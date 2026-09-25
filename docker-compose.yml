@@ -1,0 +1,39 @@
+name: dogfood-2026
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dogfood-2026-api:local
+    command: pnpm --filter api start
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dogfood-2026-web:local
+    command: pnpm --filter web start
+    environment:
+      NODE_ENV: production
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"
+      API_URL: http://api:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
