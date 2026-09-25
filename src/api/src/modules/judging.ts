@@ -516,8 +516,8 @@ export const judgingRoutes = [
         const row = await one<{ expires_at: string }>(
           t,
           `INSERT INTO judge_invites (id, event_id, token_hash, track_ids, note, created_by, expires_at)
-           VALUES ($1, $2, $3, $4, $5, $6, now() + make_interval(hours => $7)) RETURNING expires_at`,
-          [id, event.id, sha256Hex(token), body.trackIds.length ? body.trackIds : null, body.note, actor.user!.id, body.expiresInHours],
+           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING expires_at`,
+          [id, event.id, sha256Hex(token), body.trackIds.length ? body.trackIds : null, body.note, actor.user!.id, new Date(app.now() + body.expiresInHours * 3_600_000).toISOString()],
         );
         await audit(t, actor, {
           eventId: event.id,

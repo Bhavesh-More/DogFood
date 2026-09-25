@@ -167,8 +167,8 @@ export const teamRoutes = [
         const row = await one<{ expires_at: string }>(
           t,
           `INSERT INTO team_invites (id, team_id, token_hash, created_by, expires_at)
-           VALUES ($1, $2, $3, $4, now() + make_interval(hours => $5)) RETURNING expires_at`,
-          [id, team.id, sha256Hex(token), actor.user!.id, INVITE_TTL_HOURS],
+           VALUES ($1, $2, $3, $4, $5) RETURNING expires_at`,
+          [id, team.id, sha256Hex(token), actor.user!.id, new Date(app.now() + INVITE_TTL_HOURS * 3_600_000).toISOString()],
         );
         await audit(t, actor, {
           eventId: event.id,

@@ -154,8 +154,8 @@ export const votingRoutes = [
         await t.query("DELETE FROM vote_email_codes WHERE event_id = $1 AND email_hash = $2 AND verified_at IS NULL", [event.id, emailHash]);
         await t.query(
           `INSERT INTO vote_email_codes (id, event_id, email_hash, code_hash, expires_at)
-           VALUES ($1, $2, $3, $4, now() + make_interval(mins => $5))`,
-          [newId("vcode"), event.id, emailHash, hmacHex(app.secret, `code:${emailHash}:${code}`), CODE_TTL_MINUTES],
+           VALUES ($1, $2, $3, $4, $5)`,
+          [newId("vcode"), event.id, emailHash, hmacHex(app.secret, `code:${emailHash}:${code}`), new Date(app.now() + CODE_TTL_MINUTES * 60_000).toISOString()],
         );
         await t.query("INSERT INTO outbox (id, to_email, subject, body) VALUES ($1, $2, $3, $4)", [
           newId("mail"),
