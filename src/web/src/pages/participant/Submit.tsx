@@ -241,7 +241,7 @@ function SubmissionEditor({ event: e, team, initial }: { event: EventDto; team: 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {status === "submitted" ? <Pill tone="success" icon="check_circle">Submitted</Pill> : <Pill tone="warning" icon="edit">Draft</Pill>}
             <span className={cx("inline-flex items-center gap-1 type-label-md", save.isError ? "text-error" : "text-on-surface-variant")} aria-live="polite">
-              <Icon name={save.isPending ? "sync" : dirty ? "pending" : "cloud_off"} size={16} className={save.isPending ? "animate-spin" : ""} /> {saveLabel}
+              <Icon name={save.isPending ? "sync" : dirty ? "pending" : !open ? "lock" : "check_circle"} size={16} className={save.isPending ? "animate-spin" : ""} /> {saveLabel}
             </span>
           </div>
         </div>
