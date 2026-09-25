@@ -1,0 +1,308 @@
+@import "@fontsource-variable/google-sans-flex/full.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+@import "tailwindcss";
+@import "./theme.css";
+
+/*
+ * Material 3 Expressive design tokens mapped into Tailwind v4.
+ * Colour roles come from theme.css (generated); everything else is defined here.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #fff;
+  --color-black: #000;
+
+  --color-primary: var(--md-primary);
+  --color-on-primary: var(--md-on-primary);
+  --color-primary-container: var(--md-primary-container);
+  --color-on-primary-container: var(--md-on-primary-container);
+  --color-inverse-primary: var(--md-inverse-primary);
+  --color-primary-fixed: var(--md-primary-fixed);
+  --color-primary-fixed-dim: var(--md-primary-fixed-dim);
+  --color-on-primary-fixed: var(--md-on-primary-fixed);
+  --color-secondary: var(--md-secondary);
+  --color-on-secondary: var(--md-on-secondary);
+  --color-secondary-container: var(--md-secondary-container);
+  --color-on-secondary-container: var(--md-on-secondary-container);
+  --color-tertiary: var(--md-tertiary);
+  --color-on-tertiary: var(--md-on-tertiary);
+  --color-tertiary-container: var(--md-tertiary-container);
+  --color-on-tertiary-container: var(--md-on-tertiary-container);
+  --color-tertiary-fixed: var(--md-tertiary-fixed);
+  --color-on-tertiary-fixed: var(--md-on-tertiary-fixed);
+  --color-error: var(--md-error);
+  --color-on-error: var(--md-on-error);
+  --color-error-container: var(--md-error-container);
+  --color-on-error-container: var(--md-on-error-container);
+  --color-success: var(--md-success);
+  --color-on-success: var(--md-on-success);
+  --color-success-container: var(--md-success-container);
+  --color-on-success-container: var(--md-on-success-container);
+  --color-warning: var(--md-warning);
+  --color-on-warning: var(--md-on-warning);
+  --color-warning-container: var(--md-warning-container);
+  --color-on-warning-container: var(--md-on-warning-container);
+  --color-background: var(--md-background);
+  --color-on-background: var(--md-on-background);
+  --color-surface: var(--md-surface);
+  --color-on-surface: var(--md-on-surface);
+  --color-surface-variant: var(--md-surface-variant);
+  --color-on-surface-variant: var(--md-on-surface-variant);
+  --color-surface-dim: var(--md-surface-dim);
+  --color-surface-bright: var(--md-surface-bright);
+  --color-surface-container-lowest: var(--md-surface-container-lowest);
+  --color-surface-container-low: var(--md-surface-container-low);
+  --color-surface-container: var(--md-surface-container);
+  --color-surface-container-high: var(--md-surface-container-high);
+  --color-surface-container-highest: var(--md-surface-container-highest);
+  --color-inverse-surface: var(--md-inverse-surface);
+  --color-inverse-on-surface: var(--md-inverse-on-surface);
+  --color-outline: var(--md-outline);
+  --color-outline-variant: var(--md-outline-variant);
+  --color-scrim: var(--md-scrim);
+  --color-shadow: var(--md-shadow);
+
+  --font-sans: "Google Sans Flex Variable", "Google Sans Flex", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* M3 Expressive shape scale */
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-lg-plus: 20px;
+  --radius-xl: 28px;
+  --radius-xl-plus: 32px;
+  --radius-2xl: 48px;
+  --radius-full: 9999px;
+
+  /* M3 elevation levels 1–5 */
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --shadow-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --shadow-3: 0 4px 8px 3px rgb(0 0 0 / 0.15), 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --shadow-4: 0 6px 10px 4px rgb(0 0 0 / 0.15), 0 2px 3px 0 rgb(0 0 0 / 0.3);
+  --shadow-5: 0 8px 12px 6px rgb(0 0 0 / 0.15), 0 4px 4px 0 rgb(0 0 0 / 0.3);
+
+  /* Motion: emphasized easing + spring approximations (M3 Expressive motion physics) */
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring-fast: linear(0, 0.22 5%, 0.64 12%, 0.94 20%, 1.06 27%, 1.08 32%, 1.04 42%, 1 55%, 0.995 70%, 1);
+  --ease-spring-default: linear(0, 0.14 5%, 0.45 12%, 0.8 21%, 1.03 30%, 1.1 37%, 1.09 44%, 1.03 55%, 0.99 68%, 1);
+
+  /* M3 window size classes (600 / 840 / 1200 / 1600 dp). Expressed in rem so
+     Tailwind sorts them correctly alongside its default rem breakpoints. */
+  --breakpoint-compact: 37.5rem;
+  --breakpoint-medium: 52.5rem;
+  --breakpoint-expanded: 75rem;
+  --breakpoint-large: 100rem;
+}
+
+/* ---------------------------------------------------------------- type scale */
+@utility type-display-lg { font-size: 57px; line-height: 64px; letter-spacing: -0.25px; font-weight: 450; font-variation-settings: "ROND" 40; }
+@utility type-display-md { font-size: 45px; line-height: 52px; letter-spacing: 0; font-weight: 450; font-variation-settings: "ROND" 40; }
+@utility type-display-sm { font-size: 36px; line-height: 44px; letter-spacing: 0; font-weight: 450; font-variation-settings: "ROND" 30; }
+@utility type-headline-lg { font-size: 32px; line-height: 40px; font-weight: 450; }
+@utility type-headline-md { font-size: 28px; line-height: 36px; font-weight: 450; }
+@utility type-headline-sm { font-size: 24px; line-height: 32px; font-weight: 450; }
+@utility type-title-lg { font-size: 22px; line-height: 28px; font-weight: 500; }
+@utility type-title-md { font-size: 16px; line-height: 24px; letter-spacing: 0.15px; font-weight: 550; }
+@utility type-title-sm { font-size: 14px; line-height: 20px; letter-spacing: 0.1px; font-weight: 550; }
+@utility type-body-lg { font-size: 16px; line-height: 24px; letter-spacing: 0.25px; font-weight: 400; }
+@utility type-body-md { font-size: 14px; line-height: 20px; letter-spacing: 0.2px; font-weight: 400; }
+@utility type-body-sm { font-size: 12px; line-height: 16px; letter-spacing: 0.4px; font-weight: 400; }
+@utility type-label-lg { font-size: 14px; line-height: 20px; letter-spacing: 0.1px; font-weight: 550; }
+@utility type-label-md { font-size: 12px; line-height: 16px; letter-spacing: 0.5px; font-weight: 550; }
+@utility type-label-sm { font-size: 11px; line-height: 16px; letter-spacing: 0.5px; font-weight: 550; }
+/* Expressive "emphasized" variants: heavier, rounder, slightly wider. */
+@utility type-emphasized { font-weight: 720; font-variation-settings: "ROND" 100, "wdth" 104; }
+@utility font-rounded { font-variation-settings: "ROND" 100; }
+
+/* ------------------------------------------------------------- state layers */
+@utility state-layer {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms var(--ease-emphasized);
+    z-index: 0;
+  }
+  &:hover:not(:disabled, [aria-disabled="true"])::after { opacity: 0.08; }
+  &:focus-visible::after { opacity: 0.1; }
+  &:active:not(:disabled, [aria-disabled="true"])::after { opacity: 0.12; }
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 3px solid var(--md-secondary);
+    outline-offset: 2px;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+/* ----------------------------------------------------------------- base */
+@layer base {
+  html {
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100dvh;
+    background: var(--md-surface);
+  }
+  ::selection {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+  }
+  :focus-visible {
+    outline: 3px solid var(--md-secondary);
+    outline-offset: 2px;
+  }
+  code, kbd, samp, pre { font-family: var(--font-mono); }
+  a { color: inherit; text-decoration: none; }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.6; }
+  dialog::backdrop { background: color-mix(in srgb, var(--md-scrim) 40%, transparent); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- motion */
+@keyframes md-fade-up {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes md-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes md-spin { to { transform: rotate(360deg); } }
+@keyframes md-morph {
+  0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: rotate(0deg) scale(1); }
+  25% { border-radius: 50%; transform: rotate(90deg) scale(0.92); }
+  50% { border-radius: 30% 70% 36% 64% / 60% 32% 68% 40%; transform: rotate(180deg) scale(1.04); }
+  75% { border-radius: 16px; transform: rotate(270deg) scale(0.9); }
+}
+@keyframes md-wave { to { transform: translateX(-40px); } }
+@keyframes md-indeterminate {
+  0% { left: -40%; width: 40%; }
+  60% { left: 100%; width: 60%; }
+  100% { left: 100%; width: 60%; }
+}
+@keyframes md-shimmer { 100% { transform: translateX(100%); } }
+@keyframes md-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(6deg); }
+}
+
+.animate-enter { animation: md-fade-up 420ms var(--ease-emphasized-decelerate) both; }
+.animate-pop { animation: md-pop 380ms var(--ease-spring-fast) both; }
+.animate-morph { animation: md-morph 2.2s var(--ease-emphasized) infinite; }
+.animate-float { animation: md-float 7s ease-in-out infinite; }
+.stagger > * { animation: md-fade-up 460ms var(--ease-emphasized-decelerate) both; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(n + 7) { animation-delay: 240ms; }
+
+/* Range input styled as an M3 Expressive slider (thick track + bar handle). */
+.md-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+  --fill: 50%;
+}
+.md-slider:focus-visible { outline: none; }
+.md-slider::-webkit-slider-runnable-track {
+  height: 16px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--md-primary) 0 var(--fill), var(--md-secondary-container) var(--fill) 100%);
+}
+.md-slider::-moz-range-track {
+  height: 16px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--md-primary) 0 var(--fill), var(--md-secondary-container) var(--fill) 100%);
+}
+.md-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 4px;
+  height: 44px;
+  margin-top: -14px;
+  border-radius: 2px;
+  background: var(--md-primary);
+  box-shadow: 0 0 0 6px var(--md-surface-container-low);
+  transition: width 180ms var(--ease-spring-fast);
+}
+.md-slider::-moz-range-thumb {
+  width: 4px;
+  height: 44px;
+  border: none;
+  border-radius: 2px;
+  background: var(--md-primary);
+  box-shadow: 0 0 0 6px var(--md-surface-container-low);
+}
+.md-slider:active::-webkit-slider-thumb { width: 2px; }
+.md-slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px var(--md-surface-container-low), 0 0 0 9px var(--md-secondary); }
+.md-slider:disabled { cursor: not-allowed; opacity: 0.38; }
+
+/* Printable certificate */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
+
+/* Chart roles — validated with the dataviz palette validator (both modes):
+   series-1/2 categorical, cool/warm diverging poles with a neutral midpoint. */
+:root,
+:root[data-theme="light"] {
+  --chart-1: #543de0;
+  --chart-2: #eb6834;
+  --chart-cool: #2a78d6;
+  --chart-warm: #e34948;
+  --chart-mid: #f0efec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --chart-1: #9085e9;
+    --chart-2: #d95926;
+    --chart-cool: #3987e5;
+    --chart-warm: #e66767;
+    --chart-mid: #383835;
+  }
+}
+:root[data-theme="dark"] {
+  --chart-1: #9085e9;
+  --chart-2: #d95926;
+  --chart-cool: #3987e5;
+  --chart-warm: #e66767;
+  --chart-mid: #383835;
+}

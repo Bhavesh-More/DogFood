@@ -1,0 +1,14 @@
+home event calendar_month groups group_add person person_add login logout account_circle gavel rate_review
+how_to_vote trophy leaderboard search filter_list tune add edit delete close check check_circle error
+warning info schedule timer lock lock_open link content_copy share open_in_new arrow_back arrow_forward
+chevron_right chevron_left keyboard_arrow_down keyboard_arrow_up menu more_vert settings admin_panel_settings shield verified
+verified_user policy history receipt_long download upload cloud_off wifi_off bolt star_shine analytics
+stars query_stats balance compare_arrows swap_horiz star favorite thumb_up chat_bubble forum code terminal
+api webhook key badge workspace_premium military_tech school visibility visibility_off dark_mode light_mode
+sync refresh play_arrow rocket_launch flag category sell image photo_library public dashboard
+space_dashboard view_list grid_view assignment assignment_turned_in task_alt pending hourglass_top bar_chart
+rule done_all block report gpp_maybe mail send how_to_reg person_off travel_explore science hub layers
+description article print fingerprint lightbulb handshake diversity_3 shuffle sort north_east arrow_upward
+arrow_downward remove drag_indicator trending_up trending_down person_check group star_rate target
+workspace_premium qr_code data_object hourglass_empty stop_circle add_link link_off switch_account
+contrast
