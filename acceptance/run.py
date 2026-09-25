@@ -15,7 +15,8 @@ unique run id. It needs about 20 seconds because it waits for a real
 server-side deadline and voting window to pass.
 
 Standard library only (Python 3.11+). Exit code 0 when every claimed tier
-and bonus is verified.
+and bonus is verified. Environment overrides: DOGFOOD_BASE_URL and
+DOGFOOD_WEBHOOK_HOSTS (comma-separated hosts the app can reach this runner on).
 """
 from __future__ import annotations
 
@@ -1091,7 +1092,8 @@ def register_webhooks(c: Ctx) -> None:
     """Register receivers before submissions so real domain events are captured."""
     rec = Receiver()
     c.state["receiver"] = rec
-    hosts = c.manifest.get("acceptance", {}).get("webhook_hosts", ["127.0.0.1", "host.docker.internal"])
+    env_hosts = os.environ.get("DOGFOOD_WEBHOOK_HOSTS")
+    hosts = env_hosts.split(",") if env_hosts else c.manifest.get("acceptance", {}).get("webhook_hosts", ["127.0.0.1", "host.docker.internal"])
     hooks = []
     for i, host in enumerate(hosts):
         path = f"/hook{i}"
