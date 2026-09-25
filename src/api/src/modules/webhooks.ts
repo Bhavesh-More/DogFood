@@ -48,17 +48,29 @@ export function signBody(secret: string, timestamp: string, body: string): strin
   return `sha256=${hmacHex(secret, `${timestamp}.${body}`)}`;
 }
 
-/** One pass of the delivery worker: POST due deliveries with retries. */
+const LEASE_SECONDS = 60;
+
+/**
+ * One pass of the delivery worker: POST due deliveries with retries.
+ * Rows are claimed by pushing `next_attempt_at` forward in the same statement
+ * that selects them (a lease), so concurrent workers never double-send; a
+ * worker that dies mid-flight simply lets the lease expire.
+ */
 export async function deliverDue(db: Db, fetchImpl: typeof fetch = fetch, limit = 20): Promise<number> {
   const due = await db.system((t) =>
     many<{ id: string; webhook_id: string; event_type: string; payload: unknown; attempts: number; url: string; secret: string }>(
       t,
-      `SELECT d.id, d.webhook_id, d.event_type, d.payload, d.attempts, w.url, w.secret
-         FROM webhook_deliveries d JOIN webhooks w ON w.id = d.webhook_id
-        WHERE d.status = 'pending' AND d.next_attempt_at <= now()
-        ORDER BY d.next_attempt_at LIMIT $1
-        FOR UPDATE OF d SKIP LOCKED`,
-      [limit],
+      `WITH claimed AS (
+         UPDATE webhook_deliveries SET next_attempt_at = now() + make_interval(secs => $2)
+          WHERE id IN (
+            SELECT id FROM webhook_deliveries
+             WHERE status = 'pending' AND next_attempt_at <= now()
+             ORDER BY next_attempt_at LIMIT $1
+             FOR UPDATE SKIP LOCKED)
+         RETURNING id, webhook_id, event_type, payload, attempts)
+       SELECT c.id, c.webhook_id, c.event_type, c.payload, c.attempts, w.url, w.secret
+         FROM claimed c JOIN webhooks w ON w.id = c.webhook_id`,
+      [limit, LEASE_SECONDS],
     ),
   );
   for (const d of due) {
@@ -94,9 +106,9 @@ export async function deliverDue(db: Db, fetchImpl: typeof fetch = fetch, limit 
           )
         : t.query(
             `UPDATE webhook_deliveries
-                SET attempts = $2, last_status = $3, last_error = $4,
-                    status = CASE WHEN $2 >= $5 THEN 'failed' ELSE 'pending' END,
-                    next_attempt_at = now() + make_interval(secs => power(2, $2) * 5)
+                SET attempts = $2::int, last_status = $3::int, last_error = $4::text,
+                    status = CASE WHEN $2::int >= $5::int THEN 'failed' ELSE 'pending' END,
+                    next_attempt_at = now() + make_interval(secs => power(2, $2::int) * 5)
               WHERE id = $1`,
             [d.id, attempts, status, error, MAX_ATTEMPTS],
           ),
