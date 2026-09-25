@@ -1,5 +1,5 @@
 import { isBeforeDeadline, teamInput, type InviteDto, type TeamDto } from "@dogfood/core";
-import { many, one, type Tx } from "../db/pool";
+import { many, mapSeq, one, type Tx } from "../db/pool";
 import { audit } from "../lib/audit";
 import { randomToken, sha256Hex } from "../lib/crypto";
 import { HttpError, conflict, forbidden, notFound } from "../lib/errors";
@@ -402,7 +402,7 @@ export const teamRoutes = [
       return tx(async (t) => {
         const event = await loadManagedEvent(t, actor, params.eventId!);
         const ids = await many<{ id: string }>(t, "SELECT id FROM teams WHERE event_id = $1 ORDER BY name", [event.id]);
-        return Promise.all(ids.map((r) => buildTeamDto(t, r.id)));
+        return mapSeq(ids, (r) => buildTeamDto(t, r.id));
       });
     },
   }),

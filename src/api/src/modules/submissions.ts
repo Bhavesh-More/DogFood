@@ -14,7 +14,7 @@ import {
   type Paginated,
   type SubmissionDto,
 } from "@dogfood/core";
-import { many, one, type Tx } from "../db/pool";
+import { many, mapSeq, one, type Tx } from "../db/pool";
 import { audit } from "../lib/audit";
 import { sha256Hex } from "../lib/crypto";
 import { HttpError, deadlinePassed, forbidden, notFound, unprocessable } from "../lib/errors";
@@ -456,7 +456,7 @@ export const submissionRoutes = [
           `${SUBMISSION_SELECT} WHERE s.event_id = $1 ${query.status ? "AND s.status = $2" : ""} ORDER BY s.status DESC, s.title`,
           query.status ? [event.id, query.status] : [event.id],
         );
-        return Promise.all(rows.map((r) => toSubmissionDto(t, r, true)));
+        return mapSeq(rows, (r) => toSubmissionDto(t, r, true));
       });
     },
   }),

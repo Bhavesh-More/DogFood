@@ -100,29 +100,25 @@ export function criteriaForTrack(all: CriterionDto[], trackId: string | null): C
 }
 
 export async function buildEventDto(tx: Tx, e: EventRow, actor: Actor, now: number): Promise<EventDto> {
-  const [tracks, prizes, questions, stats] = await Promise.all([
-    loadTracks(tx, e.id),
-    many<PrizeDto>(
-      tx,
-      `SELECT id, name, description, value, track_id AS "trackId", position FROM prizes
-        WHERE event_id = $1 ORDER BY position, name`,
-      [e.id],
-    ),
-    many<QuestionDto>(
-      tx,
-      `SELECT id, label, help, kind, required, options, position FROM questions
-        WHERE event_id = $1 ORDER BY position, label`,
-      [e.id],
-    ),
-    eventStats(tx, [e.id]),
-  ]);
+  const tracks = await loadTracks(tx, e.id);
+  const prizes = await many<PrizeDto>(
+    tx,
+    `SELECT id, name, description, value, track_id AS "trackId", position FROM prizes
+      WHERE event_id = $1 ORDER BY position, name`,
+    [e.id],
+  );
+  const questions = await many<QuestionDto>(
+    tx,
+    `SELECT id, label, help, kind, required, options, position FROM questions
+      WHERE event_id = $1 ORDER BY position, label`,
+    [e.id],
+  );
+  const stats = await eventStats(tx, [e.id]);
   const user = actor.user;
-  const [registered, teamId, isOrganizer, scope] = await Promise.all([
-    user ? one(tx, "SELECT 1 FROM registrations WHERE event_id = $1 AND user_id = $2", [e.id, user.id]) : null,
-    user ? teamOf(tx, user.id, e.id) : null,
-    isEventOrganizer(tx, user, e.id),
-    user ? judgeScope(tx, user.id, e.id) : null,
-  ]);
+  const registered = user ? await one(tx, "SELECT 1 FROM registrations WHERE event_id = $1 AND user_id = $2", [e.id, user.id]) : null;
+  const teamId = user ? await teamOf(tx, user.id, e.id) : null;
+  const isOrganizer = await isEventOrganizer(tx, user, e.id);
+  const scope = user ? await judgeScope(tx, user.id, e.id) : null;
   const times = eventTimes(e);
   return {
     ...toSummary(e, now, stats.get(e.id)),

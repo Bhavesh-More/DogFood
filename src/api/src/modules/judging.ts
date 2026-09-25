@@ -352,7 +352,8 @@ export const judgingRoutes = [
       const possible = (ctx.candidates.length * (ctx.candidates.length - 1)) / 2;
       if (!pair) return { pair: null, done, possible };
       return tx(async (t) => {
-        const [left, right] = await Promise.all(pair.map((id) => loadSubmission(t, id)));
+        const left = await loadSubmission(t, pair[0]);
+        const right = await loadSubmission(t, pair[1]);
         return {
           pair: [await toSubmissionDto(t, left!, true), await toSubmissionDto(t, right!, true)],
           done,

@@ -103,6 +103,17 @@ export async function many<T extends pg.QueryResultRow>(
   return res.rows;
 }
 
+/**
+ * Map over items one query at a time. A transaction owns a single pg client,
+ * which cannot pipeline queries (pg 9 removes the implicit queue), so we never
+ * fan out with Promise.all inside `tx`.
+ */
+export async function mapSeq<T, R>(items: readonly T[], fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (const item of items) out.push(await fn(item));
+  return out;
+}
+
 /** Map a Postgres error raised by our triggers/constraints to an app code. */
 export function pgErrorCode(err: unknown): { code: string; constraint?: string; hint?: string } | null {
   if (err && typeof err === "object" && "code" in err && typeof (err as { code: unknown }).code === "string") {
