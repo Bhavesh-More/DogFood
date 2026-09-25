@@ -245,3 +245,33 @@ Automated Acceptance Test Runner & Report (F010)
 * [ ] External cloud SaaS dependencies (Auth0, Clerk, hosted databases, remote APIs)
 * [ ] Unstable Tier 4 features built before verifying Tier 1 & Tier 2 correctness
 * [ ] Client-side clock deadline validation or UI-only authorization hiding
+
+---
+
+## 9. Research-Verified Additions (2026-09-25)
+
+The confirmed tier lists (see `05-website-research.md` §8) add requirements that the original feature list did not name. They are tracked here with the tier that the acceptance suite will attribute them to.
+
+| ID | Feature | Tier | Priority | Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| F013 | Event lifecycle: create → edit → **publish**, with schedule (registration, submission deadline, judging, voting, results), tracks, **prizes**, **custom submission questions** | T1 | P0 | Unpublished events are invisible to non-organizers. |
+| F014 | **Event registration** before team formation | T1 | P0 | Registration is a precondition for creating/joining a team. |
+| F015 | **Single-use, expiring** team invite links | T1 | P0 | Token stored hashed; consumed atomically; default TTL 72h. |
+| F016 | Full submission fields: name, tagline, description, **thumbnail**, **gallery images**, demo video URL, repo URL, live link, **tech tags**, track, **answers to organizer questions** | T1 | P0 | Local file uploads on a Docker volume; no external storage. |
+| F017 | **Eligibility** review (eligible / ineligible with reason) before judging | T1/T2 | P0 | Ineligible projects are never routed to judges. |
+| F018 | **Judge invitations** (single-use links, optional track scope) and **conflict-of-interest** exclusion | T2 | P0 | Track-scoped judges cannot read other tracks. |
+| F019 | **Judge progress tracking** (per judge and per track) | T2 | P0 | Organizer matrix + judge progress bar. |
+| F020 | Community voting access modes: **open-link, email-gated, authenticated**; **comments**; **randomized ordering**; hidden results until the window closes | T3 | P1 | Email codes delivered through a local outbox (no email API). |
+| F021 | Quadratic voting (credits, cost = votes²) as an organizer option | T3 | P1 | Defended in `THREAT-MODEL.md`. |
+| F022 | Readable, **tamper-evident** audit trail | T3 | P1 | Hash-chained rows + verify endpoint. |
+| F023 | REST API with personal API tokens covering every UI action; OpenAPI 3.1 document generated from the same Zod schemas that validate requests | T4 | P2 | Bonus "API First". |
+| F024 | Outbound **webhooks** with HMAC-SHA256 signatures and retry | T4 | P2 | Delivered by an in-process worker. |
+| F025 | **Certificates** + **signed, publicly verifiable judge participation records** (Ed25519) | T4 | P2 | Public verify page + public key endpoint. |
+| F026 | **Embeddable gallery widget** (`/embed/:slug`, iframe-safe) | T4 | P2 | Framing allowed only on the embed route. |
+| F027 | **Bulk import/export** (event JSON bundle, CSV) | T4 | P2 | Import accepts the `fixtures.json` shape. |
+
+### Updated checklist
+* [ ] F013–F019 are P0 because the acceptance suite attributes them to T1/T2.
+* [ ] F020–F022 are required before claiming T3 in `.dogfood.toml`.
+* [ ] F023–F027 are required before claiming T4 in `.dogfood.toml`.
+* [ ] Never claim a tier whose acceptance checks fail — overclaiming is scored below the verified tier.

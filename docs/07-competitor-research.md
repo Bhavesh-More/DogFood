@@ -91,3 +91,26 @@
 ### UNKNOWN
 * Proprietary backend architecture and internal database schemas of commercial SaaS competitors (Devpost, Unstop, Devfolio).
 * Specific test harness CLI binary used by Hackathon Raptors organizers during automated evaluation.
+
+---
+
+## 8. Other Dogfood 2026 Entries (public repos, kickoff-day snapshot)
+
+| Repo | Stack | Claimed scope | Notable choices |
+| :--- | :--- | :--- | :--- |
+| `ankukumarsingh82-boop/dogfood-portal` | Python + Postgres 16 + vendored htmx | **T1 only** | Seeds checker cookies (`dogfood_session=org_…`, `jdg_a_…`, `jdg_b_…`, `prt_…`); imports official `fixtures/fixtures.json` (`/e/evt_01`), falls back to a built-in seed. |
+| `somnath-jamadar09/DogFood-Hackathon-Main` | React/Vite/Tailwind + Express + FastAPI judging microservice + MongoDB | T1–T2+ | Separate Python service for Z-score, Bayesian shrinkage and Bradley-Terry; four containers. |
+| `SilverMoon-ops/moonforge` | React + Express + MongoDB | T1–T2 | Document store; single commit at snapshot time. |
+
+### What this tells us
+* Most entries enforce isolation **only in route handlers**. A database-level guarantee (Postgres Row-Level Security with `FORCE ROW LEVEL SECURITY`) is a clear differentiator for the 25% integrity criterion.
+* Several entries split the maths into a separate service; that adds a container and a network hop without adding correctness. We keep the maths in a pure, dependency-free TypeScript module that is unit-tested and property-tested, and snapshot every normalization run for audit.
+* Nobody in the snapshot ships signed, publicly verifiable judge records or a hash-chained audit log — both are cheap to build with Node's built-in `crypto` (Ed25519, SHA-256) and fully offline.
+
+## 9. Our Differentiation Plan
+1. **Isolation in three layers:** route guard → repository `WHERE judge_id = $uid` → Postgres RLS policy. A test proves a deliberately unfiltered `SELECT * FROM scores` returns only the caller's rows.
+2. **Transparent normalization:** every run is stored with per-judge μ, σ, N and method, and a live "Normalization Lab" page shows before/after distributions for the fixture data.
+3. **Hybrid judging:** rubric scores *and* a Bradley-Terry pairwise mode, reported side by side.
+4. **Tamper-evident audit trail:** each audit row stores `hash = SHA-256(prev_hash ‖ row)`; a verify endpoint recomputes the chain.
+5. **Signed records:** Ed25519-signed judge participation and participant certificates with a public verify page.
+6. **Zero-SaaS, two-container deploy:** one Node container (API + static UI) and one Postgres container.

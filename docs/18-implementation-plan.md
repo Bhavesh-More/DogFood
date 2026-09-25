@@ -176,3 +176,17 @@ A development phase is declared **DONE** only when:
 * [ ] Primary demo flow verified on seeded fixture data
 * [ ] Hackathon submission requirements (`README`, `ARCHITECTURE`, `DATA-MODEL`, `JUDGING`, `LICENSE`, `.dogfood.toml`, video script) verified
 * [ ] `17-acceptance-criteria.md` definition of done satisfied
+
+---
+
+## 13. Execution Log
+
+| Phase | Status | Notes |
+| :--- | :--- | :--- |
+| Research | ✅ Done | Tier lists, acceptance conventions and UI references recorded in `05`, `07`, `08`, `01`. |
+| Phase 1 — Foundation | ⏳ In progress | Restructure to `src/` + `tests/`, two-container compose (app + Postgres), `.dogfood.toml`, LICENSE. |
+| Phase 2 — Core backend | ⬜ | |
+| Phase 3 — Frontend (M3 Expressive) | ⬜ | |
+| Phase 4 — T3/T4 + bonuses | ⬜ | |
+| Phase 5 — Tests + acceptance | ⬜ | |
+| Phase 6/7 — Deploy, docs, demo | ⬜ | |

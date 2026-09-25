@@ -86,3 +86,42 @@
 4. **Backend Query Isolation:** Permissions (`WHERE judge_id = auth.uid`) must be enforced at the API/database layer, never UI component hiding.
 5. **Statistical Normalization:** Implement Z-score normalization (with Min-Max fallback for $N_j < 5$) to eliminate judge scoring bias.
 6. **Required Deliverables:** Public GitHub repo, OSI license, `README.md`, `ARCHITECTURE.md`, `DATA-MODEL.md`, `JUDGING.md`, `docker-compose.yml`, `acceptance-report.txt`, `.dogfood.toml`, and 5-minute demo video.
+
+---
+
+## 8. Verified Research Pass (2026-09-25, kickoff day)
+
+> **Access note:** From the build environment, `dogfoodhack.com`, `dev.to`, `unstop.com` and the shared ChatGPT conversation were blocked by the egress proxy. The findings below were cross-checked through search-engine extracts of those pages and of public participant repositories on GitHub. Anything not confirmed by at least one extract is marked *(inferred)*.
+
+### 8.1 Tier ladder — confirmed capability lists
+
+| Tier | Confirmed capabilities (from the official brief extracts) |
+| :--- | :--- |
+| **T1 Core** | Email/password auth; roles (visitor, participant, judge, organizer, admin); organizers **create, edit and publish events with schedule, tracks, prizes and custom submission questions**; participants **register for an event, create a team, invite teammates with single-use, expiring invitation links**; project submission with **name, tagline, description, thumbnail, gallery images, demo video URL, repository URL, live link, tech tags, track, and the organizer's questions**; drafts locked by a server-side deadline; public gallery with search and filters. |
+| **T2 Judging** | Judge invitations; judge assignments; batch or algorithmic assignment; weighted judging rubrics; backend-enforced role isolation; judge progress tracking; cross-judge score normalization; CSV exports. |
+| **T3 Public** | Community voting; configurable voting access (open-link, email-gated, authenticated); comments on projects; hidden results during the voting window; randomized project ordering; rate limits; duplicate detection; readable audit trails. Quadratic voting is *one* option — "teams are free to implement something else if they can defend it". |
+| **T4 Stretch** | REST API; API access for every UI action; webhooks; certificate generation; record generation; signed and publicly verifiable judge participation records; embeddable gallery widget; bulk import and export. |
+
+### 8.2 Isolation rule (quoted intent)
+* "A judge should never be able to access another judge's scores. A track judge should never be able to access another track's data."
+* "If this only works because the UI hides a button, it does not work."
+* "If a judge can make an API request and retrieve another judge's ballot, the system has failed."
+
+### 8.3 Acceptance harness conventions
+* Command used by participants: `python3 acceptance/run.py .dogfood.toml > acceptance-report.txt`.
+* The suite "runs against your application and produces a tier-by-tier pass report"; the report is the receipt for the tiers claimed in `.dogfood.toml`.
+* **Overclaiming is penalised**: "If you claim T3 but the acceptance suite only confirms T2, you get scored at T2. Overclaiming costs more than the tier was worth."
+* Stable local **session tokens for the checker live in `.dogfood.toml`** (participants seeded long-lived sessions for organizer, judge A, judge B and participant roles).
+* An official kickoff **`fixtures.json`** exists; participants import it on first boot (one repo stores it at `fixtures/fixtures.json`, the event lives at `/e/evt_01` titled "Sample Hack 2026"). The acceptance runner locates `fixtures.json` at the repo root without a flag.
+
+### 8.4 Threat-model bonus scope
+The threat model must be "written and defensible" for **Sybil votes, ballot stuffing, submission scraping, judge collusion and deadline gaming**, naming the attacks stopped *and* the ones not stopped.
+
+### 8.5 Operational wording
+* "Everything runs in the containers defined in `docker-compose.yml`. The app works with the network cable unplugged." One extract phrases it as "two containers" (app + database) *(inferred to be an example, not a hard cap)*.
+* "No cloud services, no external APIs, no external auth providers."
+
+### 8.6 UI inspiration sources
+* **dogfoodhack.com** — could not be rendered from the build environment; the title is "DOGFOOD — Build the platform that will judge you".
+* **Unstop event pages** — known layout pattern: hero banner with organiser logo, sticky right-hand registration card (deadline countdown, team size, registered count), tabbed body (Details, Stages & Timeline, Prizes, FAQs), eligibility chips.
+* **Material 3 Expressive** (Google, 2025) — adopted as the design language: emphasized type, expanded shape scale (up to 48dp corners and shape morphing), vibrant tonal colour roles, spring motion, button groups, wavy progress and loading indicators.
