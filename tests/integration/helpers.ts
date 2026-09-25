@@ -56,6 +56,12 @@ export interface TestStack {
   as(token: string): Client;
   cookieJar(): Client;
   sql<T extends pg.QueryResultRow = any>(text: string, params?: unknown[]): Promise<T[]>;
+  /**
+   * Run raw SQL exactly as the API's request transactions do (non-owner role,
+   * RLS context set) and roll back afterwards: proves the database itself
+   * enforces isolation, independent of any application WHERE clause.
+   */
+  asDbUser<T>(userId: string | null, role: string, fn: (q: (text: string, params?: unknown[]) => Promise<any[]>) => Promise<T>): Promise<T>;
   close(): Promise<void>;
 }
 
@@ -126,6 +132,18 @@ export async function startStack(opts: { now?: () => number } = {}): Promise<Tes
     as: (token) => makeClient(base, { bearer: token }),
     cookieJar: () => makeClient(base, { cookies: new Map() }),
     sql: async (text, params) => (await db.pool.query(text, params)).rows,
+    async asDbUser(userId, role, fn) {
+      const client = await db.pool.connect();
+      try {
+        await client.query("BEGIN");
+        await client.query("SET LOCAL ROLE dogfood_app");
+        await client.query("SELECT set_config('app.user_id', $1, true), set_config('app.role', $2, true)", [userId ?? "", role]);
+        return await fn(async (text, params) => (await client.query(text, params)).rows);
+      } finally {
+        await client.query("ROLLBACK").catch(() => undefined);
+        client.release();
+      }
+    },
     async close() {
       await new Promise<void>((r) => server.close(() => r()));
       await db.close();
