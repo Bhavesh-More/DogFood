@@ -73,47 +73,50 @@ export async function deliverDue(db: Db, fetchImpl: typeof fetch = fetch, limit 
       [limit, LEASE_SECONDS],
     ),
   );
-  for (const d of due) {
-    const body = JSON.stringify(d.payload);
-    const timestamp = String(Math.floor(Date.now() / 1000));
-    let status: number | null = null;
-    let error: string | null = null;
-    try {
-      const res = await fetchImpl(d.url, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "user-agent": "dogfood-webhooks/1",
-          "x-dogfood-event": d.event_type,
-          "x-dogfood-delivery": d.id,
-          "x-dogfood-timestamp": timestamp,
-          "x-dogfood-signature": signBody(d.secret, timestamp, body),
-        },
-        body,
-        signal: AbortSignal.timeout(5000),
-      });
-      status = res.status;
-      if (!res.ok) error = `HTTP ${res.status}`;
-    } catch (err) {
-      error = (err as Error).message.slice(0, 300);
-    }
-    const attempts = d.attempts + 1;
-    await db.system((t) =>
-      error === null
-        ? t.query(
-            "UPDATE webhook_deliveries SET status = 'delivered', attempts = $2, last_status = $3, last_error = NULL, delivered_at = now() WHERE id = $1",
-            [d.id, attempts, status],
-          )
-        : t.query(
-            `UPDATE webhook_deliveries
-                SET attempts = $2::int, last_status = $3::int, last_error = $4::text,
-                    status = CASE WHEN $2::int >= $5::int THEN 'failed' ELSE 'pending' END,
-                    next_attempt_at = now() + make_interval(secs => power(2, $2::int) * 5)
-              WHERE id = $1`,
-            [d.id, attempts, status, error, MAX_ATTEMPTS],
-          ),
-    );
-  }
+  // Deliver concurrently: one slow or unreachable receiver must not delay the others.
+  await Promise.allSettled(
+    due.map(async (d) => {
+      const body = JSON.stringify(d.payload);
+      const timestamp = String(Math.floor(Date.now() / 1000));
+      let status: number | null = null;
+      let error: string | null = null;
+      try {
+        const res = await fetchImpl(d.url, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "user-agent": "dogfood-webhooks/1",
+            "x-dogfood-event": d.event_type,
+            "x-dogfood-delivery": d.id,
+            "x-dogfood-timestamp": timestamp,
+            "x-dogfood-signature": signBody(d.secret, timestamp, body),
+          },
+          body,
+          signal: AbortSignal.timeout(5000),
+        });
+        status = res.status;
+        if (!res.ok) error = `HTTP ${res.status}`;
+      } catch (err) {
+        error = (err as Error).message.slice(0, 300);
+      }
+      const attempts = d.attempts + 1;
+      await db.system((t) =>
+        error === null
+          ? t.query(
+              "UPDATE webhook_deliveries SET status = 'delivered', attempts = $2, last_status = $3, last_error = NULL, delivered_at = now() WHERE id = $1",
+              [d.id, attempts, status],
+            )
+          : t.query(
+              `UPDATE webhook_deliveries
+                  SET attempts = $2::int, last_status = $3::int, last_error = $4::text,
+                      status = CASE WHEN $2::int >= $5::int THEN 'failed' ELSE 'pending' END,
+                      next_attempt_at = now() + make_interval(secs => power(2, $2::int) * 5)
+                WHERE id = $1`,
+              [d.id, attempts, status, error, MAX_ATTEMPTS],
+            ),
+      );
+    }),
+  );
   return due.length;
 }
 
