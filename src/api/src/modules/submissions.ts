@@ -182,7 +182,7 @@ const galleryQuery = z.object({
   tag: z.string().trim().toLowerCase().max(24).optional(),
   sort: z.enum(["recent", "title", "random", "rank"]).optional(),
   page: z.coerce.number().int().min(1).max(1000).default(1),
-  pageSize: z.coerce.number().int().min(1).max(48).default(24),
+  pageSize: z.coerce.number().int().min(1).max(200).default(24),
 });
 
 const IMAGE_SIGNATURES: { ext: string; type: string; test: (b: Buffer) => boolean }[] = [
