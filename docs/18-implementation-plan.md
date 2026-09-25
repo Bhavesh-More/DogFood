@@ -184,9 +184,15 @@ A development phase is declared **DONE** only when:
 | Phase | Status | Notes |
 | :--- | :--- | :--- |
 | Research | ✅ Done | Tier lists, acceptance conventions and UI references recorded in `05`, `07`, `08`, `01`. |
-| Phase 1 — Foundation | ⏳ In progress | Restructure to `src/` + `tests/`, two-container compose (app + Postgres), `.dogfood.toml`, LICENSE. |
-| Phase 2 — Core backend | ⬜ | |
-| Phase 3 — Frontend (M3 Expressive) | ⬜ | |
-| Phase 4 — T3/T4 + bonuses | ⬜ | |
+| Phase 1 — Foundation | ✅ Done | Repo restructured to `src/{core,api,web}` + `tests/` + `tooling/`; pnpm/turbo workspace; Vitest projects. Compose/`.dogfood.toml`/LICENSE land with Phase 6. |
+| Phase 2 — Core backend | ✅ Done | `src/core` maths (57 unit tests), Postgres schema with RLS + deadline trigger + hash-chained audit, T1/T2 API, deterministic fixtures. Verified by curl: cross-judge reads → 403, late edits → 403 `DEADLINE_PASSED`, invites single-use, normalization invariants hold. |
+| Phase 3 — Frontend (M3 Expressive) | ⏳ In progress | Vite + React + Tailwind v4 with generated M3 colour tokens. |
+| Phase 4 — T3/T4 + bonuses | 🟡 Backend done | Voting modes, quadratic, Sybil cap, comments, webhooks, signed records, import/export, pairwise BT, OpenAPI (116 operations). UI pending. |
 | Phase 5 — Tests + acceptance | ⬜ | |
 | Phase 6/7 — Deploy, docs, demo | ⬜ | |
+
+### Findings during Phase 2
+* **Zod 4 `.partial()` keeps defaults** — a PATCH would reset omitted fields. Fixed with default-free patch schemas.
+* **FNV-1a high-bit clustering** — deterministic seed draws clustered; added a MurmurHash3 finalizer + distribution test.
+* **Bradley–Terry scaling bug** — rescaling each iteration fought the phantom-item prior; removed rescaling so the fixed point is the true MAP estimate (caught by the balance-condition test).
+* **Trigger ordering** — Postgres fires same-event triggers alphabetically; ownership derivation now runs before the score-bound check.
