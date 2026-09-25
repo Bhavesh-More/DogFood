@@ -66,24 +66,44 @@ export const normalizationSettings = z.object({
   minSampleSize: z.number().int().min(1).max(50).default(5),
 });
 
-const eventFields = {
+/** Event fields without defaults — used for PATCH so omitted keys stay untouched. */
+const eventShape = {
   slug,
   name: z.string().trim().min(3).max(120),
-  tagline: z.string().trim().max(200).default(""),
-  description: z.string().max(20_000).default(""),
-  rules: z.string().max(20_000).default(""),
-  location: z.string().trim().max(120).default("Online"),
+  tagline: z.string().trim().max(200),
+  description: z.string().max(20_000),
+  rules: z.string().max(20_000),
+  location: z.string().trim().max(120),
   startsAt: utcInstant,
   submissionDeadline: utcInstant,
-  judgingEndsAt: utcInstant.nullable().default(null),
-  votingOpensAt: utcInstant.nullable().default(null),
-  votingClosesAt: utcInstant.nullable().default(null),
-  minTeamSize: z.number().int().min(1).max(10).default(1),
-  maxTeamSize: z.number().int().min(1).max(10).default(4),
-  votingMode: z.enum(VOTING_MODES as [string, ...string[]]).default("off"),
-  votingStyle: z.enum(VOTING_STYLES as [string, ...string[]]).default("single"),
-  quadraticCredits: z.number().int().min(1).max(1000).default(25),
-  reviewsPerSubmission: z.number().int().min(1).max(10).default(3),
+  judgingEndsAt: utcInstant.nullable(),
+  votingOpensAt: utcInstant.nullable(),
+  votingClosesAt: utcInstant.nullable(),
+  minTeamSize: z.number().int().min(1).max(10),
+  maxTeamSize: z.number().int().min(1).max(10),
+  votingMode: z.enum(VOTING_MODES as [string, ...string[]]),
+  votingStyle: z.enum(VOTING_STYLES as [string, ...string[]]),
+  /** Single style: projects each voter may back. Quadratic: credit budget. */
+  quadraticCredits: z.number().int().min(1).max(1000),
+  reviewsPerSubmission: z.number().int().min(1).max(10),
+  normalization: normalizationSettings,
+};
+
+const eventFields = {
+  ...eventShape,
+  tagline: eventShape.tagline.default(""),
+  description: eventShape.description.default(""),
+  rules: eventShape.rules.default(""),
+  location: eventShape.location.default("Online"),
+  judgingEndsAt: eventShape.judgingEndsAt.default(null),
+  votingOpensAt: eventShape.votingOpensAt.default(null),
+  votingClosesAt: eventShape.votingClosesAt.default(null),
+  minTeamSize: eventShape.minTeamSize.default(1),
+  maxTeamSize: eventShape.maxTeamSize.default(4),
+  votingMode: eventShape.votingMode.default("off"),
+  votingStyle: eventShape.votingStyle.default("single"),
+  quadraticCredits: eventShape.quadraticCredits.default(25),
+  reviewsPerSubmission: eventShape.reviewsPerSubmission.default(3),
   normalization: normalizationSettings.default({ targetMean: 70, targetSd: 15, minSampleSize: 5 }),
 };
 
@@ -125,42 +145,66 @@ function checkEventWindows(
 }
 
 export const eventInput = z.object(eventFields).superRefine(checkEventWindows);
-export const eventPatch = z.object(eventFields).partial().superRefine(checkEventWindows);
+export const eventPatch = z.object(eventShape).partial().superRefine(checkEventWindows);
 
-export const trackInput = z.object({
+const trackShape = {
   name: z.string().trim().min(1).max(80),
-  description: z.string().max(2000).default(""),
-});
+  description: z.string().max(2000),
+};
+export const trackInput = z.object({ ...trackShape, description: trackShape.description.default("") });
+export const trackPatch = z.object(trackShape).partial();
 
-export const prizeInput = z.object({
+const prizeShape = {
   name: z.string().trim().min(1).max(120),
-  description: z.string().max(2000).default(""),
-  value: z.string().trim().max(60).default(""),
-  trackId: z.string().nullable().default(null),
+  description: z.string().max(2000),
+  value: z.string().trim().max(60),
+  trackId: z.string().nullable(),
+};
+export const prizeInput = z.object({
+  ...prizeShape,
+  description: prizeShape.description.default(""),
+  value: prizeShape.value.default(""),
+  trackId: prizeShape.trackId.default(null),
 });
+export const prizePatch = z.object(prizeShape).partial();
 
 export const QUESTION_KINDS = ["text", "textarea", "url", "select", "boolean"] as const;
 
+const questionShape = {
+  label: z.string().trim().min(1).max(200),
+  help: z.string().max(500),
+  kind: z.enum(QUESTION_KINDS),
+  required: z.boolean(),
+  options: z.array(z.string().trim().min(1).max(80)).max(20),
+};
 export const questionInput = z
   .object({
-    label: z.string().trim().min(1).max(200),
-    help: z.string().max(500).default(""),
-    kind: z.enum(QUESTION_KINDS).default("text"),
-    required: z.boolean().default(false),
-    options: z.array(z.string().trim().min(1).max(80)).max(20).default([]),
+    ...questionShape,
+    help: questionShape.help.default(""),
+    kind: questionShape.kind.default("text"),
+    required: questionShape.required.default(false),
+    options: questionShape.options.default([]),
   })
   .refine((q) => q.kind !== "select" || q.options.length >= 2, {
     message: "Select questions need at least two options",
     path: ["options"],
   });
+export const questionPatch = z.object(questionShape).partial();
 
-export const criterionInput = z.object({
+const criterionShape = {
   name: z.string().trim().min(1).max(80),
-  description: z.string().max(1000).default(""),
+  description: z.string().max(1000),
   weight: z.number().gt(0).max(100),
-  maxScore: z.number().int().min(1).max(100).default(10),
-  trackId: z.string().nullable().default(null),
+  maxScore: z.number().int().min(1).max(100),
+  trackId: z.string().nullable(),
+};
+export const criterionInput = z.object({
+  ...criterionShape,
+  description: criterionShape.description.default(""),
+  maxScore: criterionShape.maxScore.default(10),
+  trackId: criterionShape.trackId.default(null),
 });
+export const criterionPatch = z.object(criterionShape).partial();
 
 export const teamInput = z.object({
   name: z.string().trim().min(2).max(60),
