@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from "node:crypto";
 import { mkdtempSync } from "node:fs";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -62,6 +63,8 @@ export interface TestStack {
    * enforces isolation, independent of any application WHERE clause.
    */
   asDbUser<T>(userId: string | null, role: string, fn: (q: (text: string, params?: unknown[]) => Promise<any[]>) => Promise<T>): Promise<T>;
+  /** Mint a bearer session for any seeded user (bypasses the login rate limit). */
+  tokenFor(userId: string): Promise<string>;
   close(): Promise<void>;
 }
 
@@ -143,6 +146,16 @@ export async function startStack(opts: { now?: () => number } = {}): Promise<Tes
         await client.query("ROLLBACK").catch(() => undefined);
         client.release();
       }
+    },
+    async tokenFor(userId) {
+      const token = `dft_${randomBytes(16).toString("hex")}`;
+      const hash = createHash("sha256").update(token).digest("hex");
+      await db.pool.query(
+        `INSERT INTO sessions (id, user_id, token_hash, kind, label, expires_at)
+         VALUES ($1, $2, $3, 'api', 'test', now() + interval '1 hour')`,
+        [`ses_test_${hash.slice(0, 16)}`, userId, hash],
+      );
+      return token;
     },
     async close() {
       await new Promise<void>((r) => server.close(() => r()));
