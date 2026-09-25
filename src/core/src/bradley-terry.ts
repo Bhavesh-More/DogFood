@@ -128,13 +128,23 @@ export function winProbability(strengthA: number, strengthB: number): number {
   return strengthA / (strengthA + strengthB);
 }
 
-/** FNV-1a 32-bit hash — deterministic tie-breaking without Math.random. */
+/**
+ * FNV-1a 32-bit hash followed by the MurmurHash3 finalizer. Plain FNV-1a has
+ * weak avalanche in its high bits for keys that differ only at the end
+ * ("sub_01" vs "sub_02"), which made deterministic draws cluster; the
+ * finalizer spreads every input bit across the output.
+ */
 export function fnv1a(input: string): number {
   let hash = 0x811c9dc5;
   for (let i = 0; i < input.length; i++) {
     hash ^= input.charCodeAt(i);
     hash = Math.imul(hash, 0x01000193) >>> 0;
   }
+  hash ^= hash >>> 16;
+  hash = Math.imul(hash, 0x85ebca6b);
+  hash ^= hash >>> 13;
+  hash = Math.imul(hash, 0xc2b2ae35);
+  hash ^= hash >>> 16;
   return hash >>> 0;
 }
 

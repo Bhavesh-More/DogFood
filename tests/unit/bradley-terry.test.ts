@@ -99,10 +99,19 @@ describe("selectNextPair", () => {
   });
 });
 
-describe("fnv1a", () => {
+describe("fnv1a (with murmur3 finalizer)", () => {
   it("is stable", () => {
-    expect(fnv1a("")).toBe(0x811c9dc5);
     expect(fnv1a("abc")).toBe(fnv1a("abc"));
     expect(fnv1a("abc")).not.toBe(fnv1a("abd"));
+  });
+
+  it("spreads keys that differ only in their last characters", () => {
+    // Regression: plain FNV-1a put all of these in a narrow band of [0, 1).
+    const draws = Array.from({ length: 200 }, (_, i) => fnv1a(`complete:judge:sub_${String(i).padStart(3, "0")}`) / 2 ** 32);
+    const buckets = new Array(10).fill(0);
+    for (const d of draws) buckets[Math.floor(d * 10)] += 1;
+    for (const b of buckets) expect(b).toBeGreaterThan(8);
+    expect(Math.min(...draws)).toBeLessThan(0.05);
+    expect(Math.max(...draws)).toBeGreaterThan(0.95);
   });
 });
