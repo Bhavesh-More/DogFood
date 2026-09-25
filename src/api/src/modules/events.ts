@@ -52,7 +52,9 @@ async function eventStats(tx: Tx, eventIds: string[]) {
        FROM events e WHERE e.id = ANY($1)`,
     [eventIds],
   );
-  return new Map(rows.map((r) => [r.event_id, r]));
+  return new Map(
+    rows.map((r) => [r.event_id, { registrations: r.registrations, teams: r.teams, submissions: r.submissions }]),
+  );
 }
 
 export function toSummary(e: EventRow, now: number, stats?: { registrations: number; teams: number; submissions: number }): EventSummaryDto {
