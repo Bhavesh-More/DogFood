@@ -5,6 +5,7 @@ import { expect, test, type BrowserContext } from "@playwright/test";
  * Anything a test changes is put back, so the demo data stays as seeded.
  */
 const TOKENS = {
+  participant2: "dfc_participant2_3e9a7c1d5b2f86024f",
   organizer: "dfc_organizer_8b1d3f5a7c9e20461a",
   judge: "dfc_judge_a_2c4e6a8b0d1f39571b",
   participant: "dfc_participant_7d3b1f9e5c2a48064e",
@@ -161,3 +162,21 @@ test.describe("announcements", () => {
     expect(res.headers()["content-type"]).toContain("text/calendar");
   });
 });
+
+test.describe("team finder", () => {
+  test("a solo participant posts their skills, sees the post, then takes it down", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "participant2");
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+    await page.goto("/e/autumn-build-week/team");
+    const form = page.getByRole("form", { name: "Look for a team" });
+    await form.getByLabel(/^Skills/).fill("rust, wasm");
+    await form.getByLabel(/^A line about you/).fill("Systems person, find me at the venue.");
+    await form.getByRole("button", { name: "Post myself" }).click();
+    const mine = page.getByRole("list", { name: "People looking for a team" }).getByRole("listitem").filter({ hasText: "Systems person" });
+    await expect(mine).toBeVisible();
+    await expect(mine.getByRole("list", { name: "Skills" })).toContainText("wasm");
+    await page.getByRole("button", { name: "Take me off the board" }).click();
+    await expect(mine).toHaveCount(0);
+  });
+});
+
