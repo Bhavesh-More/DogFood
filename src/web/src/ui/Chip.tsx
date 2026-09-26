@@ -69,9 +69,9 @@ const PILL: Record<PillTone, string> = {
 /** Non-interactive status label. */
 export function Pill({ tone = "neutral", icon, children, className }: { tone?: PillTone; icon?: IconName; children: ReactNode; className?: string }) {
   return (
-    <span className={cx("inline-flex h-7 items-center gap-1 rounded-full px-2.5 type-label-md whitespace-nowrap", PILL[tone], className)}>
-      {icon ? <Icon name={icon} size={16} /> : null}
-      {children}
+    <span className={cx("inline-flex h-7 max-w-full items-center gap-1 rounded-full px-2.5 type-label-md whitespace-nowrap", PILL[tone], className)}>
+      {icon ? <Icon name={icon} size={16} className="shrink-0" /> : null}
+      <span className="truncate">{children}</span>
     </span>
   );
 }

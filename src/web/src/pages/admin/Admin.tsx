@@ -5,7 +5,7 @@ import { CAPABILITIES, ROLE_LABEL, ROLES, type Capability, type Role } from "@do
 import { errorMessage, get, patch } from "../../lib/api";
 import { useSession } from "../../lib/session";
 import { formatDateTime, relativeTime } from "../../lib/time";
-import { Avatar, Card, EmptyState, Icon, PageLoader, Pill, RoleBadge, SectionHeader, Select, StatTile, Switch, Tabs, TextField, useToast } from "../../ui";
+import { Avatar, Card, EmptyState, Icon, PageLoader, RoleBadge, SectionHeader, Select, StatTile, Switch, Tabs, TextField, useToast } from "../../ui";
 import { AuditTable } from "../organize/Audit";
 
 interface UserRow {
@@ -144,7 +144,7 @@ export function AdminPage() {
             <PageLoader />
           ) : stats.data ? (
             <div className="flex flex-col gap-6">
-              <div className="grid gap-3 sm:grid-cols-2 expanded:grid-cols-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 expanded:grid-cols-5">
                 <StatTile label="Events" value={stats.data.events} icon="event" />
                 <StatTile label="Teams" value={stats.data.teams} icon="groups" tone="secondary" />
                 <StatTile label="Submissions" value={stats.data.submissions} icon="rocket_launch" tone="tertiary" />
@@ -184,7 +184,10 @@ export function AdminPage() {
                   </table>
                 </div>
               </Card>
-              <Pill tone="neutral" icon="cloud_off">Offline deployment · no telemetry · no external services</Pill>
+              <p className="flex items-start gap-2 type-body-md text-on-surface-variant">
+                <Icon name="cloud_off" size={18} className="mt-0.5 shrink-0" />
+                Offline deployment · no telemetry · no external services
+              </p>
             </div>
           ) : null
         ) : tab === "users" ? (
