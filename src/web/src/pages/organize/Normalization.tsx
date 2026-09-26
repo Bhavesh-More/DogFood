@@ -119,7 +119,7 @@ export function NormalizationPage() {
         {actions}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 expanded:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 expanded:grid-cols-4">
         <StatTile label="Ballots normalized" value={r.entries.length} icon="rate_review" />
         <StatTile label="Judges" value={r.judges.length} icon="gavel" tone="secondary" hint={minMaxJudges.length ? `${minMaxJudges.length} on Min-Max fallback` : "all Z-scored"} />
         <StatTile label="Rank agreement (Spearman ρ)" value={fmt(r.spearmanRawVsNormalized, 3)} icon="compare_arrows" tone="tertiary" hint="raw vs normalized order" />
@@ -139,7 +139,7 @@ export function NormalizationPage() {
 
       {view === "lab" ? (
         <div className="flex flex-col gap-6">
-          <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <Card variant="filled" radius="2xl">
               <SectionHeader title="Judge leniency" subtitle={`Each judge's mean raw total minus the global mean (${fmt(r.globalMean, 1)})`} level={3} />
               <DivergingBars
@@ -178,7 +178,7 @@ export function NormalizationPage() {
 
           <Card variant="filled" radius="2xl">
             <SectionHeader title="Before and after" subtitle="Each dot is one ballot; the dark tick is that judge's mean. After normalization every Z-scored judge is centred on the target." level={3} />
-            <div className="grid gap-8 expanded:grid-cols-2">
+            <div className="grid grid-cols-1 gap-8 expanded:grid-cols-2">
               <StripPlot rows={judgeRows.raw} title="Raw weighted totals" ariaLabel="Raw weighted totals per judge" />
               <StripPlot rows={judgeRows.normalized} title="Normalized scores" ariaLabel="Normalized scores per judge" marker={r.config.targetMean} />
             </div>

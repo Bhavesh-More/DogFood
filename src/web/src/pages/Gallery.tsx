@@ -160,7 +160,7 @@ export function GalleryPage() {
       {gallery.error ? (
         <ErrorState error={gallery.error} onRetry={() => gallery.refetch()} />
       ) : !data ? (
-        <div className="grid gap-4 sm:grid-cols-2 expanded:grid-cols-3 large:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3 large:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-80 rounded-xl" />
           ))}
@@ -169,7 +169,7 @@ export function GalleryPage() {
         <EmptyState icon="grid_view" title="No projects yet" body={debounced || track || tag ? "Nothing matches these filters." : "Projects appear here once teams submit."} />
       ) : (
         <div className={gallery.isFetching ? "opacity-70 transition-opacity" : "transition-opacity"}>
-          <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3 large:grid-cols-4">
+          <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3 large:grid-cols-4">
             {data.items.map((item) => (
               <ProjectCard key={item.id} item={item} event={e} vote={vote.data} />
             ))}

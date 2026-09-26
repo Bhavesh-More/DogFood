@@ -55,7 +55,7 @@ export function RubricPage() {
 
       <section>
         <SectionHeader title="Effective rubric per track" subtitle="What judges see, with normalized weights" level={3} />
-        <div className="grid gap-4 medium:grid-cols-2 expanded:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-2 expanded:grid-cols-3">
           {groups.map((g) => (
             <Card key={g.trackId ?? "all"} variant="outlined" radius="xl">
               <p className="mb-3 type-title-md text-on-surface">{g.trackId ? g.trackName : "Projects without a track"}</p>

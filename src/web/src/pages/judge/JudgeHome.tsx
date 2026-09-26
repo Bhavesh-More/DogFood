@@ -51,7 +51,7 @@ export function JudgeHomePage() {
       {q.data.length === 0 ? (
         <EmptyState icon="rate_review" title="No judging assignments yet" body="Once an organizer invites you and routes projects, they appear here." />
       ) : (
-        <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
           {q.data.map((e) => {
             const done = e.assigned > 0 && e.submitted === e.assigned;
             return (

@@ -66,7 +66,7 @@ export function JudgeQueuePage() {
       {items.length === 0 ? (
         <EmptyState icon="rate_review" title="No projects assigned to you yet" body="The organizers haven't routed projects to you. Check back soon." />
       ) : (
-        <ul className="stagger grid gap-3 sm:grid-cols-2 expanded:grid-cols-3">
+        <ul className="stagger grid grid-cols-1 gap-3 sm:grid-cols-2 expanded:grid-cols-3">
           {items.map((a) => {
             const s = STATUS[a.status];
             return (

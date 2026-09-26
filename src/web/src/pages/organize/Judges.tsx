@@ -119,7 +119,7 @@ export function JudgesPage() {
           action={<Button icon="person_add" onClick={() => { setInviteOpen(true); setInviteUrl(null); setInviteTracks([]); setInviteNote(""); }}>Invite judge</Button>}
         />
         {judges.data?.length ? (
-          <div className="grid gap-3 medium:grid-cols-2 expanded:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 medium:grid-cols-2 expanded:grid-cols-3">
             {judges.data.map((j) => (
               <Card key={j.judgeId} variant="filled" radius="xl" className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
@@ -182,7 +182,7 @@ export function JudgesPage() {
             </Button>
           </div>
           {plan ? (
-            <div className="grid gap-4 medium:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 medium:grid-cols-2">
               <div className="rounded-xl bg-surface-container-low p-4">
                 <p className="mb-1 type-title-sm text-on-surface">{plan.dryRun ? "Preview" : "Result"}: {plan.created.length} new assignments</p>
                 <p className="mb-4 type-body-sm text-on-surface-variant">

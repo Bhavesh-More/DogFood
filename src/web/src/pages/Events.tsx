@@ -43,7 +43,7 @@ export function EventsPage() {
       {events.error ? (
         <ErrorState error={events.error} onRetry={() => events.refetch()} />
       ) : events.isPending ? (
-        <div className="grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-72 rounded-xl" />
           ))}
@@ -53,7 +53,7 @@ export function EventsPage() {
       ) : (
         <>
           <SectionHeader title={`${list.length} event${list.length === 1 ? "" : "s"}`} level={3} />
-          <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+          <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
             {list.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}

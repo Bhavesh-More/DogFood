@@ -175,7 +175,7 @@ export function EventPage() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 expanded:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mt-6 grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0">
           <Tabs
             label="Event sections"
@@ -193,7 +193,7 @@ export function EventPage() {
             {tab === "overview" ? (
               <div className="flex flex-col gap-6">
                 <Paragraphs text={e.description || "No description yet."} />
-                <div className="grid gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <Card variant="primary" className="flex flex-col gap-1">
                     <Icon name="timer" size={24} />
                     <p className="type-label-md opacity-80">Hard deadline</p>
@@ -246,7 +246,7 @@ export function EventPage() {
             ) : tab === "prizes" ? (
               <div className="flex flex-col gap-6">
                 {e.tracks.length ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     {e.tracks.map((t) => (
                       <Card key={t.id} variant="outlined">
                         <p className="type-title-md text-on-surface">{t.name}</p>
@@ -255,7 +255,7 @@ export function EventPage() {
                     ))}
                   </div>
                 ) : null}
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {e.prizes.map((p, i) => (
                     <li key={p.id} className="flex items-center gap-4 rounded-xl bg-surface-container-low p-4">
                       <Shape name={i === 0 ? "burst" : "cookie9"} className={i === 0 ? "h-14 w-14 text-tertiary-container" : "h-14 w-14 text-secondary-container"}>

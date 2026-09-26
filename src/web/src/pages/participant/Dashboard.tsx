@@ -40,7 +40,7 @@ export function DashboardPage() {
         {mine.isPending ? (
           <PageLoader />
         ) : mine.data?.length ? (
-          <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+          <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
             {mine.data.map((e) => (
               <div key={e.id} className="flex flex-col gap-2">
                 <EventCard event={e} />
@@ -61,7 +61,7 @@ export function DashboardPage() {
       <section id="records">
         <SectionHeader title="Certificates & signed records" subtitle="Each record is signed with the platform's Ed25519 key and can be verified by anyone." />
         {records.data?.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
             {records.data.map((r) => (
               <Card key={r.id} to={`/verify/${r.id}`} variant={r.kind === "winner" ? "primary" : "filled"} className="flex items-center gap-4">
                 <Shape name={r.kind === "winner" ? "burst" : "cookie9"} className="h-14 w-14 shrink-0 text-tertiary-container">

@@ -78,7 +78,7 @@ export function SetupPage() {
   const [questionForm, setQuestionForm] = useState<(Partial<QuestionDto> & { optionsText?: string }) | null>(null);
 
   return (
-    <div className="grid gap-6 expanded:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 expanded:grid-cols-2">
       <Section
         title="Tracks"
         subtitle="Categories projects compete in; judges can be scoped to tracks."

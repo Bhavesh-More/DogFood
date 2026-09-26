@@ -254,7 +254,7 @@ function SubmissionEditor({ event: e, team, initial }: { event: EventDto; team: 
         </Banner>
       ) : null}
 
-      <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
         <form className="flex min-w-0 flex-col gap-6" onSubmit={(ev) => ev.preventDefault()} aria-label="Submission form">
           <Card variant="filled" radius="2xl" className="flex flex-col gap-4">
             <h2 className="type-title-lg text-on-surface">Basics</h2>

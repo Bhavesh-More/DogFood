@@ -54,7 +54,7 @@ export function VotesPage() {
         Mode: <strong>{e.votingMode}</strong> · style: <strong>{e.votingStyle}</strong> · budget {e.quadraticCredits}. Duplicate detection is per voter identity (device cookie,
         verified email or account); more than 3 distinct voters behind one IP are recorded as flagged and not counted.
       </Banner>
-      <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Card variant="filled" radius="2xl">
           <SectionHeader title="Counted votes" subtitle={`${tallies.reduce((a, t) => a + t.voters, 0)} voter-project pairs · ${flaggedTotal} flagged votes excluded`} level={3} action={<LinkButton to={`/api/events/${e.id}/exports/votes.csv`} download variant="text" icon="download">CSV</LinkButton>} />
           <BarList

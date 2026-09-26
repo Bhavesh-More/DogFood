@@ -45,14 +45,14 @@ export function OverviewPage() {
         </Banner>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 expanded:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 expanded:grid-cols-4">
         <StatTile label="Registered" value={e.stats.registrations} icon="how_to_reg" tone="primary" />
         <StatTile label="Teams" value={e.stats.teams} icon="groups" tone="secondary" />
         <StatTile label="Submitted" value={submitted.length} icon="rocket_launch" tone="tertiary" hint={`${drafts.length} drafts not submitted`} />
         <StatTile label="Ballots" value={`${done}/${assigned}`} icon="rate_review" tone="success" hint={`${pct(done, assigned)}% of routed reviews`} />
       </div>
 
-      <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_380px]">
         <section>
           <SectionHeader title="Judging progress" action={<LinkButton to="judges" variant="text" trailingIcon="arrow_forward">Manage</LinkButton>} level={3} />
           <Card variant="filled" radius="2xl">

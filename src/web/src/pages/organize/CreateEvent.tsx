@@ -76,7 +76,7 @@ export function CreateEventPage() {
           />
           <TextField label="Tagline" value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} maxLength={200} />
           <TextArea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={5} />
-          <div className="grid gap-4 medium:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 medium:grid-cols-2">
             <TextField label="Hacking starts" type="datetime-local" value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} supporting={utcHint(form.startsAt)} error={errs.startsAt} />
             <TextField
               label="Hard submission deadline"

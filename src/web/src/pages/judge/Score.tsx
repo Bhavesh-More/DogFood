@@ -93,7 +93,7 @@ function ScoreForm({ slug, assignmentId, event: e, view }: { slug: string; assig
         </div>
       </header>
 
-      <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_440px]">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_440px]">
         <article className="flex min-w-0 flex-col gap-5">
           <div className="overflow-hidden rounded-2xl">
             <Cover src={s.thumbnailUrl} seed={s.id} label={s.title} big className="h-48 w-full medium:h-64" />

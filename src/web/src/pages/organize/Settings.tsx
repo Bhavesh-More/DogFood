@@ -85,7 +85,7 @@ export function EventSettingsPage() {
     <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
       <Card variant="filled" radius="2xl" className="flex flex-col gap-4">
         <SectionHeader title="Details" level={3} className="mb-0" />
-        <div className="grid gap-4 medium:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-2">
           <TextField label="Name" value={f.name} onChange={(ev) => set("name", ev.target.value)} error={errs.name} />
           <TextField label="Slug" value={f.slug} onChange={(ev) => set("slug", ev.target.value)} error={errs.slug} />
         </div>
@@ -97,7 +97,7 @@ export function EventSettingsPage() {
 
       <Card variant="filled" radius="2xl" className="flex flex-col gap-4">
         <SectionHeader title="Schedule" subtitle="Shown in your timezone; stored and enforced in UTC by the server." level={3} className="mb-0" />
-        <div className="grid gap-4 medium:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-2">
           <TextField label="Hacking starts" type="datetime-local" value={f.startsAt} onChange={(ev) => set("startsAt", ev.target.value)} supporting={utcHint(f.startsAt)} error={errs.startsAt} />
           <TextField label="Hard submission deadline" type="datetime-local" value={f.submissionDeadline} onChange={(ev) => set("submissionDeadline", ev.target.value)} supporting={utcHint(f.submissionDeadline)} error={errs.submissionDeadline} />
           <TextField label="Judging ends (optional)" type="datetime-local" value={f.judgingEndsAt} onChange={(ev) => set("judgingEndsAt", ev.target.value)} supporting={utcHint(f.judgingEndsAt)} />
@@ -107,13 +107,13 @@ export function EventSettingsPage() {
 
       <Card variant="filled" radius="2xl" className="flex flex-col gap-4">
         <SectionHeader title="Teams & judging" level={3} className="mb-0" />
-        <div className="grid gap-4 medium:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-3">
           <TextField label="Min team size" type="number" min={1} max={10} value={f.minTeamSize} onChange={(ev) => set("minTeamSize", Number(ev.target.value))} error={errs.minTeamSize} />
           <TextField label="Max team size" type="number" min={1} max={10} value={f.maxTeamSize} onChange={(ev) => set("maxTeamSize", Number(ev.target.value))} />
           <TextField label="Reviews per project" type="number" min={1} max={10} value={f.reviewsPerSubmission} onChange={(ev) => set("reviewsPerSubmission", Number(ev.target.value))} />
         </div>
         <p className="type-title-sm text-on-surface">Normalization</p>
-        <div className="grid gap-4 medium:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-3">
           <TextField label="Target mean" type="number" value={f.targetMean} onChange={(ev) => set("targetMean", Number(ev.target.value))} supporting="μ_target" />
           <TextField label="Target std-dev" type="number" value={f.targetSd} onChange={(ev) => set("targetSd", Number(ev.target.value))} supporting="σ_target" />
           <TextField label="Min-Max below N =" type="number" min={1} value={f.minSampleSize} onChange={(ev) => set("minSampleSize", Number(ev.target.value))} supporting="Judges with fewer ballots use Min-Max" />
@@ -135,11 +135,11 @@ export function EventSettingsPage() {
         />
         {f.votingMode !== "off" ? (
           <>
-            <div className="grid gap-4 medium:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 medium:grid-cols-3">
               <Select label="Style" value={f.votingStyle} onChange={(ev) => set("votingStyle", ev.target.value as typeof f.votingStyle)} options={[{ value: "single", label: "One vote per project" }, { value: "quadratic", label: "Quadratic (credits)" }]} />
               <TextField label={f.votingStyle === "quadratic" ? "Credits per voter" : "Projects each voter may back"} type="number" min={1} value={f.quadraticCredits} onChange={(ev) => set("quadraticCredits", Number(ev.target.value))} />
             </div>
-            <div className="grid gap-4 medium:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 medium:grid-cols-2">
               <TextField label="Voting opens" type="datetime-local" value={f.votingOpensAt} onChange={(ev) => set("votingOpensAt", ev.target.value)} supporting={utcHint(f.votingOpensAt)} />
               <TextField label="Voting closes" type="datetime-local" value={f.votingClosesAt} onChange={(ev) => set("votingClosesAt", ev.target.value)} supporting={utcHint(f.votingClosesAt)} error={errs.votingClosesAt} />
             </div>

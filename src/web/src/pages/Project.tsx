@@ -94,7 +94,7 @@ export function ProjectPage() {
       <Link to={`/e/${e.slug}/gallery`} className="mt-4 inline-flex items-center gap-1 type-label-lg text-primary hover:underline">
         <Icon name="arrow_back" size={18} /> Gallery
       </Link>
-      <div className="mt-4 grid gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mt-4 grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-w-0 flex-col gap-6">
           <div className="overflow-hidden rounded-2xl">
             <Cover src={s.thumbnailUrl} seed={s.id} label={s.title} big className="h-56 w-full medium:h-80" />

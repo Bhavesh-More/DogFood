@@ -109,7 +109,7 @@ export function TeamPage() {
       ) : team.isPending ? (
         <PageLoader />
       ) : !t ? (
-        <div className="grid gap-6 medium:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 medium:grid-cols-2">
           <Card variant="primary" radius="2xl">
             <h2 className="type-headline-sm">Start a team</h2>
             <p className="mt-1 type-body-md opacity-90">You'll be captain. Up to {e.maxTeamSize} people per team; one team per person.</p>
@@ -132,7 +132,7 @@ export function TeamPage() {
           </Card>
         </div>
       ) : (
-        <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
           <section className="flex flex-col gap-6">
             <Card variant="filled" radius="2xl">
               <div className="mb-4 flex items-center justify-between">

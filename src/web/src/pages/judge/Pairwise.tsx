@@ -84,7 +84,7 @@ export function PairwisePage() {
       {!n.pair ? (
         <EmptyState icon="done_all" shape="burst" title="You've compared every pair in your scope" body="Thank you! The organizers can now see the pairwise ranking." />
       ) : (
-        <div className="relative grid gap-4 medium:grid-cols-2">
+        <div className="relative grid grid-cols-1 gap-4 medium:grid-cols-2">
           <Contender s={n.pair[0]} side="A" disabled={pick.isPending} onPick={() => pick.mutate({ winnerId: n.pair![0].id, loserId: n.pair![1].id })} />
           <Shape name="sunny" className="absolute left-1/2 top-24 z-10 hidden h-16 w-16 -translate-x-1/2 text-tertiary medium:grid">
             <span className="font-rounded font-bold text-on-tertiary">VS</span>

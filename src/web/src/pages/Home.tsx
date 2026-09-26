@@ -91,7 +91,7 @@ export function HomePage() {
           subtitle="Open for submissions, in judging, or voting"
           action={<LinkButton to="/events" variant="text" trailingIcon="arrow_forward">All events</LinkButton>}
         />
-        <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
           {events.isPending
             ? [0, 1, 2].map((i) => <Skeleton key={i} className="h-72 rounded-xl" />)
             : live.slice(0, 6).map((e, i) => <EventCard key={e.id} event={e} featured={i === 0} />)}
@@ -101,7 +101,7 @@ export function HomePage() {
       {/* Why it's fair */}
       <section aria-labelledby="fair-heading">
         <SectionHeader title={<span id="fair-heading">Built so the judging is the part you can trust</span>} />
-        <div className="grid gap-4 medium:grid-cols-6">
+        <div className="grid grid-cols-1 gap-4 medium:grid-cols-6">
           <Card variant="primary" radius="2xl" className="medium:col-span-4">
             <div className="flex flex-col gap-6 medium:flex-row medium:items-center">
               <div className="flex-1">
@@ -167,7 +167,7 @@ export function HomePage() {
       {past.length ? (
         <section aria-labelledby="past-heading">
           <SectionHeader title={<span id="past-heading">Past results</span>} />
-          <div className="grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
             {past.map((e) => (
               <EventCard key={e.id} event={e} />
             ))}

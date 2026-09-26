@@ -8,7 +8,7 @@ import { Logo } from "../../app/Logo";
 function AuthLayout({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
   return (
     <div className="grid min-h-[calc(100dvh-8rem)] place-items-center py-6">
-      <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl bg-surface-container-low shadow-1 medium:grid-cols-2">
+      <div className="grid grid-cols-1 w-full max-w-4xl overflow-hidden rounded-2xl bg-surface-container-low shadow-1 medium:grid-cols-2">
         <div className="relative hidden overflow-hidden bg-primary p-10 text-on-primary medium:block">
           <Shape name="cookie12" className="absolute -bottom-20 -left-16 h-72 w-72 text-primary-container opacity-40" />
           <Shape name="clover8" className="animate-float absolute right-8 top-24 h-28 w-28 text-tertiary-container" />

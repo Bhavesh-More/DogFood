@@ -29,7 +29,7 @@ export function OrganizeHomePage() {
       {events.data.length === 0 ? (
         <EmptyState icon="event" title="No events yet" body="Create your first hackathon — it starts as a private draft." action={<LinkButton to="/organize/new" icon="add">Create event</LinkButton>} />
       ) : (
-        <div className="stagger grid gap-4 sm:grid-cols-2 expanded:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-4 sm:grid-cols-2 expanded:grid-cols-3">
           {events.data.map((e) => (
             <Card key={e.id} to={`/organize/${e.slug}`} variant="elevated" padded={false} className="flex flex-col">
               <GeneratedArt seed={e.id} label={e.name} className="h-28" />

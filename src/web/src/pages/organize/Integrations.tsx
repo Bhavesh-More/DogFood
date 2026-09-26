@@ -112,7 +112,7 @@ export function IntegrationsPage() {
         )}
       </Card>
 
-      <div className="grid gap-6 expanded:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-2">
         <Card variant="filled" radius="2xl" className="flex flex-col gap-3">
           <SectionHeader title="Export & clone" subtitle="Full event bundle as JSON; import it to clone the configuration." level={3} className="mb-0" />
           <div className="flex flex-wrap gap-2">
