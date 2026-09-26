@@ -1,3 +1,4 @@
+import { brotliCompressSync, constants as zlibConstants, gzipSync } from "node:zlib";
 import type { NextFunction, Request, Response, Router } from "express";
 import { z } from "zod";
 import { can, type Capability } from "@dogfood/core";
@@ -91,12 +92,36 @@ export function mountRoutes(router: Router, defs: readonly RouteDef[], app: AppC
         if (result === undefined) {
           res.status(def.status ?? 204).end();
         } else {
-          res.status(def.status ?? 200).json(result);
+          sendJson(req, res, def.status ?? 200, result);
         }
       } catch (err) {
         next(err);
       }
     });
+  }
+}
+
+/** Bodies smaller than one TCP segment are not worth compressing. */
+const COMPRESS_MIN_BYTES = 1400;
+
+/**
+ * JSON with transparent Brotli/gzip for larger bodies (exports, OpenAPI,
+ * normalization runs). Synchronous and fast at these sizes; no dependency.
+ */
+export function sendJson(req: Request, res: Response, status: number, body: unknown): void {
+  const json = Buffer.from(JSON.stringify(body));
+  res.status(status);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Vary", "Accept-Encoding");
+  const accepted = req.get("accept-encoding") ?? "";
+  if (json.length >= COMPRESS_MIN_BYTES && /\bbr\b/.test(accepted)) {
+    res.setHeader("Content-Encoding", "br");
+    res.send(brotliCompressSync(json, { params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 5 } }));
+  } else if (json.length >= COMPRESS_MIN_BYTES && /\bgzip\b/.test(accepted)) {
+    res.setHeader("Content-Encoding", "gzip");
+    res.send(gzipSync(json, { level: 6 }));
+  } else {
+    res.send(json);
   }
 }
 

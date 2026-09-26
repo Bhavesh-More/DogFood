@@ -5,7 +5,7 @@ import { brotliCompressSync, gzipSync } from "node:zlib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { startStack, type TestStack } from "./helpers";
 
-/** Static web delivery: precompressed assets, caching, SPA fallback and security headers. */
+/** Web delivery: precompressed assets, compressed JSON, caching, SPA fallback and security headers. */
 let s: TestStack;
 const js = `export const greeting = "${"hello ".repeat(400)}";`;
 beforeAll(async () => {
@@ -46,6 +46,17 @@ describe("static web delivery", () => {
     expect(await r.text()).toContain('id="root"');
     expect(r.headers.get("cache-control")).toBe("no-cache");
     expect(r.headers.get("content-security-policy")).toContain("script-src 'self'");
+  });
+
+  it("compresses large JSON API responses but not tiny ones", async () => {
+    const big = await fetchRaw("/api/openapi.json", "br");
+    expect(big.headers.get("content-encoding")).toBe("br");
+    expect(big.headers.get("vary")).toBe("Accept-Encoding");
+    expect((await big.json()).openapi).toMatch(/^3\.1/);
+    const small = await fetchRaw("/api/health", "br, gzip");
+    expect(small.headers.get("content-encoding")).toBeNull();
+    const identity = await fetchRaw("/api/openapi.json", "identity");
+    expect(identity.headers.get("content-encoding")).toBeNull();
   });
 
   it("never escapes the assets directory", async () => {
