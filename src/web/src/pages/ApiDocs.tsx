@@ -55,7 +55,7 @@ export function ApiDocsPage() {
       </Banner>
       <div className="mb-4 flex flex-col gap-3">
         <TextField label="Filter endpoints" leadingIcon="search" value={q} onChange={(ev) => setQ(ev.target.value)} className="max-w-md" />
-        <div className="scrollbar-none flex gap-2 overflow-x-auto">
+        <div className="scrollbar-none scroll-fade-x flex gap-2 overflow-x-auto">
           <Chip selected={!tag} onClick={() => setTag("")}>All ({ops.length})</Chip>
           {doc.data.tags.map((t) => (
             <Chip key={t.name} selected={tag === t.name} onClick={() => setTag(tag === t.name ? "" : t.name)}>

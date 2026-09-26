@@ -151,7 +151,7 @@ export function HomePage() {
       {/* Pipeline */}
       <section aria-labelledby="pipeline-heading">
         <SectionHeader title={<span id="pipeline-heading">One pipeline, ten stages</span>} subtitle="Each stage feeds the next — and every one of them lives in this platform." />
-        <ol className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+        <ol className="scrollbar-none scroll-fade-x -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
           {PIPELINE.map((s, i) => (
             <li key={s.label} className="flex w-32 shrink-0 flex-col items-center gap-2 rounded-xl bg-surface-container-low p-4 text-center">
               <Shape name={s.shape} className="h-14 w-14 text-secondary-container">

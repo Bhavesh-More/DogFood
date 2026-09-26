@@ -137,7 +137,7 @@ export function GalleryPage() {
           className="max-w-xl"
         />
         {e.tracks.length ? (
-          <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Filter by track">
+          <div className="scrollbar-none scroll-fade-x flex gap-2 overflow-x-auto" role="group" aria-label="Filter by track">
             <Chip selected={!track} onClick={() => pickTrack("")}>All tracks</Chip>
             {e.tracks.map((t) => (
               <Chip key={t.id} selected={track === t.id} onClick={() => pickTrack(track === t.id ? "" : t.id)}>
@@ -147,7 +147,7 @@ export function GalleryPage() {
           </div>
         ) : null}
         {data?.facets.tags.length ? (
-          <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Filter by tag">
+          <div className="scrollbar-none scroll-fade-x flex gap-2 overflow-x-auto" role="group" aria-label="Filter by tag">
             {data.facets.tags.slice(0, 16).map((t) => (
               <Chip key={t.tag} icon="sell" selected={tag === t.tag} onClick={() => pickTag(tag === t.tag ? "" : t.tag)}>
                 {t.tag} <span className="opacity-60">{t.count}</span>

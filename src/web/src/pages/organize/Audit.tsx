@@ -43,7 +43,7 @@ export function AuditTable({ endpoint, csvHref }: { endpoint: string; csvHref?: 
       ) : null}
       <div className="flex flex-col gap-3 medium:flex-row medium:items-center">
         <TextField label="Search summaries and people" leadingIcon="search" value={q} onChange={(ev) => setQ(ev.target.value)} className="medium:w-80" />
-        <div className="scrollbar-none flex gap-2 overflow-x-auto">
+        <div className="scrollbar-none scroll-fade-x flex gap-2 overflow-x-auto">
           <Chip selected={!action} onClick={() => pickAction("")}>all</Chip>
           {families.map((f) => (
             <Chip key={f} selected={action === f} onClick={() => pickAction(action === f ? "" : f)}>

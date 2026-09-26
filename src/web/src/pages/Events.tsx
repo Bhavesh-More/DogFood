@@ -32,7 +32,7 @@ export function EventsPage() {
       </header>
       <div className="mb-6 flex flex-col gap-4 medium:flex-row medium:items-center">
         <TextField label="Search events" leadingIcon="search" value={q} onChange={(e) => setQ(e.target.value)} className="medium:w-80" />
-        <div className="scrollbar-none flex gap-2 overflow-x-auto" role="group" aria-label="Filter by phase">
+        <div className="scrollbar-none scroll-fade-x flex gap-2 overflow-x-auto" role="group" aria-label="Filter by phase">
           {FILTERS.map((f) => (
             <Chip key={f.value} selected={filter === f.value} onClick={() => setFilter(f.value)}>
               {f.label}
