@@ -17,12 +17,14 @@ const VARIANT: Record<ButtonVariant, string> = {
 };
 
 /* M3 Expressive button sizes. Round buttons morph toward a squarer corner
-   while pressed (spring easing); square buttons use the size's fixed radius. */
+   while pressed; square buttons use the size's fixed radius. The round radius
+   is half the height, not rounded-full (9999px): interpolating from 9999px
+   stays visually "full" for almost the whole transition and then snaps. */
 const SIZE: Record<ButtonSize, { box: string; round: string; square: string; icon: number }> = {
-  xs: { box: "h-8 px-3 gap-1 type-label-lg", round: "rounded-full active:rounded-sm", square: "rounded-md", icon: 18 },
-  sm: { box: "h-10 px-4 gap-2 type-label-lg", round: "rounded-full active:rounded-sm", square: "rounded-md", icon: 20 },
-  md: { box: "h-14 px-6 gap-2 type-title-md", round: "rounded-full active:rounded-md", square: "rounded-lg", icon: 24 },
-  lg: { box: "h-[72px] px-8 gap-3 type-title-lg", round: "rounded-full active:rounded-lg", square: "rounded-xl", icon: 28 },
+  xs: { box: "h-8 px-3 gap-1 type-label-lg", round: "rounded-[16px] active:rounded-sm", square: "rounded-md", icon: 18 },
+  sm: { box: "h-10 px-4 gap-2 type-label-lg", round: "rounded-[20px] active:rounded-sm", square: "rounded-md", icon: 20 },
+  md: { box: "h-14 px-6 gap-2 type-title-md", round: "rounded-[28px] active:rounded-md", square: "rounded-lg", icon: 24 },
+  lg: { box: "h-[72px] px-8 gap-3 type-title-lg", round: "rounded-[36px] active:rounded-lg", square: "rounded-xl", icon: 28 },
 };
 
 interface BaseProps {
@@ -41,7 +43,7 @@ export function buttonClass({ variant = "filled", size = "sm", shape = "round", 
   const s = SIZE[size];
   return cx(
     "state-layer focus-ring inline-flex select-none items-center justify-center whitespace-nowrap font-medium",
-    "transition-[border-radius,box-shadow,background-color,transform] duration-300 ease-[var(--ease-spring-fast)]",
+    "transition-[border-radius,box-shadow,background-color,transform] duration-300 ease-[var(--ease-emphasized-decelerate)]",
     "disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40",
     s.box,
     shape === "round" ? s.round : s.square,
@@ -139,7 +141,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
   { icon, label, variant = "standard", selected, size = "md", className, type = "button", ...rest },
   ref,
 ) {
-  const dims = size === "sm" ? "h-8 w-8" : size === "lg" ? "h-14 w-14" : "h-10 w-10";
+  const dims = size === "sm" ? "h-8 w-8 rounded-[16px]" : size === "lg" ? "h-14 w-14 rounded-[28px]" : "h-10 w-10 rounded-[20px]";
   const px = size === "sm" ? 20 : size === "lg" ? 28 : 24;
   return (
     <button
@@ -149,7 +151,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       title={label}
       aria-pressed={selected ?? undefined}
       className={cx(
-        "state-layer focus-ring inline-grid shrink-0 place-items-center rounded-full transition-[border-radius,background-color] duration-300 ease-[var(--ease-spring-fast)] active:rounded-md disabled:opacity-40",
+        "state-layer focus-ring inline-grid shrink-0 place-items-center transition-[border-radius,background-color] duration-300 ease-[var(--ease-emphasized-decelerate)] active:rounded-md disabled:opacity-40",
         dims,
         selected ? "bg-primary text-on-primary" : ICON_VARIANT[variant],
         className,
@@ -226,13 +228,18 @@ export function ButtonGroup<T extends string>({ value, onChange, options, size =
             aria-checked={selected}
             onClick={() => onChange(o.value)}
             className={cx(
-              "state-layer focus-ring inline-flex items-center gap-1.5 transition-[border-radius,background-color] duration-300 ease-[var(--ease-spring-fast)]",
+              "state-layer focus-ring inline-flex items-center gap-1.5 transition-[border-radius,background-color] duration-300 ease-[var(--ease-emphasized-decelerate)]",
               size === "xs" ? "h-8 px-3 type-label-md" : "h-10 px-4 type-label-lg",
+              // Half-height radii instead of rounded-full so the morph interpolates smoothly.
               selected
-                ? "rounded-full bg-secondary text-on-secondary"
+                ? cx("bg-secondary text-on-secondary", size === "xs" ? "rounded-[16px]" : "rounded-[20px]")
                 : cx(
                     "bg-secondary-container text-on-secondary-container",
-                    first ? "rounded-l-full rounded-r-sm" : last ? "rounded-r-full rounded-l-sm" : "rounded-sm",
+                    first
+                      ? size === "xs" ? "rounded-l-[16px] rounded-r-sm" : "rounded-l-[20px] rounded-r-sm"
+                      : last
+                        ? size === "xs" ? "rounded-r-[16px] rounded-l-sm" : "rounded-r-[20px] rounded-l-sm"
+                        : "rounded-sm",
                   ),
             )}
           >
