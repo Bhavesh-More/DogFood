@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { Link, Navigate, useParams } from "react-router";
 import { isBeforeDeadline, type InviteDto } from "@dogfood/core";
 import { Countdown } from "../../components/Countdown";
+import { RecruitingCard, TeamFinderBoard } from "../../components/TeamFinder";
 import { errorMessage, get, post, del } from "../../lib/api";
 import { keys, useEvent, useMyTeam } from "../../lib/queries";
 import { useSession } from "../../lib/session";
@@ -130,6 +131,9 @@ export function TeamPage() {
               <Countdown target={e.submissionDeadline} label="Teams lock at the deadline" />
             </div>
           </Card>
+          <div className="medium:col-span-2">
+            <TeamFinderBoard eventId={e.id} />
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
@@ -215,8 +219,10 @@ export function TeamPage() {
                 <EmptyState icon="link" title="No invite links yet" className="py-6" />
               )}
             </Card>
+            {open ? <TeamFinderBoard eventId={e.id} showTeams={false} /> : null}
           </section>
           <aside className="flex flex-col gap-4">
+            {open ? <RecruitingCard key={t.lookingFor ?? ""} team={t} /> : null}
             <Card variant="elevated" radius="2xl">
               <Countdown target={t.deadlineExtensionUntil && t.deadlineExtensionUntil > e.submissionDeadline ? t.deadlineExtensionUntil : e.submissionDeadline} label="Submission deadline" />
               {t.deadlineExtensionUntil ? <p className="mt-2 type-body-sm text-on-surface-variant">Your team has an organizer-granted extension.</p> : null}
