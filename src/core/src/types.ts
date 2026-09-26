@@ -291,3 +291,15 @@ export interface Paginated<T> {
   page: number;
   pageSize: number;
 }
+
+export interface AnnouncementDto {
+  id: string;
+  eventId: string;
+  title: string;
+  body: string;
+  audience: "everyone" | "participants" | "judges";
+  pinned: boolean;
+  authorName: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
