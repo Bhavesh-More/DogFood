@@ -104,7 +104,7 @@ function makeClient(base: string, auth?: { bearer?: string; cookies?: Map<string
   };
 }
 
-export async function startStack(opts: { now?: () => number } = {}): Promise<TestStack> {
+export async function startStack(opts: { now?: () => number; webDist?: string } = {}): Promise<TestStack> {
   const dbName = `dogfood_test_${process.pid}_${Math.floor(Math.random() * 1e9)}`;
   const admin = new pg.Client({ connectionString: ADMIN_URL });
   await admin.connect();
@@ -114,7 +114,7 @@ export async function startStack(opts: { now?: () => number } = {}): Promise<Tes
   url.pathname = `/${dbName}`;
   const config = loadConfig({
     DATABASE_URL: url.toString(),
-    WEB_DIST: "",
+    WEB_DIST: opts.webDist ?? "",
     FIXTURES_PATH: path.join(ROOT, "fixtures.json"),
     LOG_REQUESTS: "false",
     WEBHOOK_WORKER: "false",
