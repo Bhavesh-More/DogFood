@@ -205,3 +205,19 @@ A development phase is declared **DONE** only when:
 * **Secrets readable by the request role.** `settings` (HMAC secret, Ed25519 key) had `SELECT` for `dogfood_app` although only the owner reads it at boot; migration `003` revokes it, with a test.
 * **pg client fan-out.** `Promise.all` over one transaction client relies on pg's implicit queue, removed in pg 9; replaced by sequential `mapSeq`.
 * **Environment gotcha.** A stale dev server on :8000 silently answered the first acceptance run — the runner now prints server version and clock skew up front so a wrong target is obvious.
+
+### Iteration 2 — review & improve loop
+| Area | Finding | Change |
+| :--- | :--- | :--- |
+| Mobile layout | Probe of 31 screens at 360/390 px found 5 pages wider than the viewport (grid min-width blow-outs, results table, API paths, a long pill) | Base `grid-cols-1` on every responsive grid (43 grids), contained table scrolling, wrapping paths, truncating pills; probe now reports zero overflow |
+| Charts | Strip plots scaled a fixed viewBox, shrinking labels to ~6 px on phones | Measured width, drawn at 1 unit = 1 px |
+| Participant UX | Deadline countdown sat below the whole form on phones; podium read 2-1-3 to screen readers | Countdown leads on phones; DOM in rank order, visual 2-1-3 only on wide screens |
+| Organizer UX | Console tabs clipped at 1440 px | Shorter labels; active tab scrolls into view |
+| Scrollers | No affordance that chip rows scroll | Scroll-driven edge fade, only where content is hidden |
+| Accessibility | Automated sweep of every screen | One miss (embed had no `h1`), fixed |
+| Payload | 1.4 MB font (all axes), uncompressed JS/CSS/JSON | Weight+ROND font (71 KB); build-time Brotli/gzip for assets (878 → 225 KB); Brotli/gzip JSON ≥ 1.4 KB (OpenAPI 96 → 8.5 KB) |
+| Robustness | NUL bytes and bad percent-encoding produced 500s | Mapped to 400 `BAD_REQUEST`; regression test fires six malformed requests |
+| Algorithms | Bradley–Terry O(n²) per MM step; routing recomputed pools/hashes in comparators | Sparse adjacency (4.3× faster), precomputed pools and hashes (2.2× faster), identical outputs |
+| Test coverage | Test sources not type-checked; no browser tests; no CI | `tests/tsconfig.json` in `check-types`; 10 Playwright journeys; GitHub Actions workflow (checks → Docker stack → acceptance → e2e) |
+
+Re-verified on a fresh `docker compose` build: 156/156 Vitest, 10/10 Playwright, 38/38 acceptance (T4).
