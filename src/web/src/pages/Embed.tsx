@@ -24,7 +24,7 @@ export function EmbedPage() {
   return (
     <div className="min-h-dvh bg-surface p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="type-title-md text-on-surface">{q.data.event.name}</p>
+        <h1 className="type-title-md text-on-surface">{q.data.event.name}</h1>
         <a href={`${origin}/e/${q.data.event.slug}/gallery`} target="_blank" rel="noreferrer" className="type-label-lg text-primary hover:underline">
           Open gallery ↗
         </a>
