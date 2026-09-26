@@ -61,8 +61,8 @@ export function fitBradleyTerry(
 
   const wins = new Array<number>(n).fill(0);
   const losses = new Array<number>(n).fill(0);
-  // pairCounts[i][j] = number of comparisons between i and j (symmetric)
-  const pairCounts: number[][] = Array.from({ length: n }, () => new Array<number>(n).fill(0));
+  // pairCounts[i].get(j) = number of comparisons between i and j (symmetric, sparse)
+  const pairCounts: Map<number, number>[] = Array.from({ length: n }, () => new Map());
 
   for (const c of comparisons) {
     const w = index.get(c.winnerId);
@@ -70,9 +70,13 @@ export function fitBradleyTerry(
     if (w === undefined || l === undefined || w === l) continue;
     wins[w]! += 1;
     losses[l]! += 1;
-    pairCounts[w]![l]! += 1;
-    pairCounts[l]![w]! += 1;
+    pairCounts[w]!.set(l, (pairCounts[w]!.get(l) ?? 0) + 1);
+    pairCounts[l]!.set(w, (pairCounts[l]!.get(w) ?? 0) + 1);
   }
+
+  // Sparse adjacency (opponent, count): each MM step costs O(comparisons), not O(n²).
+  // Sorted by opponent so the floating-point summation order is deterministic.
+  const neighbours: [number, number][][] = pairCounts.map((row) => [...row.entries()].sort((a, b) => a[0] - b[0]));
 
   let p = new Array<number>(n).fill(1);
   let iterations = 0;
@@ -84,10 +88,7 @@ export function fitBradleyTerry(
     for (let i = 0; i < n; i++) {
       const pi = p[i]!;
       let denom = 0;
-      for (let j = 0; j < n; j++) {
-        const nij = pairCounts[i]![j]!;
-        if (nij > 0) denom += nij / (pi + p[j]!);
-      }
+      for (const [j, nij] of neighbours[i]!) denom += nij / (pi + p[j]!);
       // Phantom opponent of strength 1: `prior` wins + `prior` losses.
       denom += (2 * opt.prior) / (pi + 1);
       const numer = wins[i]! + opt.prior;
