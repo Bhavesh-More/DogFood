@@ -176,6 +176,15 @@ export function requestLogger(enabled: boolean) {
 }
 
 /** Maps every error to the `{ error, code, details? }` contract. */
+/** SQLSTATEs in class 22 (data exception) that only bad input can trigger. */
+const PG_BAD_INPUT = new Set(["22001", "22003", "22007", "22008", "22021", "22P05"]);
+
+function clientErrorStatus(err: unknown): number | null {
+  if (!err || typeof err !== "object") return null;
+  const s = (err as { status?: unknown; statusCode?: unknown }).status ?? (err as { statusCode?: unknown }).statusCode;
+  return typeof s === "number" && s >= 400 && s < 500 ? s : null;
+}
+
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction): void {
   let status = 500;
   let body: { error: string; code: string; details?: unknown } = {
@@ -198,6 +207,10 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
   } else if (err && typeof err === "object" && "type" in err && (err as { type: string }).type === "entity.too.large") {
     status = 413;
     body = { error: "Request body too large", code: "PAYLOAD_TOO_LARGE" };
+  } else if (clientErrorStatus(err) !== null) {
+    // Framework-level client errors, e.g. undecodable percent-encoding in a path.
+    status = clientErrorStatus(err)!;
+    body = { error: "Malformed request", code: "BAD_REQUEST" };
   } else {
     const pg = pgErrorCode(err);
     if (pg?.hint === "DEADLINE_PASSED") {
@@ -212,6 +225,10 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     } else if (pg?.code === "23514" || pg?.code === "23503" || pg?.code === "22P02") {
       status = 422;
       body = { error: "The request violates a data constraint", code: "CONSTRAINT_VIOLATION" };
+    } else if (pg && PG_BAD_INPUT.has(pg.code)) {
+      // Postgres data exceptions caused by the input (NUL bytes, invalid characters, out-of-range values).
+      status = 400;
+      body = { error: "The request contains characters or values that cannot be stored", code: "BAD_REQUEST" };
     } else {
       console.error("[error]", err);
     }

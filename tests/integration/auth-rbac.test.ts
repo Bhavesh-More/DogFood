@@ -156,6 +156,21 @@ describe("security headers & CSRF", () => {
     expect(r.body.code).toBe("CSRF_BLOCKED");
   });
 
+  it("answers malformed input with 4xx, never 500", async () => {
+    const probes: [string, Promise<{ status: number }>][] = [
+      ["NUL in a path param", s.anon.get("/api/events/evt%00")],
+      ["invalid percent-encoding", s.anon.get("/api/events/%C0%AF")],
+      ["NUL inside a JSON string", s.as(TOKENS.participant).put("/api/teams/team_02_01/submission", { title: "bad\u0000title" })],
+      ["duplicated query params", s.anon.get("/api/events/evt_01/gallery?page=1&page=2")],
+      ["tsquery operators in search", s.anon.get("/api/events/evt_01/gallery?q=%21%26%7C%3A%2A%28%29")],
+      ["array instead of object", s.as(TOKENS.organizer).post("/api/events", [1, 2, 3])],
+    ];
+    for (const [what, p] of probes) {
+      const r = await p;
+      expect(r.status, what).toBeLessThan(500);
+    }
+  });
+
   it("never leaks stack traces", async () => {
     const r = await s.anon.get("/api/does-not-exist");
     expect(r.status).toBe(404);
