@@ -234,3 +234,15 @@ Re-verified on a fresh `docker compose` build: 156/156 Vitest, 10/10 Playwright,
 
 Re-verified on a fresh `docker compose` build: 218/218 Vitest, 14/14 Playwright, 38/38 acceptance (T4), lint and types clean.
 
+
+### Iteration 4 — dev tooling, sign-in/out fixes
+| Area | Change |
+| :--- | :--- |
+| Dev tooling | `pnpm setup` (env files, install, images, Chromium); `pnpm dev` = dev Postgres (compose profile `dev`, :5433) + Turbo TUI with API (:8001) and web (:5173) panes; `pnpm dashboard` = full Docker stack on :8000, alongside |
+| Sign-in redirect | After a client-side login the app bounced back to `/login` (e.g. judges sent from `/judge`): `qc.clear()` detached the session query `SessionProvider` observes. Now the session is swapped in place and other queries are reset. The old e2e hid it with a full-page `goto` |
+| Sign-in errors | The form showed only "Invalid request body"; it now shows per-field messages |
+| Sign-out | M3 confirmation dialog, then a full reload so no per-user state survives |
+| Button shape morph | `rounded-full` (9999px) → pressed radius snapped; round buttons now use half-height radii and ease out (`--ease-emphasized-decelerate`) for Button, IconButton and ButtonGroup |
+| Accessibility | `Dialog` is labelled by its title (`aria-labelledby`) |
+
+Re-verified on a fresh `docker compose` build: 218/218 Vitest, 17/17 Playwright, 38/38 acceptance (T4), lint and types clean; a crawl of 66 routes × 8 roles × desktop/mobile found no page errors, 5xx, error screens or overflow.

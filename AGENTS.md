@@ -64,7 +64,7 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
   - **218/218 Vitest tests**, run with `pnpm test`.
-  - **14/14 Playwright journeys.**
+  - **17/17 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
   - Lint and type-check are clean.
