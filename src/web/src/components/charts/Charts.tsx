@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { cx } from "../../lib/format";
 
 /*
@@ -27,6 +27,26 @@ function Tooltip({ t }: { t: TooltipState | null }) {
       <p className="max-w-56 truncate type-body-sm text-inverse-on-surface/80">{t.label}</p>
     </div>
   );
+}
+
+/**
+ * Track an element's content width so SVG charts can draw at 1 unit = 1 px:
+ * axis labels and marks keep their real size instead of shrinking with a
+ * scaled viewBox on small screens.
+ */
+function useWidth<T extends HTMLElement>(fallback: number) {
+  const ref = useRef<T>(null);
+  const [width, setWidth] = useState(fallback);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setWidth(Math.max(120, Math.round(el.getBoundingClientRect().width)));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, width] as const;
 }
 
 export interface BarDatum {
@@ -125,7 +145,9 @@ export interface StripRow {
  */
 export function StripPlot({ rows, title, ariaLabel, color = "var(--chart-1)", domain = [0, 100], marker }: { rows: StripRow[]; title: string; ariaLabel: string; color?: string; domain?: [number, number]; marker?: number }) {
   const [tip, setTip] = useState<TooltipState | null>(null);
-  const W = 420;
+  const [plotRef, plotWidth] = useWidth<HTMLDivElement>(420);
+  const PAD = 14; // room for the centred edge tick labels ("100") and dot radius
+  const W = plotWidth - 2 * PAD;
   const L = 0;
   const rowH = 44;
   const H = rows.length * rowH + 26;
@@ -134,7 +156,7 @@ export function StripPlot({ rows, title, ariaLabel, color = "var(--chart-1)", do
   return (
     <figure className="relative" aria-label={ariaLabel} onMouseLeave={() => setTip(null)}>
       <figcaption className="mb-2 type-title-sm text-on-surface">{title}</figcaption>
-      <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-2">
+      <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-2 medium:grid-cols-[6.5rem_minmax(0,1fr)]">
         <div>
           {rows.map((r) => (
             <div key={r.key} className="flex h-[44px] flex-col justify-center">
@@ -143,8 +165,8 @@ export function StripPlot({ rows, title, ariaLabel, color = "var(--chart-1)", do
             </div>
           ))}
         </div>
-        <div className="relative">
-          <svg viewBox={`-6 0 ${W + 12} ${H}`} className="w-full overflow-visible" style={{ height: H }} role="img" aria-label={ariaLabel}>
+        <div ref={plotRef} className="relative min-w-0">
+          <svg viewBox={`${-PAD} 0 ${plotWidth} ${H}`} width={plotWidth} height={H} className="block overflow-visible" role="img" aria-label={ariaLabel}>
             {ticks.map((t) => (
               <g key={t}>
                 <line x1={x(t)} x2={x(t)} y1={0} y2={rows.length * rowH} stroke="var(--md-outline-variant)" strokeWidth={1} />
