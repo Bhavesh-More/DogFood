@@ -49,6 +49,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = params.get("next") ?? "/";
+  const errors = login.error instanceof ApiError ? login.error.fieldErrors : {};
   const submit = (e: FormEvent) => {
     e.preventDefault();
     login.mutate({ email, password }, { onSuccess: () => navigate(next.startsWith("/") ? next : "/") });
@@ -56,14 +57,15 @@ export function LoginPage() {
   return (
     <AuthLayout title="Welcome back" subtitle="Sign in with your local account.">
       <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
-        {login.error ? <Banner tone="error">{(login.error as ApiError).message}</Banner> : null}
-        <TextField label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required leadingIcon="mail" />
+        {login.error && !Object.keys(errors).length ? <Banner tone="error">{(login.error as ApiError).message}</Banner> : null}
+        <TextField label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} required leadingIcon="mail" />
         <TextField
           label="Password"
           type={show ? "text" : "password"}
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
           required
           leadingIcon="key"
           trailing={

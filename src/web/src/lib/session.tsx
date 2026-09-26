@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { Capability, Role, SessionDto, UserDto } from "@dogfood/core";
 import { get, post } from "./api";
@@ -43,14 +43,19 @@ export function useSession(): SessionValue {
   return ctx;
 }
 
+/* qc.clear() would detach the session query SessionProvider observes, leaving
+   the app signed out after a successful login. Swap the session in place and
+   reset everything else so per-user data refetches under the new identity. */
+function signedIn(qc: QueryClient, s: SessionDto) {
+  qc.setQueryData(["session"], s);
+  void qc.resetQueries({ predicate: (q) => q.queryKey[0] !== "session" });
+}
+
 export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: { email: string; password: string }) => post<SessionDto>("/api/auth/login", input),
-    onSuccess: (s) => {
-      qc.clear();
-      qc.setQueryData(["session"], s);
-    },
+    onSuccess: (s) => signedIn(qc, s),
   });
 }
 
@@ -59,20 +64,14 @@ export function useRegister() {
   return useMutation({
     mutationFn: (input: { email: string; password: string; name: string; intent: "participant" | "visitor" }) =>
       post<SessionDto>("/api/auth/register", input),
-    onSuccess: (s) => {
-      qc.clear();
-      qc.setQueryData(["session"], s);
-    },
+    onSuccess: (s) => signedIn(qc, s),
   });
 }
 
 export function useLogout() {
-  const qc = useQueryClient();
   return useMutation({
     mutationFn: () => post("/api/auth/logout"),
-    onSuccess: async () => {
-      qc.clear();
-      await qc.invalidateQueries({ queryKey: ["session"] });
-    },
+    // Full reload: drops every cached per-user query and in-memory state.
+    onSuccess: () => window.location.assign("/"),
   });
 }

@@ -80,6 +80,38 @@ test.describe("public", () => {
 });
 
 test.describe("participant", () => {
+  test("the sign-in form shows per-field validation errors", async ({ page }) => {
+    await page.goto("/login");
+    await page.getByLabel("Email").fill("participant");
+    await page.getByLabel(/^Password/).fill("x");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await expect(page.getByText("Invalid email address")).toBeVisible();
+    await expect(page.getByText("Invalid request body")).toHaveCount(0);
+  });
+
+  test("signing out asks for confirmation, then reloads signed out", async ({ page }) => {
+    // A fresh form session, so the shared checker tokens are never revoked.
+    await page.goto("/login");
+    await page.getByLabel("Email").fill("participant@dogfood.local");
+    await page.getByLabel(/^Password/).fill("dogfood-demo-2026");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL((url) => !url.pathname.startsWith("/login"));
+    const menu = page.locator("header button[aria-haspopup=menu]");
+    const dialog = page.getByRole("dialog", { name: "Sign out?" });
+    await menu.click();
+    await page.getByRole("menuitem", { name: "Sign out" }).click();
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(menu).toBeVisible();
+    await menu.click();
+    await page.getByRole("menuitem", { name: "Sign out" }).click();
+    const reload = page.waitForEvent("load");
+    await dialog.getByRole("button", { name: "Sign out" }).click();
+    await reload;
+    await expect(page).toHaveURL((url) => url.pathname === "/");
+    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+  });
+
   test("signs in with the form and reaches their hub", async ({ page }) => {
     await page.goto("/login");
     await page.getByLabel("Email").fill("participant@dogfood.local");
@@ -102,6 +134,17 @@ test.describe("participant", () => {
 });
 
 test.describe("judge", () => {
+  test("a judge sent to sign-in lands back on the judging page without a reload", async ({ page }) => {
+    await page.goto("/judge");
+    await page.waitForURL((url) => url.pathname === "/login");
+    await page.getByRole("button", { name: "Judge", exact: true }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL((url) => url.pathname === "/judge");
+    await expect(page.getByRole("heading", { level: 1, name: "Judging" })).toBeVisible();
+    await page.getByRole("link", { name: "Queue" }).first().click();
+    await expect(page.getByText("Your review queue")).toBeVisible();
+  });
+
   test("scores with the rubric sliders and cannot open another judge's work", async ({ page, context, baseURL }) => {
     await signInAs(context, baseURL!, "judge");
     await page.goto("/judge/sample-hack-2026");
