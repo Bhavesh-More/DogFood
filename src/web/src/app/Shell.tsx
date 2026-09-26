@@ -1,10 +1,10 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import type { Role } from "@dogfood/core";
 import { cx } from "../lib/format";
 import { useLogout, useSession } from "../lib/session";
 import { useTheme } from "../lib/theme";
-import { Avatar, Icon, IconButton, LinkButton, Menu, PageLoader, RoleBadge, type IconName } from "../ui";
+import { Avatar, Button, Dialog, Icon, IconButton, LinkButton, Menu, PageLoader, RoleBadge, type IconName } from "../ui";
 import { Logo } from "./Logo";
 
 interface Destination {
@@ -76,6 +76,7 @@ function UserMenu() {
   const { user } = useSession();
   const logout = useLogout();
   const navigate = useNavigate();
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [theme, toggleTheme] = useTheme();
   // Show what a click will switch to: the moon in light mode, the sun in dark mode.
   const themeIcon: IconName = theme === "dark" ? "light_mode" : "dark_mode";
@@ -121,13 +122,24 @@ function UserMenu() {
             label: "Sign out",
             icon: "logout",
             danger: true,
-            onSelect: () =>
-              logout.mutate(undefined, {
-                onSuccess: () => navigate("/"),
-              }),
+            onSelect: () => setConfirmSignOut(true),
           },
         ]}
       />
+      <Dialog
+        open={confirmSignOut}
+        onClose={() => setConfirmSignOut(false)}
+        title="Sign out?"
+        icon="logout"
+        actions={
+          <>
+            <Button variant="text" onClick={() => setConfirmSignOut(false)}>Cancel</Button>
+            <Button variant="danger" loading={logout.isPending} onClick={() => logout.mutate()}>Sign out</Button>
+          </>
+        }
+      >
+        You'll be signed out of {user.email} on this device. Unsaved changes will be lost.
+      </Dialog>
     </div>
   );
 }

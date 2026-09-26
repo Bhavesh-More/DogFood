@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cx } from "../lib/format";
 import { Icon, type IconName } from "./Icon";
 
@@ -18,6 +18,7 @@ interface DialogProps {
  */
 export function Dialog({ open, onClose, title, icon, children, actions, wide }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -27,6 +28,7 @@ export function Dialog({ open, onClose, title, icon, children, actions, wide }: 
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onClose={onClose}
       onCancel={(e) => {
         e.preventDefault();
@@ -43,7 +45,7 @@ export function Dialog({ open, onClose, title, icon, children, actions, wide }: 
       <div className="flex max-h-[90dvh] flex-col">
         <div className={cx("px-6 pt-6", icon && "text-center")}>
           {icon ? <Icon name={icon} size={28} className="mx-auto mb-3 text-secondary" /> : null}
-          <h2 className="type-headline-sm">{title}</h2>
+          <h2 id={titleId} className="type-headline-sm">{title}</h2>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4 type-body-md text-on-surface-variant">{children}</div>
         {actions ? <div className="flex flex-wrap justify-end gap-2 px-6 pb-6">{actions}</div> : null}
