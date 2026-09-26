@@ -152,6 +152,7 @@ export async function createApp({ config, db, now = Date.now }: CreateAppOptions
 
   if (config.webDist && existsSync(path.join(config.webDist, "index.html"))) {
     const indexHtml = path.join(config.webDist, "index.html");
+    app.use("/assets", precompressedAssets(path.join(config.webDist, "assets")));
     app.use(
       express.static(config.webDist, {
         index: false,
@@ -174,4 +175,33 @@ export async function createApp({ config, db, now = Date.now }: CreateAppOptions
 
   app.use(errorHandler);
   return { app, ctx };
+}
+
+const ASSET_TYPES: Record<string, string> = {
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".json": "application/json; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+};
+
+/**
+ * Serve the Brotli/gzip twins written at build time (src/web/scripts/compress.mjs)
+ * when the client accepts them. Falls through to express.static otherwise.
+ */
+function precompressedAssets(dir: string): express.RequestHandler {
+  return (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
+    const type = ASSET_TYPES[path.extname(req.path)];
+    if (!type || req.path.includes("..")) return next();
+    const accepted = req.get("accept-encoding") ?? "";
+    const variant = /\bbr\b/.test(accepted) ? { ext: ".br", enc: "br" } : /\bgzip\b/.test(accepted) ? { ext: ".gz", enc: "gzip" } : null;
+    const file = variant && path.join(dir, `${req.path}${variant.ext}`);
+    if (!variant || !file || !file.startsWith(dir + path.sep) || !existsSync(file)) return next();
+    res.setHeader("Content-Type", type);
+    res.setHeader("Content-Encoding", variant.enc);
+    res.setHeader("Vary", "Accept-Encoding");
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.sendFile(file, (err) => err && next(err));
+  };
 }

@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/compress.mjs",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
