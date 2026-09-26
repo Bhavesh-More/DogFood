@@ -90,9 +90,11 @@ export function planAssignments(input: AssignmentInput): AssignmentPlan {
         !conflicts.has(key(j.id, s.id)),
     );
 
+  // Eligible pools computed once (not inside the sort comparator).
+  const eligible = new Map(input.submissions.map((sub) => [sub.id, eligibleJudges(sub)]));
   const ordered = [...input.submissions].sort((a, b) => {
-    const ea = eligibleJudges(a).length;
-    const eb = eligibleJudges(b).length;
+    const ea = eligible.get(a.id)!.length;
+    const eb = eligible.get(b.id)!.length;
     return ea - eb || (a.id < b.id ? -1 : 1);
   });
 
@@ -103,15 +105,13 @@ export function planAssignments(input: AssignmentInput): AssignmentPlan {
     const have = perSubmission.get(s.id) ?? 0;
     let need = k - have;
     if (need <= 0) continue;
-    const pool = eligibleJudges(s).filter(
-      (j) => !assigned.has(key(j.id, s.id)) && (loads.get(j.id) ?? 0) < cap,
-    );
-    pool.sort(
-      (a, b) =>
-        (loads.get(a.id) ?? 0) - (loads.get(b.id) ?? 0) ||
-        fnv1a(`${a.id}:${s.id}`) - fnv1a(`${b.id}:${s.id}`) ||
-        (a.id < b.id ? -1 : 1),
-    );
+    // Least-loaded first; ties broken by a stable per-(judge, submission) hash, computed once.
+    const pool = eligible
+      .get(s.id)!
+      .filter((j) => !assigned.has(key(j.id, s.id)) && (loads.get(j.id) ?? 0) < cap)
+      .map((j) => ({ j, load: loads.get(j.id) ?? 0, h: fnv1a(`${j.id}:${s.id}`) }))
+      .sort((a, b) => a.load - b.load || a.h - b.h || (a.j.id < b.j.id ? -1 : 1))
+      .map((x) => x.j);
     for (const j of pool) {
       if (need <= 0) break;
       created.push({ judgeId: j.id, submissionId: s.id });
@@ -121,7 +121,7 @@ export function planAssignments(input: AssignmentInput): AssignmentPlan {
       need -= 1;
     }
     if (need > 0) {
-      const eligibleCount = eligibleJudges(s).length;
+      const eligibleCount = eligible.get(s.id)!.length;
       shortfalls.push({
         submissionId: s.id,
         needed: k,
