@@ -44,7 +44,8 @@ export function ResultsPage() {
   const e = event.data;
   const r = results.data!;
   const top = r.results.slice(0, 3);
-  const order = top.length === 3 ? [top[1]!, top[0]!, top[2]!] : top;
+  // DOM order is rank order (screen readers, phones); the classic 2-1-3 podium is visual only.
+  const podiumOrder = top.length === 3 ? ["medium:order-2", "medium:order-1", "medium:order-3"] : [];
   return (
     <div className="animate-enter">
       <header className="py-6">
@@ -55,12 +56,12 @@ export function ResultsPage() {
         <p className="mt-1 type-body-md text-on-surface-variant">Published {formatDateTime(r.publishedAt)}</p>
       </header>
 
-      <section aria-label="Podium" className="mb-10 grid items-start gap-4 medium:grid-cols-3">
-        {order.map((row) => {
+      <section aria-label="Podium" className="mb-10 grid grid-cols-1 items-start gap-4 medium:grid-cols-3">
+        {top.map((row, i) => {
           const idx = row.rank - 1;
           const p = PODIUM[Math.min(idx, 2)]!;
           return (
-            <Card key={row.submissionId} to={`/e/${e.slug}/p/${row.submissionId}`} variant={idx === 0 ? "primary" : "filled"} radius="2xl" className={cx("flex flex-col items-center gap-3 text-center", p.height)}>
+            <Card key={row.submissionId} to={`/e/${e.slug}/p/${row.submissionId}`} variant={idx === 0 ? "primary" : "filled"} radius="2xl" className={cx("flex flex-col items-center gap-3 text-center", p.height, podiumOrder[i])}>
               <Shape name={p.shape} className={cx("h-24 w-24", p.cls)}>
                 <span className="font-rounded text-2xl font-bold text-on-primary">{p.label}</span>
               </Shape>
@@ -73,8 +74,8 @@ export function ResultsPage() {
         })}
       </section>
 
-      <div className="grid gap-6 expanded:grid-cols-[minmax(0,1fr)_340px]">
-        <section aria-labelledby="board">
+      <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_340px]">
+        <section aria-labelledby="board" className="min-w-0">
           <h2 id="board" className="mb-3 type-title-lg text-on-surface">Leaderboard</h2>
           <div className="overflow-x-auto rounded-xl bg-surface-container-low">
             <table className="w-full min-w-[640px] text-left">
