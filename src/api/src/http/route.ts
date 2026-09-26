@@ -27,7 +27,7 @@ export interface RouteDef<B extends z.ZodType | undefined = z.ZodType | undefine
   status?: number;
   rateLimit?: { bucket: string; spec: BucketSpec };
   /** Response media type for the OpenAPI document. */
-  produces?: "application/json" | "text/csv" | "image/*" | "text/html";
+  produces?: "application/json" | "text/csv" | "text/calendar" | "image/*" | "text/html";
   /** Raw body (uploads) — skips JSON parsing/validation. */
   rawBody?: boolean;
   handler: (

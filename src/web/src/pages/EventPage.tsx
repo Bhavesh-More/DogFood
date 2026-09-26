@@ -170,6 +170,7 @@ export function EventPage() {
       <div className="mt-4 flex flex-wrap gap-2">
         <LinkButton to={`/e/${e.slug}/gallery`} variant="tonal" icon="grid_view">Project gallery</LinkButton>
         {e.resultsPublishedAt ? <LinkButton to={`/e/${e.slug}/results`} variant="tonal" icon="leaderboard">Results</LinkButton> : null}
+        <LinkButton to={`/api/events/${e.id}/calendar.ics`} download variant="outlined" icon="calendar_add_on">Add to calendar</LinkButton>
         {e.tracks.map((t) => (
           <Pill key={t.id} tone="secondary" icon="category">{t.name}</Pill>
         ))}
