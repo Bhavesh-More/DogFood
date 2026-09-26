@@ -652,6 +652,7 @@ def t3_quadratic(c: Ctx):
     })
     expect_status(r, 201, "create quadratic event")
     eid = r.json["id"]
+    c.state["qv_eid"] = eid
     org.post(f"/api/events/{eid}/publish")
     subs = []
     for role in ("participant", "participant_2"):
@@ -1177,6 +1178,14 @@ def main(argv: list[str]) -> int:
 
     if "receiver" in ctx.state:
         ctx.state["receiver"].close()
+    # Leave the checker's stack tidy: archive what this run created (kept as
+    # read-only history with its audit trail, but out of the live listings).
+    for key in ("eid", "qv_eid"):
+        if key in ctx.state:
+            try:
+                ctx.client("organizer").post(f"/api/events/{ctx.state[key]}/archive")
+            except Exception:  # noqa: BLE001
+                pass
 
     summary: dict[str, tuple[int, int]] = {}
     for tier in ("T1", "T2", "T3", "T4", "BONUS"):

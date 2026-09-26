@@ -20,7 +20,7 @@ const shots = [
   { name: "participant-submit", path: "/e/autumn-build-week/submit", as: "participant" },
   { name: "participant-team", path: "/e/autumn-build-week/team", as: "participant" },
   { name: "judge-queue", path: "/judge/sample-hack-2026", as: "judge" },
-  { name: "judge-score", path: "/judge/sample-hack-2026/a/asg_evt_01_001", as: "judge" },
+  { name: "judge-score", path: async () => `/judge/sample-hack-2026/a/${await firstAssignment("judge")}`, as: "judge" },
   { name: "judge-pairwise", path: "/judge/sample-hack-2026/pairwise", as: "judge" },
   { name: "org-overview", path: "/organize/sample-hack-2026", as: "organizer" },
   { name: "org-judges", path: "/organize/sample-hack-2026/judges", as: "organizer" },
@@ -29,6 +29,13 @@ const shots = [
   { name: "admin", path: "/admin", as: "admin" },
   { name: "api-docs", path: "/api-docs" },
 ];
+/** The judge's own first assignment (ids differ per seed; other judges' ids are 403 by design). */
+async function firstAssignment(role) {
+  const res = await fetch(`${base}/api/judge/events/evt_01/assignments`, { headers: { authorization: `Bearer ${TOKENS[role]}` } });
+  const list = await res.json();
+  return (list.find((a) => a.status !== "submitted") ?? list[0]).id;
+}
+
 const only = process.env.ONLY?.split(",");
 const browser = await chromium.launch({ executablePath: process.env.CHROME ?? "/opt/pw-browsers/chromium" });
 for (const theme of (process.env.THEMES ?? "light").split(",")) {
@@ -42,7 +49,8 @@ for (const theme of (process.env.THEMES ?? "light").split(",")) {
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-      await page.goto(base + s.path, { waitUntil: "networkidle" });
+      const target = typeof s.path === "function" ? await s.path() : s.path;
+      await page.goto(base + target, { waitUntil: "networkidle" });
       await page.waitForTimeout(700);
       await page.screenshot({ path: `${out}/${s.name}-${label}-${theme}.png`, fullPage: process.env.FULL !== "0" });
       if (errors.length) console.log(`[${s.name}/${label}/${theme}] errors:`, errors.slice(0, 3));
