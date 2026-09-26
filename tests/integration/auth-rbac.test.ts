@@ -117,6 +117,27 @@ describe("F001 — five-role RBAC enforced by the API", () => {
   });
 });
 
+describe("privacy of public endpoints", () => {
+  it("never exposes email addresses to anonymous or other users", async () => {
+    const paths = [
+      "/api/events",
+      "/api/events/evt_01",
+      "/api/events/evt_01/gallery?pageSize=200",
+      "/api/submissions/sub_01_02",
+      "/api/submissions/sub_01_02/comments",
+      "/api/events/evt_03/results",
+      "/api/embed/events/evt_01/gallery.json",
+    ];
+    for (const p of paths) {
+      for (const client of [s.anon, s.as(TOKENS.participant2)]) {
+        const r = await client.get(p);
+        expect(r.status, p).toBe(200);
+        expect(r.text, p).not.toMatch(/[\w.+-]+@[\w-]+\.[\w.]+/);
+      }
+    }
+  });
+});
+
 describe("security headers & CSRF", () => {
   it("sends a strict CSP and anti-framing headers", async () => {
     const r = await s.anon.get("/api/health");
