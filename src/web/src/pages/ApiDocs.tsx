@@ -72,8 +72,8 @@ export function ApiDocsPage() {
               <details className="group rounded-lg bg-surface-container-low">
                 <summary className="flex cursor-pointer flex-wrap items-center gap-3 p-3">
                   <span className={cx("w-16 rounded-sm py-0.5 text-center font-mono type-label-md uppercase", METHOD_TONE[method])}>{method}</span>
-                  <code className="font-mono type-body-md text-on-surface">{path}</code>
-                  <span className="flex-1 type-body-md text-on-surface-variant">{op.summary}</span>
+                  <code className="min-w-0 break-all font-mono type-body-md text-on-surface">{path}</code>
+                  <span className="min-w-0 flex-1 basis-48 type-body-md text-on-surface-variant">{op.summary}</span>
                   <span className="rounded-full bg-surface-container-highest px-2 py-0.5 font-mono type-label-sm text-on-surface-variant">{op["x-required-capability"]}</span>
                 </summary>
                 <div className="border-t border-outline-variant p-4">
