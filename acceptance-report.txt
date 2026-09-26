@@ -4,68 +4,68 @@ Project      Dogfood Portal 1.0.0
 Target       http://localhost:8000
 Manifest     .dogfood.toml — claims T1, T2, T3, T4 + 4 bonus(es)
 Fixtures     fixtures.json (dogfood.fixtures.v1, 50 users, 4 events)
-Run id       38deac
-Started      2026-09-26T00:35:38Z
+Run id       2488e1
+Started      2026-09-26T00:39:41Z
 
 Tier 1 — Core platform (auth, events, teams, submissions, deadline, gallery)
 ------------------------------------------------------------------------
   PASS  T1.01  Stack is up: health endpoint reports the database reachable  (3 ms)
-                ↳ version 1.0.0, clock skew -2 ms
-  PASS  T1.02  Seeded fixtures are served; draft events stay private  (13 ms)
+                ↳ version 1.0.0, clock skew -1 ms
+  PASS  T1.02  Seeded fixtures are served; draft events stay private  (18 ms)
                 ↳ 3 public events, 1 private draft(s), 16 eligible projects in sample-hack-2026
-  PASS  T1.03  Every checker token authenticates as its declared role  (17 ms)
+  PASS  T1.03  Every checker token authenticates as its declared role  (15 ms)
                 ↳ admin, organizer, judge, judge_b, judge_track, participant, participant_2, visitor
-  PASS  T1.04  Registration, login and logout with an HttpOnly SameSite session cookie  (729 ms)
-  PASS  T1.05  Five-role RBAC is enforced by the API (401 anonymous, 403 wrong role)  (22 ms)
-  PASS  T1.06  Organizer creates an event with tracks, prizes, questions and a weighted rubric  (89 ms)
-                ↳ acc-38deac, hard deadline 2026-09-26T00:35:52.954Z
-  PASS  T1.07  Participants register and form teams; one team per person per event  (47 ms)
+  PASS  T1.04  Registration, login and logout with an HttpOnly SameSite session cookie  (698 ms)
+  PASS  T1.05  Five-role RBAC is enforced by the API (401 anonymous, 403 wrong role)  (18 ms)
+  PASS  T1.06  Organizer creates an event with tracks, prizes, questions and a weighted rubric  (73 ms)
+                ↳ acc-2488e1, hard deadline 2026-09-26T00:39:55.900Z
+  PASS  T1.07  Participants register and form teams; one team per person per event  (52 ms)
   PASS  T1.08  Team invites are single-use, hash-stored, revocable and expiring  (45 ms)
-  PASS  T1.09  Submissions: drafts are private, completeness is validated, then locked in  (90 ms)
-  PASS  T1.10  Public gallery lists submitted projects with search and track filters  (17 ms)
-  PASS  T1.11  Hard deadline: server-clock lock, client time headers ignored, rosters frozen  (13847 ms)
+  PASS  T1.09  Submissions: drafts are private, completeness is validated, then locked in  (100 ms)
+  PASS  T1.10  Public gallery lists submitted projects with search and track filters  (15 ms)
+  PASS  T1.11  Hard deadline: server-clock lock, client time headers ignored, rosters frozen  (13839 ms)
   11/11 passed
 
 Tier 2 — Judging (invites, routing, rubric, isolation, normalization, CSV)
 ------------------------------------------------------------------------
-  PASS  T2.01  Judge invitations: single-use, track-scoped, organizers cannot judge  (72 ms)
-  PASS  T2.02  Algorithmic routing: dry run first, k reviews each, conflicts and track scopes honoured  (62 ms)
+  PASS  T2.01  Judge invitations: single-use, track-scoped, organizers cannot judge  (65 ms)
+  PASS  T2.02  Algorithmic routing: dry run first, k reviews each, conflicts and track scopes honoured  (49 ms)
                 ↳ 6 assignments
-  PASS  T2.03  Judge isolation: own queue only; others' assignments and raw ballots are forbidden  (26 ms)
-  PASS  T2.04  Weighted rubric: bounds and completeness validated, totals weighted server-side  (115 ms)
+  PASS  T2.03  Judge isolation: own queue only; others' assignments and raw ballots are forbidden  (29 ms)
+  PASS  T2.04  Weighted rubric: bounds and completeness validated, totals weighted server-side  (129 ms)
   PASS  T2.05  Organizer progress view reflects completed reviews  (4 ms)
-  PASS  T2.06  Normalization: Z-score for n>=5, Min-Max fallback below, invariants hold (seeded event)  (47 ms)
+  PASS  T2.06  Normalization: Z-score for n>=5, Min-Max fallback below, invariants hold (seeded event)  (54 ms)
                 ↳ 46 ballots, max recompute error 0.0e+00, strictest Jade Park (-27.5), most lenient Bruno Silva (+13.6)
-  PASS  T2.07  Results are hidden until published, then public and ranked; ballots lock  (33 ms)
-  PASS  T2.08  CSV exports for organizers, with spreadsheet formula-injection neutralised  (35 ms)
+  PASS  T2.07  Results are hidden until published, then public and ranked; ballots lock  (32 ms)
+  PASS  T2.08  CSV exports for organizers, with spreadsheet formula-injection neutralised  (37 ms)
   8/8 passed
 
 Tier 3 — Community voting & integrity (modes, quadratic, Sybil, comments, audit)
 ------------------------------------------------------------------------
-  PASS  T3.01  Open-link voting: one vote per device per project, per-voter budget enforced  (38 ms)
+  PASS  T3.01  Open-link voting: one vote per device per project, per-voter budget enforced  (37 ms)
   PASS  T3.02  Anti-Sybil: devices beyond 3 per IP are flagged (X-Forwarded-For is not trusted)  (24 ms)
                 ↳ more than 3 voters from one IP
   PASS  T3.03  Tallies are hidden from everyone but organizers while voting is open  (13 ms)
-  PASS  T3.04  Randomized, per-viewer-stable project order during voting (position-bias control)  (63 ms)
+  PASS  T3.04  Randomized, per-viewer-stable project order during voting (position-bias control)  (72 ms)
                 ↳ 6 distinct orders across 6 viewers on evt_01
   PASS  T3.05  Comments: signed-in users post, authors delete, anonymous users cannot  (19 ms)
-  PASS  T3.06  Email-gated quadratic voting: outbox code, v² credits, +tag aliases are one voter  (115 ms)
-  PASS  T3.07  Voting closes on the server clock; tallies are then public without anti-abuse details  (7 ms)
-  PASS  T3.08  Tamper-evident audit trail: every sensitive action logged, hash chain verifies  (15 ms)
-                ↳ 82 chained entries, head b331c7f34f39…
+  PASS  T3.06  Email-gated quadratic voting: outbox code, v² credits, +tag aliases are one voter  (117 ms)
+  PASS  T3.07  Voting closes on the server clock; tallies are then public without anti-abuse details  (8 ms)
+  PASS  T3.08  Tamper-evident audit trail: every sensitive action logged, hash chain verifies  (13 ms)
+                ↳ 82 chained entries, head 167ba4086a0a…
   8/8 passed
 
 Tier 4 — Platform (OpenAPI, tokens, webhooks, signed records, embed, bundles)
 ------------------------------------------------------------------------
-  PASS  T4.01  REST API described by a live OpenAPI 3.1 document  (28 ms)
+  PASS  T4.01  REST API described by a live OpenAPI 3.1 document  (23 ms)
                 ↳ 97 paths, 116 operations
-  PASS  T4.02  Personal API tokens work as Bearer credentials and can be revoked  (19 ms)
-  PASS  T4.03  Webhooks: domain events delivered with a valid HMAC-SHA256 signature  (2015 ms)
-                ↳ delivered via host.docker.internal:41527
-  PASS  T4.04  Ed25519-signed records verify independently; tampering is detected  (184 ms)
+  PASS  T4.02  Personal API tokens work as Bearer credentials and can be revoked  (13 ms)
+  PASS  T4.03  Webhooks: domain events delivered with a valid HMAC-SHA256 signature  (2014 ms)
+                ↳ delivered via host.docker.internal:37869
+  PASS  T4.04  Ed25519-signed records verify independently; tampering is detected  (175 ms)
                 ↳ 11 records verified with a pure-Python RFC 8032 verifier
-  PASS  T4.05  Embeddable gallery: CORS feed and frameable widget; the app itself refuses framing  (10 ms)
-  PASS  T4.06  Import/export: an exported event bundle re-imports as a faithful draft clone  (31 ms)
+  PASS  T4.05  Embeddable gallery: CORS feed and frameable widget; the app itself refuses framing  (9 ms)
+  PASS  T4.06  Import/export: an exported event bundle re-imports as a faithful draft clone  (32 ms)
   PASS  T4.07  Uploads accept real images only (magic bytes), served with nosniff  (12 ms)
   7/7 passed
 
@@ -73,10 +73,10 @@ Bonuses
 ------------------------------------------------------------------------
   PASS  B.01   Normalization proof: documented and independently reproduced  (0 ms)
                 ↳ Spearman raw vs normalized = 0.865
-  PASS  B.02   Pairwise judging with a Bradley-Terry ranking (MAP fixed point verified)  (37 ms)
+  PASS  B.02   Pairwise judging with a Bradley-Terry ranking (MAP fixed point verified)  (40 ms)
                 ↳ 29 comparisons, 371 MM iterations
   PASS  B.03   Threat model covers Sybil voting, ballot stuffing, scraping, collusion and deadline gaming  (0 ms)
-  PASS  B.04   API-first: every screen is backed by documented endpoints; interactive docs shipped  (2 ms)
+  PASS  B.04   API-first: every screen is backed by documented endpoints; interactive docs shipped  (1 ms)
   4/4 passed
 
 Summary
@@ -90,5 +90,5 @@ Summary
   Checks passed    38/38
   Claimed tier     T4
   Verified tier    T4
-  Duration         18.2 s
+  Duration         18.0 s
   Result           PASS
