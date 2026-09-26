@@ -1,12 +1,13 @@
 import { cx, hashUnit } from "../lib/format";
 import { SHAPE_NAMES, shapePath } from "./Shape";
 
+/** [background, shape, shape accent, ink] — ink is the background's paired "on" colour, legible in both themes. */
 const PALETTES = [
-  ["var(--md-primary-container)", "var(--md-primary)", "var(--md-tertiary-container)"],
-  ["var(--md-tertiary-container)", "var(--md-tertiary)", "var(--md-primary-fixed-dim)"],
-  ["var(--md-secondary-container)", "var(--md-secondary)", "var(--md-tertiary-container)"],
-  ["var(--md-primary-fixed)", "var(--md-primary)", "var(--md-secondary-container)"],
-  ["var(--md-surface-container-highest)", "var(--md-tertiary)", "var(--md-primary-container)"],
+  ["var(--md-primary-container)", "var(--md-primary)", "var(--md-tertiary-container)", "var(--md-on-primary-container)"],
+  ["var(--md-tertiary-container)", "var(--md-tertiary)", "var(--md-primary-fixed-dim)", "var(--md-on-tertiary-container)"],
+  ["var(--md-secondary-container)", "var(--md-secondary)", "var(--md-tertiary-container)", "var(--md-on-secondary-container)"],
+  ["var(--md-primary-fixed)", "var(--md-primary)", "var(--md-secondary-container)", "var(--md-on-primary-fixed)"],
+  ["var(--md-surface-container-highest)", "var(--md-tertiary)", "var(--md-primary-container)", "var(--md-on-surface)"],
 ] as const;
 
 /**
@@ -44,10 +45,11 @@ export function GeneratedArt({ seed, label, className, big }: { seed: string; la
       {letters ? (
         <span
           className={cx(
-            "absolute bottom-2 left-3 font-rounded font-bold tracking-tight text-on-primary mix-blend-normal",
+            "absolute bottom-2 left-2 rounded-lg px-1.5 font-rounded font-bold leading-tight tracking-tight",
             big ? "text-6xl" : "text-3xl",
           )}
-          style={{ textShadow: "0 2px 12px rgb(0 0 0 / 0.2)" }}
+          // Sits on its own backing so the shapes behind can never swallow the letters.
+          style={{ color: pal[3], background: `color-mix(in srgb, ${pal[0]} 82%, transparent)` }}
         >
           {letters}
         </span>
