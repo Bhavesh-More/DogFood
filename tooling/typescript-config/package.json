@@ -1,0 +1,10 @@
+{
+  "name": "@dogfood/typescript-config",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    "./base.json": "./base.json",
+    "./react-library.json": "./react-library.json"
+  }
+}

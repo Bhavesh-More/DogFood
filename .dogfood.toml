@@ -1,0 +1,81 @@
+# Dogfood 2026 capability manifest.
+# Read by `python3 acceptance/run.py .dogfood.toml > acceptance-report.txt`.
+
+[project]
+name = "Dogfood Portal"
+version = "1.0.0"
+license = "MIT"
+summary = "Self-hosted hackathon platform: teams, deadline-locked submissions, isolated judging with Z-score normalization, community voting, signed records."
+
+[stack]
+base_url = "http://localhost:8000"
+start = "docker compose up --build"
+stop = "docker compose down"
+reset = "docker compose down -v && docker compose up --build"
+health = "/api/health"
+openapi = "/api/openapi.json"
+fixtures = "fixtures.json"
+offline = true
+
+[seed]
+# The app migrates and seeds itself on first boot when the database is empty.
+on_boot = true
+source = "fixtures.json"
+format = "dogfood.fixtures.v1"
+command = "docker compose exec app node dist/cli.mjs reset --yes"
+demo_password = "dogfood-demo-2026"
+note = "Fixture times are relative to seed time (e.g. now-6h), so windows are always meaningful on a fresh stack."
+
+[tiers]
+claimed = [1, 2, 3, 4]
+
+[bonuses]
+claimed = ["normalization-proof", "pairwise-bradley-terry", "threat-model", "api-first"]
+
+[normalization]
+method = "z-score"
+fallback = "min-max"          # judges with fewer than min_sample_size ballots
+min_sample_size = 5
+epsilon = 1e-6
+target_mean = 70              # per-event override in organizer settings
+target_sd = 15
+
+[auth]
+bearer = "Authorization: Bearer <token>"
+cookie = "dogfood_session"
+
+# Stable per-role session tokens (seeded as checker sessions, valid 30 days,
+# refreshed on every boot). Keys are "<role>" or "<role>_<variant>".
+[sessions]
+admin = "dfc_admin_4f9c2e7a1b8d60536e21"
+organizer = "dfc_organizer_8b1d3f5a7c9e20461a"
+judge = "dfc_judge_a_2c4e6a8b0d1f39571b"
+judge_b = "dfc_judge_b_9e7c5a3b1d2f40682c"
+judge_track = "dfc_judge_f_5a1c9e3b7d2f60843d"
+participant = "dfc_participant_7d3b1f9e5c2a48064e"
+participant_2 = "dfc_participant2_3e9a7c1d5b2f86024f"
+visitor = "dfc_visitor_1b5d9f3a7e2c64080a"
+
+[entry_points]
+web = "/"
+events = "/events"
+event = "/e/{slug}"
+gallery = "/e/{slug}/gallery"
+results = "/e/{slug}/results"
+participant_dashboard = "/dashboard"
+judge_queue = "/judge/{slug}"
+organizer_console = "/organize/{slug}"
+results_lab = "/organize/{slug}/results"
+admin = "/admin"
+embed_widget = "/embed/{slug}"
+record_verification = "/verify/{recordId}"
+api = "/api"
+api_docs = "/api-docs"
+signing_key = "/.well-known/dogfood-signing-key.json"
+
+[acceptance]
+# Seconds between creating the runner's event and its hard deadline.
+deadline_seconds = 14
+# Hosts the app can use to reach the runner's local webhook receiver
+# (127.0.0.1 for a native stack, host.docker.internal from the container).
+webhook_hosts = ["127.0.0.1", "host.docker.internal"]

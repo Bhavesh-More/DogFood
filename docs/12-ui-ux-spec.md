@@ -181,3 +181,14 @@ Public Gallery Results & Anti-Sybil Community Voting (Hidden tallies revealed po
 
 ### UNKNOWN
 * [ ] Specific design token palette, font families, or CSS framework mandated by organizers (developers choose UI styling)
+
+---
+
+## 11. Implementation & Verification Notes
+
+* **Screens shipped** — public (home, events, event, gallery, project, results, embed widget, record verification, API reference), participant (hub, team & invites, submission editor), judge (queue, rubric scoring, pairwise), organizer (overview, settings, setup, rubric, submissions, judges & routing, Results Lab, voting review, audit trail, integrations), admin.
+* **Responsive** — navigation rail ≥ 840 px, bottom navigation bar below; two-pane layouts ≥ 1200 px. An automated probe loads all 31 screens at 360 px and 390 px and asserts zero horizontal overflow (it caught and drove fixes for grid min-width blow-outs, the results table, long API paths and a long status pill). On phones the submission deadline countdown leads the editor and the podium reads in rank order.
+* **Accessibility** — automated sweep over every screen: all controls named, all inputs labelled, alt text present, unique ids, one `h1` per page (the embed widget was the only miss, fixed). Keyboard: skip link, visible focus rings, roving tabindex on tabs, sliders with `aria-valuetext`, chart points focusable with tooltips. Colour roles come from the M3 tonal system, which guarantees on-colour contrast pairs in light and dark themes.
+* **Horizontal scrollers** (chip filters, event rows) fade their edges only while more content is hidden (CSS scroll-driven animation).
+* **Performance** — lazy route chunks, assets precompressed at build (Brotli: 878 KB → 225 KB for JS + CSS), immutable caching for hashed assets, a 71 KB variable font instead of 1.4 MB.
+* **E2E** — `tests/e2e/smoke.spec.ts` (Playwright) walks the key journey of every role in a real browser, desktop and phone.

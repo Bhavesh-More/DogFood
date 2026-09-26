@@ -1,0 +1,12 @@
+{
+  "extends": "../tooling/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
+    "paths": { "@dogfood/core": ["../src/core/src/index.ts"] }
+  },
+  "include": ["**/*.ts"]
+}

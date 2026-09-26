@@ -166,13 +166,58 @@ A development phase is declared **DONE** only when:
 
 ## 12. Final Checklist
 
-* [ ] Phase 1 — Foundation & Docker orchestration complete
-* [ ] Phase 2 — P0 backend services (Auth, RBAC, UTC lock, query isolation, Z-score math) complete
-* [ ] Phase 3 — P0 frontend dashboards and user workflows complete
-* [ ] Phase 4 — Integrations & anti-Sybil voting complete
-* [ ] Phase 5 — Testing complete and `acceptance-report.txt` generated
-* [ ] Phase 6 — Security & offline air-gapped execution verified
-* [ ] Phase 7 — Production container build succeeds (`docker compose up`)
-* [ ] Primary demo flow verified on seeded fixture data
-* [ ] Hackathon submission requirements (`README`, `ARCHITECTURE`, `DATA-MODEL`, `JUDGING`, `LICENSE`, `.dogfood.toml`, video script) verified
-* [ ] `17-acceptance-criteria.md` definition of done satisfied
+* [x] Phase 1 — Foundation & Docker orchestration complete
+* [x] Phase 2 — P0 backend services (Auth, RBAC, UTC lock, query isolation, Z-score math) complete
+* [x] Phase 3 — P0 frontend dashboards and user workflows complete
+* [x] Phase 4 — Integrations & anti-Sybil voting complete
+* [x] Phase 5 — Testing complete and `acceptance-report.txt` generated (38/38, T4 verified)
+* [x] Phase 6 — Security & offline air-gapped execution verified (app detached from every routable network, suite still verifies T1–T4)
+* [x] Phase 7 — Production container build succeeds (`docker compose up --build`, healthy in ~10 s)
+* [x] Primary demo flow verified on seeded fixture data
+* [x] Hackathon submission requirements (`README`, `ARCHITECTURE`, `DATA-MODEL`, `JUDGING`, `THREAT-MODEL`, `LICENSE`, `.dogfood.toml`, video script) verified
+* [x] `17-acceptance-criteria.md` definition of done satisfied
+
+---
+
+## 13. Execution Log
+
+| Phase | Status | Notes |
+| :--- | :--- | :--- |
+| Research | ✅ Done | Tier lists, acceptance conventions and UI references recorded in `05`, `07`, `08`, `01`. |
+| Phase 1 — Foundation | ✅ Done | Repo restructured to `src/{core,api,web}` + `tests/` + `tooling/`; pnpm/turbo workspace; Vitest projects. Compose/`.dogfood.toml`/LICENSE land with Phase 6. |
+| Phase 2 — Core backend | ✅ Done | `src/core` maths (57 unit tests), Postgres schema with RLS + deadline trigger + hash-chained audit, T1/T2 API, deterministic fixtures. Verified by curl: cross-judge reads → 403, late edits → 403 `DEADLINE_PASSED`, invites single-use, normalization invariants hold. |
+| Phase 3 — Frontend (M3 Expressive) | ✅ Done | Vite + React 19 + Tailwind v4; generated M3 colour tokens (light/dark), Google Sans Flex, Material Symbols subset, procedural expressive shapes; every role's screens; screenshot-reviewed on desktop and mobile. |
+| Phase 4 — T3/T4 + bonuses | ✅ Done | Voting modes, quadratic, Sybil cap, comments, webhooks, signed records, import/export, pairwise BT, OpenAPI (116 operations), all with UI. |
+| Phase 5 — Tests + acceptance | ✅ Done | 57 unit + 93 integration tests (real Postgres, real HTTP, one throw-away DB per file) and `acceptance/run.py` (38 black-box checks, stdlib only). Five real bugs found and fixed along the way — see below. |
+| Phase 6 — Deploy & harden | ✅ Done | Multi-stage non-root image with bundled API (no `node_modules`), compose with the DB on an `internal` network, air-gap run verified; secrets hidden from the request role. |
+| Phase 7 — Docs & demo | ✅ Done | README, ARCHITECTURE, DATA-MODEL, JUDGING (proofs), THREAT-MODEL, LICENSE, `acceptance-report.txt`, demo script (`19-demo-script.md`). |
+
+### Findings during Phase 2
+* **Zod 4 `.partial()` keeps defaults** — a PATCH would reset omitted fields. Fixed with default-free patch schemas.
+* **FNV-1a high-bit clustering** — deterministic seed draws clustered; added a MurmurHash3 finalizer + distribution test.
+* **Bradley–Terry scaling bug** — rescaling each iteration fought the phantom-item prior; removed rescaling so the fixed point is the true MAP estimate (caught by the balance-condition test).
+* **Trigger ordering** — Postgres fires same-event triggers alphabetically; ownership derivation now runs before the score-bound check.
+
+### Findings during Phases 5–6 (bugs the tests caught)
+* **Webhook retries never happened.** The retry `UPDATE` passed `attempts` to `power()` untyped; Postgres resolved it as `text` and rejected it, so the first failed delivery aborted the worker pass forever. Explicit casts; covered by a test against a receiver that returns 500.
+* **Webhook double-send / head-of-line blocking.** `FOR UPDATE SKIP LOCKED` was released as soon as the claim transaction committed, and deliveries were sent one by one, so a single unresolvable host delayed everyone by its timeout. Rows are now leased atomically (`next_attempt_at` pushed forward in the claiming statement) and sent concurrently.
+* **Two clocks for expiry.** Invite and voting-code expiry was written with the DB clock but checked against the app clock — surfaced by the controllable-clock lifecycle test. All expiries now derive from `app.now()`.
+* **Secrets readable by the request role.** `settings` (HMAC secret, Ed25519 key) had `SELECT` for `dogfood_app` although only the owner reads it at boot; migration `003` revokes it, with a test.
+* **pg client fan-out.** `Promise.all` over one transaction client relies on pg's implicit queue, removed in pg 9; replaced by sequential `mapSeq`.
+* **Environment gotcha.** A stale dev server on :8000 silently answered the first acceptance run — the runner now prints server version and clock skew up front so a wrong target is obvious.
+
+### Iteration 2 — review & improve loop
+| Area | Finding | Change |
+| :--- | :--- | :--- |
+| Mobile layout | Probe of 31 screens at 360/390 px found 5 pages wider than the viewport (grid min-width blow-outs, results table, API paths, a long pill) | Base `grid-cols-1` on every responsive grid (43 grids), contained table scrolling, wrapping paths, truncating pills; probe now reports zero overflow |
+| Charts | Strip plots scaled a fixed viewBox, shrinking labels to ~6 px on phones | Measured width, drawn at 1 unit = 1 px |
+| Participant UX | Deadline countdown sat below the whole form on phones; podium read 2-1-3 to screen readers | Countdown leads on phones; DOM in rank order, visual 2-1-3 only on wide screens |
+| Organizer UX | Console tabs clipped at 1440 px | Shorter labels; active tab scrolls into view |
+| Scrollers | No affordance that chip rows scroll | Scroll-driven edge fade, only where content is hidden |
+| Accessibility | Automated sweep of every screen | One miss (embed had no `h1`), fixed |
+| Payload | 1.4 MB font (all axes), uncompressed JS/CSS/JSON | Weight+ROND font (71 KB); build-time Brotli/gzip for assets (878 → 225 KB); Brotli/gzip JSON ≥ 1.4 KB (OpenAPI 96 → 8.5 KB) |
+| Robustness | NUL bytes and bad percent-encoding produced 500s | Mapped to 400 `BAD_REQUEST`; regression test fires six malformed requests |
+| Algorithms | Bradley–Terry O(n²) per MM step; routing recomputed pools/hashes in comparators | Sparse adjacency (4.3× faster), precomputed pools and hashes (2.2× faster), identical outputs |
+| Test coverage | Test sources not type-checked; no browser tests; no CI | `tests/tsconfig.json` in `check-types`; 10 Playwright journeys; GitHub Actions workflow (checks → Docker stack → acceptance → e2e) |
+
+Re-verified on a fresh `docker compose` build: 156/156 Vitest, 10/10 Playwright, 38/38 acceptance (T4).
