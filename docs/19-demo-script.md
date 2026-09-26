@@ -45,8 +45,7 @@ edits, and even if it didn't, a database trigger would."
 the API. Our tests run raw SQL as the app role and still see nothing."
 
 ## 1:35 — Organizer: routing and the Results Lab (60 s)
-1. Sign in as `organizer@dogfood.local`. Open **Sample Hack 2026 → Judges
-   & routing**: progress per judge, one track-scoped judge, and
+1. Sign in as `organizer@dogfood.local`. Open **Sample Hack 2026 → Judges**: progress per judge, one track-scoped judge, and
    **Preview**, the routing dry run.
 2. Open **Results lab → Run normalization**.
    - *Judge leniency* chart: Jade −27.5 (strict), Bruno +13.6 (lenient).

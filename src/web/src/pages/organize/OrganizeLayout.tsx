@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import { Link, NavLink, Outlet, useParams } from "react-router";
+import { Suspense, useEffect, useRef } from "react";
+import { Link, NavLink, Outlet, useLocation, useParams } from "react-router";
 import { PhasePill } from "../../components/EventCard";
 import { cx } from "../../lib/format";
 import { useEvent } from "../../lib/queries";
@@ -8,10 +8,10 @@ import { EmptyState, ErrorState, Icon, LinkButton, PageLoader, type IconName } f
 const SECTIONS: { to: string; label: string; icon: IconName }[] = [
   { to: "", label: "Overview", icon: "dashboard" },
   { to: "settings", label: "Settings", icon: "settings" },
-  { to: "setup", label: "Tracks & prizes", icon: "category" },
+  { to: "setup", label: "Setup", icon: "category" },
   { to: "rubric", label: "Rubric", icon: "balance" },
   { to: "submissions", label: "Submissions", icon: "assignment" },
-  { to: "judges", label: "Judges & routing", icon: "gavel" },
+  { to: "judges", label: "Judges", icon: "gavel" },
   { to: "results", label: "Results lab", icon: "query_stats" },
   { to: "votes", label: "Voting", icon: "how_to_vote" },
   { to: "audit", label: "Audit trail", icon: "receipt_long" },
@@ -21,6 +21,13 @@ const SECTIONS: { to: string; label: string; icon: IconName }[] = [
 export function OrganizeLayout() {
   const { slug } = useParams();
   const event = useEvent(slug);
+  const { pathname } = useLocation();
+  const nav = useRef<HTMLElement>(null);
+  const ready = Boolean(event.data);
+  // Keep the current section's tab visible when the bar scrolls (narrow screens).
+  useEffect(() => {
+    nav.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [pathname, ready]);
   if (event.isPending) return <PageLoader label="Loading event" />;
   if (event.error) return <ErrorState error={event.error} onRetry={() => event.refetch()} />;
   const e = event.data;
@@ -41,7 +48,7 @@ export function OrganizeLayout() {
           Public page
         </LinkButton>
       </header>
-      <nav aria-label="Event console" className="scrollbar-none -mx-4 mb-6 flex gap-1 overflow-x-auto border-b border-outline-variant px-4">
+      <nav ref={nav} aria-label="Event console" className="scrollbar-none -mx-4 mb-6 flex gap-1 overflow-x-auto border-b border-outline-variant px-4">
         {SECTIONS.map((s) => (
           <NavLink key={s.to} to={s.to} end={s.to === ""} className={({ isActive }) => cx("state-layer focus-ring relative flex h-12 shrink-0 items-center gap-2 px-3 type-title-sm", isActive ? "text-primary" : "text-on-surface-variant")}>
             {({ isActive }) => (
