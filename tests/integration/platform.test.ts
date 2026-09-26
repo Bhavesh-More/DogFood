@@ -4,7 +4,7 @@ import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { allRoutes } from "../../src/api/src/app";
 import { deliverDue } from "../../src/api/src/modules/webhooks";
-import { startStack, TOKENS, type TestStack } from "./helpers";
+import { startStack, TOKENS, type TestResponse, type TestStack } from "./helpers";
 
 /** T4 — platform surface: webhooks, signed records, OpenAPI, bundles, uploads, embed; plus audit tamper detection. */
 let s: TestStack;
@@ -172,7 +172,7 @@ describe("API-first", () => {
 describe("uploads", () => {
   const PNG = Buffer.from("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da63f8ffff3f0005fe02fea7d6a4b30000000049454e44ae426082", "hex");
   const up = (body: Buffer, type: string, token: string | null = TOKENS.participant) =>
-    s.anon.raw("/api/uploads", { method: "POST", headers: { "content-type": type, ...(token ? { authorization: `Bearer ${token}` } : {}) }, body });
+    s.anon.raw("/api/uploads", { method: "POST", headers: { "content-type": type, ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: new Uint8Array(body) });
 
   it("stores real images and serves them with nosniff", async () => {
     const r = await up(PNG, "image/png");
@@ -193,7 +193,7 @@ describe("uploads", () => {
 
 describe("abuse controls & audit integrity", () => {
   it("rate-limits password guessing with Retry-After", async () => {
-    let last: Awaited<ReturnType<TestStack["anon"]["post"]>> | null = null;
+    let last: TestResponse<any> | null = null;
     for (let i = 0; i < 11; i++) last = await s.anon.post("/api/auth/login", { email: "admin@dogfood.local", password: `guess-${i}` });
     expect(last!.status).toBe(429);
     expect(last!.body.code).toBe("RATE_LIMITED");

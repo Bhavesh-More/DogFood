@@ -11,8 +11,8 @@ let bAssignment: string;
 let aAssignment: string;
 beforeAll(async () => {
   s = await startStack();
-  [{ id: bAssignment }] = await s.sql("SELECT id FROM assignments WHERE event_id = 'evt_01' AND judge_id = 'usr_judge_b' ORDER BY id LIMIT 1");
-  [{ id: aAssignment }] = await s.sql("SELECT id FROM assignments WHERE event_id = 'evt_01' AND judge_id = 'usr_judge_a' ORDER BY id LIMIT 1");
+  bAssignment = (await s.sql("SELECT id FROM assignments WHERE event_id = 'evt_01' AND judge_id = 'usr_judge_b' ORDER BY id LIMIT 1"))[0].id;
+  aAssignment = (await s.sql("SELECT id FROM assignments WHERE event_id = 'evt_01' AND judge_id = 'usr_judge_a' ORDER BY id LIMIT 1"))[0].id;
 });
 afterAll(async () => {
   await s?.close();
