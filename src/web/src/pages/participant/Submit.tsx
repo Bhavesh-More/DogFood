@@ -254,6 +254,11 @@ function SubmissionEditor({ event: e, team, initial }: { event: EventDto; team: 
         </Banner>
       ) : null}
 
+      {/* Phones: the deadline comes first, not after the whole form. */}
+      <Card variant="elevated" radius="2xl" className="mb-6 expanded:hidden">
+        <Countdown target={deadline} label="Hard deadline" />
+      </Card>
+
       <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
         <form className="flex min-w-0 flex-col gap-6" onSubmit={(ev) => ev.preventDefault()} aria-label="Submission form">
           <Card variant="filled" radius="2xl" className="flex flex-col gap-4">
@@ -337,7 +342,7 @@ function SubmissionEditor({ event: e, team, initial }: { event: EventDto; team: 
         </form>
 
         <aside className="flex flex-col gap-4 expanded:sticky expanded:top-20 expanded:self-start">
-          <Card variant="elevated" radius="2xl">
+          <Card variant="elevated" radius="2xl" className="hidden expanded:block">
             <Countdown target={deadline} label="Hard deadline" />
           </Card>
           <Card variant="filled" radius="2xl">
