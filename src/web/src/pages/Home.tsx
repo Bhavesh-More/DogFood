@@ -56,7 +56,8 @@ export function HomePage() {
           <h1 className="mt-5 font-rounded text-[44px] font-[780] leading-[1.02] tracking-tight [font-variation-settings:'ROND'_100] medium:text-[76px]">
             Hackathons,
             <br />
-            judged <span className="text-primary">fairly</span>.
+            judged{" "}
+            <span className="inline-block -rotate-2 rounded-[0.35em] bg-tertiary-container px-[0.18em] pb-[0.06em] text-on-tertiary-container">fairly</span>.
           </h1>
           <p className="mt-5 max-w-xl type-body-lg opacity-90 medium:text-lg">
             Run the whole competition — teams, hard deadlines, judge routing, weighted rubrics and community votes — on a
