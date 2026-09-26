@@ -63,9 +63,8 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
-  - **156/156 Vitest tests** (57 unit, 99 integration — the per-file
-    counts are in §7).
-  - **10/10 Playwright journeys.**
+  - **218/218 Vitest tests**, run with `pnpm test`.
+  - **14/14 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
   - Lint and type-check are clean.
@@ -643,6 +642,33 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
      (`immutable_tags_text`).
 
 ---
+
+## 10b. Added in the follow-up session (PR #3)
+
+- **Theme.** Dark mode uses deep containers: `DARK_CONTAINER_OVERRIDES` in
+  `generate-theme.mjs` sets tone 30 for the surface and tone 90 for text.
+  `tests/unit/theme-contrast.test.ts` fails if any text/surface pair used
+  by the UI drops below WCAG AA in either theme. **Regenerate the theme;
+  never edit `theme.css` by hand.**
+- **Two-state theme.** `lib/theme.ts` exposes `useTheme()` →
+  `[theme, toggle, set]`. There is no "system" state; the OS preference is
+  only the default before the viewer chooses.
+- **Scrollbars** are hidden globally (`@layer base` in `app.css`).
+- **Calendar.** `core/calendar.ts` builds the file; the route is
+  `GET /api/events/:eventId/calendar.ics`.
+- **Announcements.**
+  - `modules/announcements.ts` and migration `004`.
+  - `visibleAudiences()` decides who sees what, on the server.
+  - Posting copies the announcement to the outbox and emits an
+    `announcement.published` webhook (a new `WEBHOOK_EVENTS` entry).
+  - UI: `components/Announcements.tsx`.
+- **Team finder.**
+  - `modules/teamfinder.ts` and migration `005`.
+  - The `team_members_clear_seeker` trigger removes a person's post when
+    they join or found a team.
+  - `teams.looking_for` holds the recruiting text; `null` means the team
+    is not recruiting.
+  - UI: `components/TeamFinder.tsx`, shown on the team page.
 
 ## 11. Known limitations and next ideas
 
