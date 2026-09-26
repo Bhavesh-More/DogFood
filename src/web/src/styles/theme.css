@@ -66,8 +66,8 @@
     color-scheme: dark;
     --md-primary: #aca3ff;
     --md-on-primary: #27009a;
-    --md-primary-container: #9d93ff;
-    --md-on-primary-container: #1c007a;
+    --md-primary-container: #3e1dcc;
+    --md-on-primary-container: #e4dfff;
     --md-inverse-primary: #5741e4;
     --md-primary-fixed: #9d93ff;
     --md-primary-fixed-dim: #8f83ff;
@@ -83,8 +83,8 @@
     --md-on-secondary-fixed-variant: #5c3ba4;
     --md-tertiary: #ff9ecb;
     --md-on-tertiary: #6d0f47;
-    --md-tertiary-container: #fd87c1;
-    --md-on-tertiary-container: #5f003d;
+    --md-tertiary-container: #7f2056;
+    --md-on-tertiary-container: #ffd8e7;
     --md-tertiary-fixed: #ff8bc3;
     --md-tertiary-fixed-dim: #f07db6;
     --md-on-tertiary-fixed: #360021;
@@ -128,8 +128,8 @@
   color-scheme: dark;
   --md-primary: #aca3ff;
   --md-on-primary: #27009a;
-  --md-primary-container: #9d93ff;
-  --md-on-primary-container: #1c007a;
+  --md-primary-container: #3e1dcc;
+  --md-on-primary-container: #e4dfff;
   --md-inverse-primary: #5741e4;
   --md-primary-fixed: #9d93ff;
   --md-primary-fixed-dim: #8f83ff;
@@ -145,8 +145,8 @@
   --md-on-secondary-fixed-variant: #5c3ba4;
   --md-tertiary: #ff9ecb;
   --md-on-tertiary: #6d0f47;
-  --md-tertiary-container: #fd87c1;
-  --md-on-tertiary-container: #5f003d;
+  --md-tertiary-container: #7f2056;
+  --md-on-tertiary-container: #ffd8e7;
   --md-tertiary-fixed: #ff8bc3;
   --md-tertiary-fixed-dim: #f07db6;
   --md-on-tertiary-fixed: #360021;

@@ -51,9 +51,28 @@ function customBlock(isDark) {
     .join("\n");
 }
 
+/*
+ * The 2025 spec keeps primary/tertiary containers bright (tone ~70) in dark
+ * mode. Our layouts put primary-coloured text and large hero surfaces on those
+ * containers, which reads as glaring slabs with low-contrast text on a dark
+ * page. In dark mode we therefore use the same vibrant palettes at the classic
+ * container tones (30 surface / 90 text), which keeps the hues but restores
+ * readable contrast everywhere.
+ */
+const DARK_CONTAINER_OVERRIDES = {
+  primaryContainer: ["primaryPalette", 30],
+  onPrimaryContainer: ["primaryPalette", 90],
+  tertiaryContainer: ["tertiaryPalette", 30],
+  onTertiaryContainer: ["tertiaryPalette", 90],
+};
+
 function block(isDark) {
   const scheme = new Scheme(Hct.fromInt(argbFromHex(seed)), isDark, 0, "2025");
-  const roles = ROLES.map((role) => `  --md-${kebab(role)}: ${hexFromArgb(MaterialDynamicColors[role].getArgb(scheme))};`).join("\n");
+  const value = (role) => {
+    const override = isDark ? DARK_CONTAINER_OVERRIDES[role] : undefined;
+    return override ? scheme[override[0]].tone(override[1]) : MaterialDynamicColors[role].getArgb(scheme);
+  };
+  const roles = ROLES.map((role) => `  --md-${kebab(role)}: ${hexFromArgb(value(role))};`).join("\n");
   return `${roles}\n${customBlock(isDark)}`;
 }
 
