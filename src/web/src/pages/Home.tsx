@@ -53,7 +53,7 @@ export function HomePage() {
           <span className="inline-flex items-center gap-2 rounded-full bg-surface/70 px-3 py-1 type-label-lg text-on-surface backdrop-blur">
             <Icon name="verified" size={18} className="text-primary" /> Open source · self-hosted · works offline
           </span>
-          <h1 className="mt-5 font-rounded text-[44px] font-[780] leading-[1.02] tracking-tight [font-variation-settings:'ROND'_100,'wdth'_106] medium:text-[76px]">
+          <h1 className="mt-5 font-rounded text-[44px] font-[780] leading-[1.02] tracking-tight [font-variation-settings:'ROND'_100] medium:text-[76px]">
             Hackathons,
             <br />
             judged <span className="text-primary">fairly</span>.
