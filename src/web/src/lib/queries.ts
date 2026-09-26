@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { EventDto, EventSummaryDto, TeamDto } from "@dogfood/core";
+import type { EventDto, EventSummaryDto, NotificationsDto, TeamDto } from "@dogfood/core";
 import { get } from "./api";
 
 export const keys = {
@@ -29,5 +29,15 @@ export function useMyTeam(eventId: string | undefined, enabled = true) {
     queryKey: keys.myTeam(eventId ?? ""),
     queryFn: () => get<TeamDto | null>(`/api/events/${eventId}/my-team`),
     enabled: Boolean(eventId) && enabled,
+  });
+}
+
+/** The signed-in user's notifications, refreshed periodically for the header badge. */
+export function useNotifications(enabled = true) {
+  return useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => get<NotificationsDto>("/api/notifications"),
+    enabled,
+    refetchInterval: 60_000,
   });
 }

@@ -104,7 +104,7 @@ function makeClient(base: string, auth?: { bearer?: string; cookies?: Map<string
   };
 }
 
-export async function startStack(opts: { now?: () => number; webDist?: string } = {}): Promise<TestStack> {
+export async function startStack(opts: { now?: () => number; webDist?: string; env?: Record<string, string> } = {}): Promise<TestStack> {
   const dbName = `dogfood_test_${process.pid}_${Math.floor(Math.random() * 1e9)}`;
   const admin = new pg.Client({ connectionString: ADMIN_URL });
   await admin.connect();
@@ -120,6 +120,7 @@ export async function startStack(opts: { now?: () => number; webDist?: string } 
     WEBHOOK_WORKER: "false",
     UPLOAD_DIR: mkdtempSync(path.join(tmpdir(), "dogfood-uploads-")),
     PUBLIC_URL: "http://localhost:8000",
+    ...opts.env,
   });
   const db = new Db(config.databaseUrl, 5);
   await prepareDatabase(db, config, () => undefined);

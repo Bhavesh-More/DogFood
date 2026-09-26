@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router";
 import type { CommentDto, SubmissionDto } from "@dogfood/core";
+import { AiSummary } from "../components/AiSummary";
 import { VoteControl, VotingBar, useVoteState } from "../components/Voting";
 import { errorMessage, get, post, del } from "../lib/api";
 import { useEvent } from "../lib/queries";
@@ -140,6 +141,7 @@ export function ProjectPage() {
               </dl>
             </Card>
           ) : null}
+          <AiSummary submissionId={s.id} />
           <Comments submissionId={s.id} eventSlug={e.slug} />
         </div>
         <aside className="flex flex-col gap-4 expanded:sticky expanded:top-20 expanded:self-start">

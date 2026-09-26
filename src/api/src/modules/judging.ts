@@ -14,11 +14,13 @@ import {
   type Comparison,
   type JudgeProgressDto,
 } from "@dogfood/core";
+import { buildAffinityMap } from "../ai/affinity";
 import { many, one, type Tx } from "../db/pool";
 import { audit } from "../lib/audit";
 import { randomToken, sha256Hex } from "../lib/crypto";
 import { HttpError, conflict, forbidden, notFound, unprocessable } from "../lib/errors";
 import { newId } from "../lib/ids";
+import { notify } from "../lib/notify";
 import type { Actor, AppContext } from "../http/context";
 import { route } from "../http/route";
 import {
@@ -763,6 +765,9 @@ export const judgingRoutes = [
           "SELECT judge_id, submission_id FROM conflicts WHERE event_id = $1",
           [event.id],
         );
+        // AI is optional: when enabled it contributes a tie-break only, so the
+        // balance/scope/conflict guarantees and determinism are unchanged.
+        const affinityMap = await buildAffinityMap(app, t, event.id, submissions, judges, conflicts);
         const plan = planAssignments({
           submissions: submissions.map((s) => ({ id: s.id, trackId: s.track_id, memberIds: s.member_ids })),
           judges: judges.map((j) => ({ id: j.user_id, trackIds: j.track_ids })),
@@ -770,6 +775,7 @@ export const judgingRoutes = [
           conflicts: conflicts.map((c) => ({ judgeId: c.judge_id, submissionId: c.submission_id })),
           reviewsPerSubmission: k,
           maxPerJudge: body.maxPerJudge,
+          affinity: affinityMap ? (judgeId, submissionId) => affinityMap.get(`${judgeId}\u0000${submissionId}`) ?? 0 : undefined,
         });
         if (!body.dryRun) {
           for (const p of plan.created) {
@@ -778,6 +784,19 @@ export const judgingRoutes = [
               [newId("asg"), event.id, p.judgeId, p.submissionId, actor.user!.id],
             );
           }
+          const perJudge = new Map<string, number>();
+          for (const p of plan.created) perJudge.set(p.judgeId, (perJudge.get(p.judgeId) ?? 0) + 1);
+          await notify(
+            t,
+            [...perJudge].map(([userId, n]) => ({
+              userId,
+              eventId: event.id,
+              kind: "assignment" as const,
+              title: `${n} new project${n === 1 ? "" : "s"} to review`,
+              body: `${event.name} — your review queue was updated.`,
+              link: `/judge/${event.slug}`,
+            })),
+          );
           if (body.reviewsPerSubmission && body.reviewsPerSubmission !== event.reviews_per_submission) {
             await t.query("UPDATE events SET reviews_per_submission = $2 WHERE id = $1", [event.id, body.reviewsPerSubmission]);
           }
@@ -786,8 +805,8 @@ export const judgingRoutes = [
             action: "assignments.generated",
             entityType: "event",
             entityId: event.id,
-            summary: `Algorithmic routing created ${plan.created.length} assignments (k=${k}, load ${plan.stats.minLoad}–${plan.stats.maxLoad})`,
-            data: { created: plan.created.length, stats: plan.stats, shortfalls: plan.shortfalls.length },
+            summary: `Algorithmic routing created ${plan.created.length} assignments (k=${k}, load ${plan.stats.minLoad}–${plan.stats.maxLoad}${affinityMap ? ", AI-assisted tie-break" : ""})`,
+            data: { created: plan.created.length, stats: plan.stats, shortfalls: plan.shortfalls.length, aiAffinity: Boolean(affinityMap) },
           });
           if (plan.created.length) {
             await app.webhooks.emit(event.id, "judging.assignments_created", { count: plan.created.length }, t);
@@ -831,6 +850,14 @@ export const judgingRoutes = [
           actor.user!.id,
         ]);
         await audit(t, actor, { eventId: event.id, action: "assignment.created", entityType: "assignment", entityId: id, summary: `Manual assignment for "${sub.title}"`, data: body });
+        await notify(t, {
+          userId: body.judgeId,
+          eventId: event.id,
+          kind: "assignment",
+          title: `New project to review: ${sub.title}`,
+          body: `${event.name} — a project was assigned to you.`,
+          link: `/judge/${event.slug}`,
+        });
         return { id };
       });
     },

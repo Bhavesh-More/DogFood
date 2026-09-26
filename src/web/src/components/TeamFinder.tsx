@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import type { TeamDto, TeamFinderDto } from "@dogfood/core";
-import { ApiError, del, errorMessage, get, put } from "../lib/api";
+import { ApiError, del, errorMessage, get, post, put } from "../lib/api";
 import { cx } from "../lib/format";
-import { keys } from "../lib/queries";
+import { keys, useMyTeam } from "../lib/queries";
 import { useSession } from "../lib/session";
 import { relativeTime, useServerNow } from "../lib/time";
 import { Avatar, Button, Card, EmptyState, Icon, Pill, TextArea, TextField, useToast } from "../ui";
@@ -146,10 +146,19 @@ export function RecruitingCard({ team }: { team: TeamDto }) {
 export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true }: { eventId: string; showTeams?: boolean; showSeekers?: boolean }) {
   const q = useTeamFinder(eventId);
   const { user } = useSession();
+  const team = useMyTeam(eventId, Boolean(user));
+  const toast = useToast();
   const now = useServerNow(60_000);
+  const invite = useMutation({
+    mutationFn: (v: { teamId: string; userId: string; name: string }) =>
+      post(`/api/teams/${v.teamId}/invitations`, { userId: v.userId }),
+    onSuccess: (_d, v) => toast.success(`Invitation sent to ${v.name}`),
+    onError: (err) => toast.error(errorMessage(err)),
+  });
   if (q.isPending || !q.data) return null;
   const { seekers, teams, me, open } = q.data;
   const mine = seekers.find((p) => p.userId === user?.id);
+  const canInvite = open && Boolean(team.data) && team.data!.members.length < team.data!.maxSize;
   return (
     <section aria-labelledby="team-finder-heading" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -198,9 +207,22 @@ export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true 
                     <Card variant="filled" radius="lg" className="flex gap-3">
                       <Avatar name={p.name} size={40} />
                       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                        <p className="type-title-sm text-on-surface">
-                          {p.name} <span className="type-body-sm text-on-surface-variant">· {relativeTime(p.updatedAt, now)}</span>
-                        </p>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="type-title-sm text-on-surface">
+                            {p.name} <span className="type-body-sm text-on-surface-variant">· {relativeTime(p.updatedAt, now)}</span>
+                          </p>
+                          {canInvite ? (
+                            <Button
+                              size="xs"
+                              icon="person_add"
+                              loading={invite.isPending && invite.variables?.name === p.name}
+                              disabled={invite.isPending}
+                              onClick={() => invite.mutate({ teamId: team.data!.id, userId: p.userId, name: p.name })}
+                            >
+                              Invite
+                            </Button>
+                          ) : null}
+                        </div>
                         {p.note ? <p className="whitespace-pre-line break-words type-body-md text-on-surface">{p.note}</p> : null}
                         <Skills skills={p.skills} />
                       </div>

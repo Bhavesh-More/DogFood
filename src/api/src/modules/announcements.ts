@@ -3,6 +3,7 @@ import { many, one, type Tx } from "../db/pool";
 import { audit } from "../lib/audit";
 import { notFound } from "../lib/errors";
 import { newId } from "../lib/ids";
+import { notify } from "../lib/notify";
 import type { Actor } from "../http/context";
 import { route } from "../http/route";
 import { isEventOrganizer, judgeScope, loadManagedEvent, loadVisibleEvent, type EventRow } from "./access";
@@ -31,11 +32,11 @@ export async function visibleAudiences(tx: Tx, actor: Actor, event: EventRow): P
 }
 
 /** People who get a copy in the local mail outbox for an audience. */
-async function recipients(tx: Tx, eventId: string, audience: Audience): Promise<{ email: string }[]> {
-  const participants = `SELECT u.email FROM registrations r JOIN users u ON u.id = r.user_id WHERE r.event_id = $1 AND u.disabled_at IS NULL`;
-  const judges = `SELECT u.email FROM event_judges j JOIN users u ON u.id = j.user_id WHERE j.event_id = $1 AND u.disabled_at IS NULL`;
+async function recipients(tx: Tx, eventId: string, audience: Audience): Promise<{ id: string; email: string }[]> {
+  const participants = `SELECT u.id, u.email FROM registrations r JOIN users u ON u.id = r.user_id WHERE r.event_id = $1 AND u.disabled_at IS NULL`;
+  const judges = `SELECT u.id, u.email FROM event_judges j JOIN users u ON u.id = j.user_id WHERE j.event_id = $1 AND u.disabled_at IS NULL`;
   const sql = audience === "participants" ? participants : audience === "judges" ? judges : `${participants} UNION ${judges}`;
-  return many<{ email: string }>(tx, sql, [eventId]);
+  return many<{ id: string; email: string }>(tx, sql, [eventId]);
 }
 
 async function loadForManagement(tx: Tx, actor: Actor, id: string) {
@@ -91,6 +92,17 @@ export const announcementRoutes = [
             `${body.body}\n\n— ${event.name} organizers\n${app.config.publicUrl}/e/${event.slug}`,
           ]);
         }
+        await notify(
+          t,
+          to.map((r) => ({
+            userId: r.id,
+            eventId: event.id,
+            kind: "announcement" as const,
+            title: body.title,
+            body: body.body,
+            link: `/e/${event.slug}`,
+          })),
+        );
         await audit(t, actor, {
           eventId: event.id,
           action: "announcement.published",

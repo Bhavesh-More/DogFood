@@ -40,6 +40,7 @@ const VerifyPage = named(() => import("./pages/Verify"), "VerifyPage");
 const EmbedPage = named(() => import("./pages/Embed"), "EmbedPage");
 const ApiDocsPage = named(() => import("./pages/ApiDocs"), "ApiDocsPage");
 const AccountPage = named(() => import("./pages/Account"), "AccountPage");
+const NotificationsPage = named(() => import("./pages/Notifications"), "NotificationsPage");
 
 export const router = createBrowserRouter([
   { path: "/embed/:slug", element: <EmbedPage /> },
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
       { path: "invite/:token", element: <InvitePage /> },
       { path: "judge-invite/:token", element: <JudgeInvitePage /> },
       { path: "dashboard", element: <DashboardPage /> },
+      { path: "notifications", element: <NotificationsPage /> },
       { path: "judge", element: <JudgeHomePage /> },
       { path: "judge/:slug", element: <JudgeQueuePage /> },
       { path: "judge/:slug/a/:assignmentId", element: <ScorePage /> },

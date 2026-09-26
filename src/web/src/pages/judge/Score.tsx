@@ -6,6 +6,7 @@ import { ApiError, errorMessage, get, post, put } from "../../lib/api";
 import { fmt } from "../../lib/format";
 import { useEvent } from "../../lib/queries";
 import { formatUtc, useServerNow } from "../../lib/time";
+import { JudgeFeedback } from "../../components/JudgeFeedback";
 import { Banner, Button, Card, Cover, Dialog, ErrorState, Icon, LinkButton, PageLoader, Pill, ScoreSlider, TextArea, TextField, useToast } from "../../ui";
 
 interface AssignmentView {
@@ -169,6 +170,10 @@ function ScoreForm({ slug, assignmentId, event: e, view }: { slug: string; assig
               />
             ))}
             <TextArea label="Private notes for organizers (optional)" rows={3} value={comment} onChange={(ev) => setComment(ev.target.value)} disabled={locked} maxLength={5000} />
+            <JudgeFeedback
+              assignmentId={assignmentId}
+              onUse={(text) => setComment((prev) => (prev ? `${prev}\n\n${text}` : text))}
+            />
             {save.error instanceof ApiError && save.error.code === "INVALID_BALLOT" ? <Banner tone="error">{save.error.message}</Banner> : null}
             <div className="flex flex-wrap gap-2 pt-1">
               <Button variant="tonal" icon="sync" onClick={() => save.mutate(false)} loading={save.isPending && !save.variables} disabled={locked}>

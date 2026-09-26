@@ -306,10 +306,89 @@ export interface AnnouncementDto {
   updatedAt: string;
 }
 
+export type NotificationKind = "announcement" | "assignment" | "invite";
+
+export interface NotificationDto {
+  id: string;
+  eventId: string | null;
+  kind: NotificationKind;
+  title: string;
+  body: string;
+  link: string | null;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationsDto {
+  items: NotificationDto[];
+  unread: number;
+}
+
 export interface TeamFinderDto {
   /** Whether new posts and joins are still possible (roster open). */
   open: boolean;
   me: { onTeam: boolean; posted: boolean; canPost: boolean };
   seekers: { userId: string; name: string; skills: string[]; note: string; updatedAt: string }[];
   teams: { teamId: string; name: string; members: string[]; openSpots: number; lookingFor: string }[];
+}
+
+/* ---------------------------------- AI (optional sidecar) ----------------- */
+
+export interface AiStatusDto {
+  enabled: boolean;
+  service: "disabled" | "up" | "down";
+  device: string;
+  classifierBackend: string;
+  generatorBackend: string;
+  classifierModel: string;
+  summaryModel: string;
+  feedbackModel: string;
+}
+
+export interface AiClassificationDto {
+  submissionId: string;
+  tags: string[];
+  primaryTag: string;
+  confidence: number;
+  source: string;
+  model: string;
+  updatedAt: string;
+}
+
+export interface AiExpertiseDto {
+  judgeId: string;
+  tags: string[];
+  source: string;
+  model: string;
+}
+
+export interface AiAffinityDto {
+  judgeId: string;
+  submissionId: string;
+  score: number;
+}
+
+export interface AiMatrixDto {
+  projects: AiClassificationDto[];
+  judges: AiExpertiseDto[];
+  pairs: AiAffinityDto[];
+}
+
+export interface AiSummaryDto {
+  enabled: boolean;
+  submissionId: string;
+  summary: string | null;
+  tags: string[];
+  primaryTag: string | null;
+  model: string | null;
+  source: string | null;
+  generatedAt: string | null;
+}
+
+export interface AiFeedbackDto {
+  assignmentId: string;
+  draft: string;
+  model: string;
+  source: string;
+  generatedAt: string;
 }

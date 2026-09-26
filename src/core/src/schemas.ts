@@ -306,6 +306,11 @@ export const recruitingInput = z.object({
   lookingFor: z.string().trim().min(3).max(200).nullable(),
 });
 
+/** Invite one specific participant to a team; they receive an in-app notification. */
+export const invitationInput = z.object({
+  userId: z.string().trim().min(1),
+});
+
 export const ANNOUNCEMENT_AUDIENCES = ["everyone", "participants", "judges"] as const;
 
 const announcementShape = {

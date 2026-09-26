@@ -44,6 +44,12 @@ export interface AssignmentInput {
   reviewsPerSubmission: number;
   /** Optional hard cap on assignments per judge. */
   maxPerJudge?: number;
+  /**
+   * Optional AI/expertise affinity in [0, 1]. Used only as a tie-break between
+   * judges that already have the same load, so the hard guarantees (scope,
+   * conflicts, balance, determinism) are never weakened. Higher wins.
+   */
+  affinity?: (judgeId: string, submissionId: string) => number;
 }
 
 export interface AssignmentShortfall {
@@ -109,8 +115,8 @@ export function planAssignments(input: AssignmentInput): AssignmentPlan {
     const pool = eligible
       .get(s.id)!
       .filter((j) => !assigned.has(key(j.id, s.id)) && (loads.get(j.id) ?? 0) < cap)
-      .map((j) => ({ j, load: loads.get(j.id) ?? 0, h: fnv1a(`${j.id}:${s.id}`) }))
-      .sort((a, b) => a.load - b.load || a.h - b.h || (a.j.id < b.j.id ? -1 : 1))
+      .map((j) => ({ j, load: loads.get(j.id) ?? 0, aff: input.affinity?.(j.id, s.id) ?? 0, h: fnv1a(`${j.id}:${s.id}`) }))
+      .sort((a, b) => a.load - b.load || b.aff - a.aff || a.h - b.h || (a.j.id < b.j.id ? -1 : 1))
       .map((x) => x.j);
     for (const j of pool) {
       if (need <= 0) break;

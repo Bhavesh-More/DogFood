@@ -220,6 +220,17 @@ const publicSteps: TourStep[] = [
   },
   {
     as: null,
+    route: `/e/${SLUGS.judging}/p/${SUBMISSIONS.first}`,
+    element: byTour("ai-summary"),
+    popover: {
+      title: "AI project summary (optional)",
+      description:
+        "When the optional AI sidecar is enabled, each project gets a locally generated summary and topic tags, shown with a Gemini-style shimmer while it loads. It is advisory and never part of the score.",
+      side: "bottom",
+    },
+  },
+  {
+    as: null,
     route: `/e/${SLUGS.archived}/results`,
     element: at("main h1", "Results"),
     popover: {
@@ -370,6 +381,28 @@ const participantSteps: TourStep[] = [
       title: "Your events",
       description:
         "Open an event to manage the team and the submission for it.",
+      side: "bottom",
+    },
+  },
+  {
+    as: ACCOUNTS.participant,
+    route: "/dashboard",
+    element: byTour("notifications"),
+    popover: {
+      title: "Notifications",
+      description:
+        "Announcements, new judging work and team invitations arrive here. The bell shows how many are unread.",
+      side: "bottom",
+    },
+  },
+  {
+    as: ACCOUNTS.participant,
+    route: "/notifications",
+    element: at("main h1", "Notifications"),
+    popover: {
+      title: "Your notification feed",
+      description:
+        "Click a notification to open what it is about — an event, a review queue or a team invite — and mark it read. Clear them all at once with “Mark all as read”.",
       side: "bottom",
     },
   },
@@ -726,8 +759,18 @@ const organizerSteps: TourStep[] = [
     element: at("h3", "Assignments"),
     popover: {
       title: "Assignments",
+      description: "The full assignment matrix, coverage per project and any gaps — with manual add and remove.",
+      side: "bottom",
+    },
+  },
+  {
+    as: ACCOUNTS.organizer,
+    route: `${organize(SLUGS.judging)}/judges`,
+    element: byTour("ai-routing"),
+    popover: {
+      title: "AI classification & routing (optional)",
       description:
-        "The full assignment matrix, coverage per project and any gaps — with manual add and remove.",
+        "With the optional AI sidecar, projects are tagged from their problem statement and judges from their expertise (Laya, with a deterministic fallback). The affinity it produces is only a tie-break, so scope, conflicts and load balancing are unchanged.",
       side: "bottom",
     },
   },
@@ -941,8 +984,17 @@ const judgeSteps: TourStep[] = [
     element: at("textarea"),
     popover: {
       title: "Private notes",
+      description: "Optional notes for the organizers. “Save progress” keeps a draft; “Submit ballot” completes the review (and audits the change).",
+      side: "left",
+    },
+  },
+  {
+    as: ACCOUNTS.judge,
+    element: byTour("ai-feedback"),
+    popover: {
+      title: "AI writing assist (optional)",
       description:
-        "Optional notes for the organizers. “Save progress” keeps a draft; “Submit ballot” completes the review (and audits the change).",
+        "With the optional AI sidecar, the judge can draft a feedback comment from their rubric scores (Gemma 4, effective 4B), edit it, and insert it into their private notes. It never writes to the ballot.",
       side: "left",
     },
   },

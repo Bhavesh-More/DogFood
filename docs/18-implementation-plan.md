@@ -258,3 +258,35 @@ Re-verified on a fresh `docker compose` build: 218/218 Vitest, 17/17 Playwright,
 | Theme | driver.js popovers restyled with the M3 colour roles (light and dark) |
 
 Verified against the production container: full demo 94/94 steps, quick tours (organizer 40, judge 17, admin 48) with zero console errors, no 4xx/5xx and no page errors; 17/17 Playwright, 38/38 acceptance (T4), lint and types clean.
+
+### Iteration 6 — optional AI sidecar (classification, routing assist, summaries, feedback)
+
+Reconciled against `docs/08 §5` ("AI is not required as an embedded feature"),
+`docs/04 §2` (air-gapped, single command) and the Docker/Apple-Silicon GPU
+reality. AI is **modified into an optional, independent service**, never part of
+`docker compose up`.
+
+| Area | Change |
+| :--- | :--- |
+| AI service | `src/ai` FastAPI app: `/health`, `/v1/classify`, `/v1/expertise`, `/v1/affinity`, `/v1/summary`, `/v1/feedback`; deterministic `heuristic` default, optional `laya` and `ollama`/Gemma 4 backends; device (`cpu/cuda/mps`) and models by env; offline (`HF_HUB_OFFLINE=1`), no runtime downloads |
+| Container | compose profile `ai` + multi-stage `Dockerfile` (`--build-arg INSTALL_MODELS=1`); app `depends_on ai: required:false`; `ai-models` volume for pre-provisioned weights |
+| Portal | `AI_ENABLED` (default false) + `AI_SERVICE_URL`; `src/api/src/ai/client.ts` with timeout and `AiUnavailable`; migration `006_ai.sql`; `/api/ai/*` routes; graceful 503/disabled |
+| Routing | `planAssignments` gained an optional `affinity` **tie-break** (after load, before the stable hash); AI never weakens scope/conflict/balance/determinism |
+| Web | Gemini-style `ai-shimmer` skeleton; `AiSummary` (summary + tags) on the project page; `JudgeFeedback` writer on the score page; `AiRoutingPanel` (classify + affinity) on the organizer Judges page. All hidden unless enabled |
+| Commands | `pnpm ai:install|dev|test|build|up|down|logs`, `pnpm services:up|down|logs|reset|ps` |
+| Tests | `tests/unit/ai.test.ts` (tie-break), `src/ai/tests/*` (pytest, 9), `tests/integration/ai.test.ts` (fake sidecar + disabled fallback) |
+| Docs | `docs/20-ai-service.md` (reconciliation + design), README, ARCHITECTURE, DATA-MODEL, JUDGING, THREAT-MODEL, API reference (auto via OpenAPI) |
+
+Verified: `python3 -m pytest` 9/9; Vitest 230/230 (107 unit + 123 integration); Playwright 17/17; acceptance 38/38 T4 — all with AI **on**; AI disabled path covered by tests; both containers build and run (`AI_ENABLED=true docker compose --profile ai up -d --build --wait`, all healthy).
+
+### Iteration 7 — in-app notifications and targeted team invitations
+| Area | Change |
+| :--- | :--- |
+| Notifications | New `notifications` table (migration `007`) and `modules/notifications.ts`: `GET /api/notifications` (list + unread count), `POST /api/notifications/:id/read`, `POST /api/notifications/read-all`. Reads always filter `user_id = <caller>` |
+| Emission | `lib/notify.ts`'s `notify(tx, …)` inserts rows in the same transaction as the change. Announcements notify their audience; algorithmic and manual routing notify each judge; team invitations notify the invitee |
+| Team finder | The board's **Invite** action now sends a targeted invitation (`POST /api/teams/:teamId/invitations`) — a single-use link delivered to the invitee as a notification — instead of showing the captain a link to copy. Fixes the read-only board where a seeker showed up but could not be invited |
+| Web | Header bell (`Shell.tsx`) with an unread badge and `pages/Notifications.tsx`; clicking an item marks it read and opens its target; "Mark all as read" |
+| Docs | README, AGENTS.md §10b, DATA-MODEL; guided-tour steps for the bell and the feed; API reference auto (OpenAPI) |
+| Tests | `tests/integration/notifications.test.ts` (5); the team-finder and notifications Playwright journeys |
+
+Re-verified on a fresh `docker compose` build: 235/235 Vitest (107 unit + 128 integration), 19/19 Playwright, lint and types clean.

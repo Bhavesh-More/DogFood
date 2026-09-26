@@ -82,9 +82,15 @@ Also built in:
   `.ics` file, with a reminder one hour before the hard deadline.
 - **Announcements:** organizers post news to everyone, to participants
   only, or to judges only. Posts can be pinned. They show on the event's
-  News tab, are copied to the local mail outbox, and fire a webhook.
+  News tab, are copied to the local mail outbox, fire a webhook, and land
+  in the audience's notification feed.
+- **Notifications:** an in-app feed behind the header bell. Announcements,
+  new judging work and team invitations all arrive here with an unread
+  count; clicking one opens the event, review queue or invitation.
 - **Team finder:** solo participants list their skills, and teams list
-  their open spots and what they need. Emails are never shown.
+  their open spots and what they need. A team member can invite someone on
+  the board and they receive the invitation as a notification. Emails are
+  never shown.
 
 Every screen works at phone width (navigation bar and compact layouts),
 in light and dark themes. The theme switch has two states, light and
@@ -101,6 +107,35 @@ participants form teams and submit, judges score and compare, admins manage
 accounts and read the audit trail — then restore your original session.
 The tour only navigates and highlights; it never changes your data.
 
+### Optional AI sidecar
+
+A second, **independent** service (`src/ai`) adds AI when you want it —
+project classification, expertise-aware routing, project summaries and a
+judge feedback writer — and is **not started** by the default command.
+
+```bash
+docker compose up --build                       # core platform, offline, no AI
+docker compose --profile ai up --build          # core + AI sidecar
+docker compose --profile ai up -d --build       # (same, detached)
+```
+
+- **Offline by default.** With `AI_ENABLED=false` the portal is identical to
+  before and no AI UI is shown. The sidecar's default backend is deterministic
+  and needs no weights.
+- **Model-backed and device-aware.** Set `AI_CLASSIFIER_BACKEND=laya` and
+  `AI_GENERATOR_BACKEND=ollama` for Laya classification and Gemma 4 E2B/E4B
+  summaries/feedback. `AI_DEVICE` chooses `cpu | cuda | mps`. Note: Docker on
+  Apple Silicon has no Metal passthrough, so `mps` applies when the service
+  runs natively on macOS; inside containers use `cpu` or `cuda`.
+- **Advisory only.** Routing affinity is a tie-break; summaries and feedback
+  never affect scores, normalization, published results or any claimed tier.
+
+Commands: `pnpm ai:dev`, `pnpm ai:test`, `pnpm ai:up`, `pnpm ai:down`,
+`pnpm services:up` (all services), `pnpm services:down`, `pnpm services:reset`.
+See [docs/20-ai-service.md](docs/20-ai-service.md) for the design and
+[docs/21-running-and-testing.md](docs/21-running-and-testing.md) for the
+step-by-step build/run/test runbook.
+
 ## Tier coverage
 
 | Tier | What's in it | Acceptance |
@@ -108,7 +143,7 @@ The tour only navigates and highlights; it never changes your data.
 | **T1** | Five-role RBAC; events with tracks, prizes and custom questions; registration; teams with single-use, expiring, revocable invites; hard UTC deadline (server clock plus DB trigger, per-team audited extensions); public gallery with search, tags and tracks | 11/11 |
 | **T2** | Judge invites with track scopes; conflict-aware, balanced, deterministic routing (dry run first); weighted rubric; RLS judge isolation; progress tracking; Z-score normalization with Min-Max fallback (n < 5) and invariant checks; CSV exports with formula-injection protection | 8/8 |
 | **T3** | Open, email-verified and authenticated voting; single or quadratic style; anti-Sybil flagging and review; tallies hidden until close; randomized per-viewer order; comments; hash-chained, verifiable audit log | 8/8 |
-| **T4** | REST API with a generated OpenAPI 3.1 document (116 operations); personal API tokens; signed webhooks with retries; Ed25519-signed records with public verification; embeddable widget; event bundle import/export; bulk CSV registration | 7/7 |
+| **T4** | REST API with a generated OpenAPI 3.1 document (130 operations, incl. the optional AI endpoints); personal API tokens; signed webhooks with retries; Ed25519-signed records with public verification; embeddable widget; event bundle import/export; bulk CSV registration | 7/7 |
 | **Bonus** | Normalization proof ([JUDGING.md](JUDGING.md)); pairwise Bradley–Terry ranking; threat model ([THREAT-MODEL.md](THREAT-MODEL.md)); API-first | 4/4 |
 
 ## Documentation

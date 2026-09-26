@@ -1,9 +1,10 @@
-import { isBeforeDeadline, teamInput, type InviteDto, type TeamDto } from "@dogfood/core";
+import { invitationInput, isBeforeDeadline, teamInput, type InviteDto, type TeamDto } from "@dogfood/core";
 import { many, mapSeq, one, type Tx } from "../db/pool";
 import { audit } from "../lib/audit";
 import { randomToken, sha256Hex } from "../lib/crypto";
 import { HttpError, conflict, forbidden, notFound } from "../lib/errors";
 import { newId } from "../lib/ids";
+import { notify } from "../lib/notify";
 import type { Actor, AppContext } from "../http/context";
 import { route } from "../http/route";
 import { findEvent, judgeScope, loadManagedEvent, loadVisibleEvent, teamOf, type EventRow } from "./access";
@@ -184,13 +185,63 @@ export const teamRoutes = [
   }),
 
   route({
+    method: "post",
+    path: "/api/teams/:teamId/invitations",
+    summary: "Invite one specific person to your team (they get an in-app notification)",
+    description: "Creates a single-use invite link and delivers it to the invitee as a notification. Fails with 409 if they already have a team or judge this event.",
+    tags: ["Teams"],
+    auth: "team:manage",
+    body: invitationInput,
+    status: 201,
+    async handler({ app, params, body, actor, tx }) {
+      return tx(async (t): Promise<InviteDto> => {
+        const { team, event } = await loadMyTeam(t, actor, params.teamId!);
+        assertRosterOpen(app, event, team.deadline_extension_until);
+        const size = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM team_members WHERE team_id = $1", [team.id]);
+        if ((size?.n ?? 0) >= event.max_team_size) throw conflict("Your team is already full", "TEAM_FULL");
+        const target = await one<{ id: string; name: string }>(
+          t,
+          "SELECT id, name FROM users WHERE id = $1 AND disabled_at IS NULL",
+          [body.userId],
+        );
+        if (!target) throw notFound("Person");
+        if (await teamOf(t, target.id, event.id)) throw conflict("They are already on a team in this event", "ALREADY_ON_TEAM");
+        if (await judgeScope(t, target.id, event.id)) throw conflict("They are judging this event", "JUDGE_CONFLICT");
+        const token = randomToken(24);
+        const id = newId("inv");
+        const row = await one<{ expires_at: string }>(
+          t,
+          `INSERT INTO team_invites (id, team_id, token_hash, created_by, expires_at)
+           VALUES ($1, $2, $3, $4, $5) RETURNING expires_at`,
+          [id, team.id, sha256Hex(token), actor.user!.id, new Date(app.now() + INVITE_TTL_HOURS * 3_600_000).toISOString()],
+        );
+        await notify(t, {
+          userId: target.id,
+          eventId: event.id,
+          kind: "invite",
+          title: `${actor.user!.name} invited you to join "${team.name}"`,
+          body: `You're invited to join ${team.name} for ${event.name}. Open the invitation to accept.`,
+          link: `/invite/${token}`,
+        });
+        await audit(t, actor, {
+          eventId: event.id,
+          action: "team.invited",
+          entityType: "team_invite",
+          entityId: id,
+          summary: `Invited ${target.name} to "${team.name}"`,
+        });
+        return { id, token, url: inviteUrl(app, token), expiresAt: row!.expires_at, usedAt: null };
+      });
+    },
+  }),
+
+  route({
     method: "get",
     path: "/api/teams/:teamId/invites",
     summary: "List your team's invite links (tokens are never shown again)",
     tags: ["Teams"],
     auth: "team:manage",
-    async handler({ params, actor, tx }) {
-      return tx(async (t) => {
+    async handler({ params, actor, tx }) {      return tx(async (t) => {
         const { team } = await loadMyTeam(t, actor, params.teamId!);
         return many(
           t,

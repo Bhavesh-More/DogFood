@@ -2,6 +2,7 @@ import { Suspense, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import type { Role } from "@dogfood/core";
 import { cx } from "../lib/format";
+import { useNotifications } from "../lib/queries";
 import { useLogout, useSession } from "../lib/session";
 import { useTheme } from "../lib/theme";
 import { TourMenu } from "../tour/TourLauncher";
@@ -70,6 +71,30 @@ function ContextFab() {
     <Link to="/events" aria-label="Find a hackathon" title="Find a hackathon" data-tour="context-fab" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 active:rounded-xl">
       <Icon name="rocket_launch" size={26} className="relative z-[1]" />
     </Link>
+  );
+}
+
+function NotificationBell() {
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const q = useNotifications(Boolean(user));
+  if (!user) return null;
+  const unread = q.data?.unread ?? 0;
+  return (
+    <button
+      type="button"
+      onClick={() => navigate("/notifications")}
+      aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+      data-tour="notifications"
+      className="focus-ring relative grid h-10 w-10 place-items-center rounded-full text-on-surface-variant hover:bg-on-surface/8"
+    >
+      <Icon name="notifications" size={24} />
+      {unread ? (
+        <span className="absolute right-0.5 top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-error px-1 type-label-sm text-on-error">
+          {unread > 9 ? "9+" : unread}
+        </span>
+      ) : null}
+    </button>
   );
 }
 
@@ -185,6 +210,7 @@ export function Shell() {
           <span data-tour="offline-badge" className="hidden items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1 type-label-md text-on-surface-variant lg:inline-flex" title="Everything runs locally; no external services">
             <Icon name="cloud_off" size={16} /> Offline-first
           </span>
+          <NotificationBell />
           <UserMenu />
         </header>
         <main id="main" key={location.pathname.split("/").slice(0, 3).join("/")} className="mx-auto w-full max-w-[1400px] px-4 pb-28 pt-2 medium:px-8 medium:pb-12">

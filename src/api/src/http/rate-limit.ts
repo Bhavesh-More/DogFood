@@ -56,4 +56,6 @@ export const LIMITS = {
   comment: { capacity: 10, perMinute: 6 },
   upload: { capacity: 20, perMinute: 20 },
   write: { capacity: 120, perMinute: 120 },
+  ai: { capacity: 20, perMinute: 20 },
+  aiGenerate: { capacity: 6, perMinute: 6 },
 } satisfies Record<string, BucketSpec>;

@@ -26,9 +26,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      # Optional AI sidecar (profile `ai`). required:false keeps `docker
+      # compose up` working when the profile is not enabled.
+      ai:
+        condition: service_started
+        required: false
     environment:
       DATABASE_URL: postgres://dogfood:${POSTGRES_PASSWORD:-dogfood-local-only}@db:5432/dogfood
       PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8000}
+      # Optional AI. Off by default; the app degrades gracefully either way.
+      AI_ENABLED: ${AI_ENABLED:-false}
+      AI_SERVICE_URL: ${AI_SERVICE_URL:-http://ai:8080}
+      AI_SERVICE_KEY: ${AI_SERVICE_KEY:-}
+      AI_TIMEOUT_MS: ${AI_TIMEOUT_MS:-5000}
       # Leave empty to generate a random secret on first boot (stored in the DB).
       APP_SECRET: ${APP_SECRET:-}
       SEED_ON_BOOT: ${SEED_ON_BOOT:-true}
@@ -42,6 +52,41 @@ services:
       - uploads:/app/data/uploads
     # Lets webhooks reach receivers running on the host (e.g. the acceptance runner).
     extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [backend, edge]
+    restart: unless-stopped
+
+  # Optional AI sidecar. Independent and offline-capable; never started by
+  # plain `docker compose up`. Enable with `docker compose --profile ai up`.
+  # See docs/20-ai-service.md for the device/model caveats.
+  ai:
+    profiles: [ai]
+    build:
+      context: ./src/ai
+      args:
+        INSTALL_MODELS: ${AI_INSTALL_MODELS:-0}
+    image: dogfood-ai:local
+    environment:
+      AI_DEVICE: ${AI_DEVICE:-auto}
+      AI_CLASSIFIER_BACKEND: ${AI_CLASSIFIER_BACKEND:-heuristic}
+      AI_GENERATOR_BACKEND: ${AI_GENERATOR_BACKEND:-heuristic}
+      AI_CLASSIFIER_MODEL: ${AI_CLASSIFIER_MODEL:-convaiinnovations/laya}
+      AI_SUMMARY_MODEL: ${AI_SUMMARY_MODEL:-gemma-4-E2B}
+      AI_FEEDBACK_MODEL: ${AI_FEEDBACK_MODEL:-gemma-4-E4B}
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      AI_SERVICE_KEY: ${AI_SERVICE_KEY:-}
+      AI_MAX_BATCH: ${AI_MAX_BATCH:-64}
+      HF_HOME: /models
+      # Offline by default; override to 0 only for one-time provisioning.
+      HF_HUB_OFFLINE: ${HF_HUB_OFFLINE:-1}
+      TRANSFORMERS_OFFLINE: ${TRANSFORMERS_OFFLINE:-1}
+    volumes:
+      # Pre-provisioned weights only; the image never downloads at runtime.
+      - ai-models:/models
+    ports:
+      - "${AI_PORT:-8080}:8080"
+    extra_hosts:
+      # Lets the Gemma/Ollama backend reach an Ollama running on the host.
       - "host.docker.internal:host-gateway"
     networks: [backend, edge]
     restart: unless-stopped
@@ -74,3 +119,4 @@ volumes:
   db-data:
   uploads:
   devdb-data:
+  ai-models:

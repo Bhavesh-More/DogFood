@@ -3,6 +3,7 @@ import path from "node:path";
 import express, { type Express } from "express";
 import type { Config } from "./config";
 import type { Db } from "./db/pool";
+import { createAiClient } from "./ai/client";
 import { generateSigningKeyPem, loadSigningKeys, randomToken, type SigningKeys } from "./lib/crypto";
 import { notFound } from "./lib/errors";
 import type { AppContext } from "./http/context";
@@ -10,11 +11,13 @@ import { authenticate, csrfGuard, errorHandler, globalRateLimit, requestLogger, 
 import { RateLimiter } from "./http/rate-limit";
 import { mountRoutes, openApiDocument, route, type RouteDef } from "./http/route";
 import { adminRoutes } from "./modules/admin";
+import { aiRoutes } from "./modules/ai";
 import { announcementRoutes } from "./modules/announcements";
 import { teamFinderRoutes } from "./modules/teamfinder";
 import { authRoutes } from "./modules/auth";
 import { eventRoutes } from "./modules/events";
 import { judgingRoutes } from "./modules/judging";
+import { notificationRoutes } from "./modules/notifications";
 import { platformRoutes } from "./modules/platform";
 import { recordRoutes } from "./modules/records";
 import { resultRoutes } from "./modules/results";
@@ -56,11 +59,13 @@ export function allRoutes(): RouteDef[] {
   return [
     ...authRoutes,
     ...eventRoutes,
+    ...aiRoutes,
     ...announcementRoutes,
     ...teamRoutes,
     ...teamFinderRoutes,
     ...submissionRoutes,
     ...judgingRoutes,
+    ...notificationRoutes,
     ...resultRoutes,
     ...votingRoutes,
     ...adminRoutes,
@@ -86,6 +91,7 @@ export async function createApp({ config, db, now = Date.now }: CreateAppOptions
     now,
     limiter: new RateLimiter(now),
     webhooks: createWebhookSink(db),
+    ai: createAiClient(config),
   };
 
   const app = express();

@@ -63,8 +63,8 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
-  - **218/218 Vitest tests**, run with `pnpm test`.
-  - **17/17 Playwright journeys.**
+  - **235/235 Vitest tests** (107 unit + 128 integration), run with `pnpm test`.
+  - **19/19 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
   - Lint and type-check are clean.
@@ -669,6 +669,21 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
   - `teams.looking_for` holds the recruiting text; `null` means the team
     is not recruiting.
   - UI: `components/TeamFinder.tsx`, shown on the team page.
+- **Notifications (in-app feed).**
+  - `modules/notifications.ts` and migration `007`.
+  - `lib/notify.ts`'s `notify(tx, …)` inserts rows in the same transaction
+    as the change. Emitters: announcements (audience), judge assignments
+    (auto routing and manual), and `POST /api/teams/:teamId/invitations`
+    (a targeted team invitation).
+  - Routes: `GET /api/notifications`, `POST
+    /api/notifications/:id/read`, `POST /api/notifications/read-all`.
+  - Reads always filter `user_id = <caller>`; the table carries no RLS of
+    its own (like `announcements`), so **always scope notification queries
+    to the caller**.
+  - UI: the header bell (`Shell.tsx`) with an unread badge and
+    `pages/Notifications.tsx`.
+  - The team finder's **Invite** button now sends a targeted invitation
+    (link + notification) rather than asking the captain to copy a link.
 
 ## 11. Known limitations and next ideas
 
@@ -708,3 +723,55 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
    test tokens.
 5. Make small commits and update the docs as you go. Open the PR only when
    the user asks, and target the repository the user names.
+
+---
+
+## 13. Optional AI sidecar (`src/ai`)
+
+AI is **optional and independent** — see `docs/20-ai-service.md` for why
+(`docs/08 §5`: AI is not required as an embedded feature; `docs/04 §2`:
+air-gapped, single command). Rules:
+
+- **Never** make the core stack depend on it. `docker compose up` must stay
+  single-command, fast and offline; AI runs only under the `ai` profile.
+- `AI_ENABLED` defaults to **false**. With it off, no AI route is called and no
+  AI UI renders; the portal must be byte-for-byte as before.
+- AI is **advisory**: routing affinity is only a tie-break in
+  `planAssignments` (after load, before the stable hash). It must never weaken
+  scope, conflicts, balance or determinism, and never feed normalization,
+  published results or any claimed tier.
+- The service downloads **nothing at runtime** (`HF_HUB_OFFLINE=1`). Weights are
+  baked in (`--build-arg INSTALL_MODELS=1`) or mounted at `/models`; Gemma is
+  served via a local Ollama.
+- Device is env-configurable: `AI_DEVICE=cpu|cuda|mps`. **Docker on Apple
+  Silicon has no Metal passthrough**, so `mps` only applies when the service
+  runs natively on macOS; in containers use `cpu` or `cuda`.
+
+Files: `src/ai/**` (FastAPI + backends + pytest), `src/api/src/ai/*` (client,
+affinity), `src/api/src/modules/ai.ts`, `src/api/migrations/006_ai.sql`,
+`src/web/src/components/Ai*.tsx`. Commands: `pnpm ai:dev`, `pnpm ai:test`,
+`pnpm ai:up`, `pnpm ai:down`, `pnpm services:up`.
+
+## 14. When you add a feature — update these (required)
+
+Every new user-facing feature must land with all of the following, in the same
+branch:
+
+1. **Tour** — add/adjust steps in `src/web/src/tour/steps.ts` (role tours and
+   `FULL_DEMO`); keep the full demo at 90+ steps covering every screen. Verify
+   with a Playwright walk (see the tour verification pattern).
+2. **API reference** — add the endpoint through `route()` so
+   `/api/openapi.json` and `/api-docs` regenerate automatically;
+   `platform.test.ts` asserts every route is documented.
+3. **README** — a short section or bullet, plus any new command.
+4. **AGENTS.md** — this file: update §2 status/counts and add the feature here
+   if it introduces a new subsystem or rule.
+5. **docs/18** — an execution-log entry for the iteration.
+6. **Domain docs** — ARCHITECTURE / DATA-MODEL / JUDGING / THREAT-MODEL as
+   applicable.
+7. **Tests** — unit for pure logic, integration for API/RLS, pytest for the AI
+   service, and (for UI) Playwright. Run `pnpm lint`, `pnpm check-types`,
+   `pnpm test`, `pnpm test:e2e`, and the acceptance runner; never claim a tier
+   whose checks fail.
+8. **Offline + one command** — no CDNs, no runtime downloads, no external
+   calls; keep `docker compose up --build` working.

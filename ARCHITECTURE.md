@@ -246,3 +246,24 @@ set `TEST_DATABASE_URL` to point at one. `pnpm test:acceptance` writes
 | Bundled API (esbuild) | A tiny runtime image, fast cold start, no install step at deploy time. |
 | In-memory rate limiter | Correct for a single node. A documented limitation for multi-node deployments. |
 | Local mail outbox | Email-gated voting works offline. An SMTP relay can be added later without schema changes. |
+
+## Optional AI sidecar
+
+An **independent** FastAPI service (`src/ai`) can be started with the compose
+profile `ai`. It is never part of `docker compose up`, so the core stack stays
+single-command, fast and offline. The API talks to it through
+`src/api/src/ai/client.ts` (hard timeout, `AiUnavailable` on failure).
+Everything degrades to a deterministic path when the sidecar is off or down:
+
+- **Classification / expertise** — cached in `project_classifications` and
+  `judge_expertise`; used only for display and a routing tie-break.
+- **Routing** — `planAssignments` takes an optional `affinity(judge, project)`
+  used **after load, before the stable hash** in its sort key. Scope, conflicts,
+  team membership, `maxPerJudge` and balance are unchanged; with AI off the plan
+  is identical to before.
+- **Summaries / feedback** — cached rows; summaries are public, feedback is
+  owner-only. Neither touches ballots or normalization.
+
+Backends: deterministic `heuristic` (default), `laya` (classification) and
+`ollama`/Gemma 4 (`summary`, `feedback`). Device (`cpu|cuda|mps`) and models are
+env-configurable. See `docs/20-ai-service.md`.

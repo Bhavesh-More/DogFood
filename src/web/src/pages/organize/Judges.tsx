@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { JudgeProgressDto, SubmissionDto } from "@dogfood/core";
+import { AiRoutingPanel } from "../../components/AiRoutingPanel";
 import { BarList } from "../../components/charts/Charts";
 import { errorMessage, get, post, patch, del } from "../../lib/api";
 import { formatDateTime, relativeTime, useServerNow } from "../../lib/time";
@@ -168,6 +169,8 @@ export function JudgesPage() {
           </details>
         ) : null}
       </section>
+
+      <AiRoutingPanel eventId={e.id} />
 
       <section>
         <SectionHeader title="Algorithmic routing" subtitle="Most-constrained project first, least-loaded judge first. Deterministic; existing assignments are kept." level={3} />

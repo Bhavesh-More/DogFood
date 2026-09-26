@@ -375,3 +375,23 @@
 .driver-popover-arrow-side-right { border-top-color: transparent; border-bottom-color: transparent; border-left-color: transparent; }
 .driver-popover-arrow-side-top { border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
 .driver-popover-arrow-side-bottom { border-top-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+
+/* Gemini-style shimmer for AI placeholders. A soft band sweeps across the
+   surface, tinted with the primary role; disabled under reduced motion. */
+@keyframes ai-shimmer-move {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.ai-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--md-surface-container-high) 25%,
+    color-mix(in srgb, var(--md-surface-container-high) 62%, var(--md-primary) 38%) 50%,
+    var(--md-surface-container-high) 75%
+  );
+  background-size: 200% 100%;
+  animation: ai-shimmer-move 1.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-shimmer { animation: none; }
+}

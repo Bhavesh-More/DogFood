@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { Role } from "@dogfood/core";
+import type { AiClient } from "../ai/client";
 import type { Config } from "../config";
 import type { Db, DbActor, Tx } from "../db/pool";
 import type { SigningKeys } from "../lib/crypto";
@@ -36,6 +37,8 @@ export interface AppContext {
   now: () => number;
   limiter: RateLimiter;
   webhooks: WebhookSink;
+  /** Optional AI sidecar client; `enabled` is false unless AI_ENABLED=true. */
+  ai: AiClient;
 }
 
 export function dbActor(actor: Actor): DbActor {

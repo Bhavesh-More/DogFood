@@ -221,5 +221,54 @@ test.describe("team finder", () => {
     await page.getByRole("button", { name: "Take me off the board" }).click();
     await expect(mine).toHaveCount(0);
   });
+
+  test("a team member invites a seeker, who receives it as a notification", async ({ page, context, baseURL }) => {
+    await page.request.put("/api/events/evt_02/team-finder/me", {
+      headers: { authorization: `Bearer ${TOKENS.participant2}` },
+      data: { skills: ["rust"], note: "Invite me from the board" },
+    });
+    await signInAs(context, baseURL!, "participant");
+    await page.goto("/e/autumn-build-week/team");
+    const card = page.getByRole("list", { name: "People looking for a team" }).getByRole("listitem").filter({ hasText: "Invite me from the board" });
+    const [res] = await Promise.all([
+      page.waitForResponse((r) => r.url().endsWith("/api/teams/team_02_01/invitations") && r.request().method() === "POST"),
+      card.getByRole("button", { name: "Invite" }).click(),
+    ]);
+    const invite = (await res.json()) as { id: string; token: string };
+    await expect(page.getByText("Invitation sent to")).toBeVisible();
+
+    // The invitee sees the invitation in their own notification feed.
+    const feed = await (await page.request.get("/api/notifications", { headers: { authorization: `Bearer ${TOKENS.participant2}` } })).json();
+    expect(feed.items.some((n: { kind: string; link: string }) => n.kind === "invite" && n.link === `/invite/${invite.token}`)).toBe(true);
+
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+    await page.request.delete(`/api/teams/team_02_01/invites/${invite.id}`, { headers: { authorization: `Bearer ${TOKENS.participant}` } });
+  });
+});
+
+test.describe("notifications", () => {
+  test("an announcement to participants lands in the bell and the feed", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "organizer");
+    await page.goto("/organize/autumn-build-week");
+    const form = page.getByRole("form", { name: "New announcement" });
+    const title = `Heads up ${Date.now()}`;
+    await form.getByLabel(/^Title/).fill(title);
+    await form.getByLabel(/^Message/).fill("Check your notifications feed.");
+    await form.getByLabel(/Audience/).selectOption("participants");
+    await form.getByRole("button", { name: "Post announcement" }).click();
+    await expect(page.getByRole("heading", { name: title })).toBeVisible();
+
+    const ctx = await context.browser()!.newContext();
+    await signInAs(ctx, baseURL!, "participant2");
+    const p = await ctx.newPage();
+    await p.goto(`${baseURL}/notifications`);
+    await expect(p.getByText(title)).toBeVisible();
+    await ctx.close();
+
+    // Restore the demo data (notifications are inert; the announcement is removed).
+    const list = (await (await page.request.get("/api/events/evt_02/announcements", { headers: { authorization: `Bearer ${TOKENS.organizer}` } })).json()) as { id: string; title: string }[];
+    const ann = list.find((a) => a.title === title);
+    if (ann) await page.request.delete(`/api/announcements/${ann.id}`, { headers: { authorization: `Bearer ${TOKENS.organizer}` } });
+  });
 });
 

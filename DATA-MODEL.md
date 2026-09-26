@@ -112,6 +112,7 @@ erDiagram
 | `vote_email_codes` | One-time codes stored as an HMAC, with an attempt counter and an expiry. |
 | `outbox` | The local mail spool. The platform never calls an external email API, so it works offline; admins can read the spool. |
 | `comments` | Moderation via `hidden_at` and `hidden_by`. |
+| `notifications` | A per-user in-app feed. `kind ∈ {announcement, assignment, invite}` with an optional `event_id`, a `link` and `read_at`. Reads always filter `user_id = <caller>`; rows are written by the announcement, assignment and invitation code paths in the same transaction as the change. |
 
 ### Integrations and trust
 
@@ -199,3 +200,15 @@ submissions, judges and assignments. `POST /api/events/import` accepts the
 configuration subset and creates a **draft** clone. Track references are
 re-linked to the new track ids. Both directions are exercised by
 `platform.test.ts` and acceptance check T4.06.
+
+## Optional AI artifacts (`006_ai.sql`)
+
+| Table | Purpose | RLS |
+|---|---|---|
+| `project_classifications` | Cached project tags + primary category (`submission_id` PK) | staff ALL, system ALL |
+| `judge_expertise` | Cached judge tags per event (`event_id, judge_id` PK) | staff ALL, judge self-read, system ALL |
+| `project_summaries` | Cached public summary + tags (`submission_id` PK) | public SELECT, staff ALL, system ALL |
+| `judge_feedback` | Private judge feedback draft (`assignment_id` PK) | judge own ALL, staff SELECT, system ALL |
+
+AI is off by default; these tables stay empty and no AI route is called unless
+`AI_ENABLED=true`. None of them feeds normalization or published results.

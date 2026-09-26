@@ -1,0 +1,9 @@
+# Optional heavy extras for the model-backed classifier (Laya).
+# Pre-provision weights into the image or a mounted HF cache; the service
+# never downloads at request time. See docs/20-ai-service.md.
+torch>=2.4
+transformers>=4.55
+safetensors>=0.4
+huggingface_hub>=0.24
+numpy>=1.26
+laya>=0.3.11

@@ -288,8 +288,23 @@ that proves it:
   for judges.
 - They can be revoked. They check capacity when minted and again when
   accepted.
+- A **targeted invitation** reuses the same token but delivers it inside the
+  invitee's in-app feed, so the captain does not have to copy a link out of
+  band. The invitee is checked (not already on a team, not a judge) when it
+  is sent.
 
-### 2.12 Denial of service
+### 2.12 In-app notifications
+
+- The `notifications` table carries no RLS of its own (like `announcements`),
+  so **every query filters `user_id = <caller>`** in the module. A read of
+  someone else's notification is a 404, not a leak
+  (`notifications.test.ts`).
+- Rows are written only by server code paths that already authorised the
+  actor (event organiser, team member); a client cannot address one.
+- Notification bodies are plain text rendered as text by React, never
+  injected as markup.
+
+### 2.13 Denial of service
 
 - Per-IP and per-user token buckets: `global`, `auth`, `vote`, `emailCode`,
   `comment`, `upload` and `write`.
@@ -308,3 +323,16 @@ that proves it:
 | `COOKIE_SECURE`, `TRUST_PROXY` | `false` | `true` behind a TLS reverse proxy |
 | Postgres | Internal compose network, random-looking default password | Set `POSTGRES_PASSWORD`, back up the `db-data` volume |
 | Audit anchor | — | Publish `headHash` when results go out |
+
+## Optional AI sidecar
+
+The AI service is advisory and isolated by design:
+
+| Threat | Control |
+|---|---|
+| Model reads private ballots | The sidecar never receives ballot rows; it only gets text already visible to the caller, and returns text |
+| Model alters scores/results | AI output is cached separately; routing affinity is only a tie-break; nothing AI-generated is published or normalized |
+| Prompt injection in a project description | Output is stored as data and rendered as text; it is never executed and never used as a SQL/route decision |
+| Data exfiltration | The image runs with `HF_HUB_OFFLINE=1` and makes no external calls; the default backend is fully local |
+| Abuse / cost of public summaries | Public summary generation is rate-limited and cached; batch size is capped |
+| Shared-secret exposure | Optional `AI_SERVICE_KEY` is read from the environment, never persisted or returned |

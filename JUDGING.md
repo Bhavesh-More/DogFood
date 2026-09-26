@@ -233,3 +233,19 @@ Community votes never enter the judged score. They produce a separate
 | Ballot submitted | Later edits are allowed until judging closes, but each one is audit-logged with the before and after totals. |
 | `judgingEndsAt`, or results published | Ballots lock (`JUDGING_CLOSED`). |
 | Results published | The normalization run is frozen into `published_results`. Records are signed with Ed25519. |
+
+## Optional AI-assisted routing (tie-break only)
+
+When the AI sidecar is enabled, `planAssignments` receives an optional
+`affinity(judgeId, submissionId) -> [0,1]` derived from project classifications
+(problem statement) and judge expertise. It is inserted into the sort key
+**after** load and **before** the stable hash:
+
+```
+load asc → affinity desc → hash asc → id
+```
+
+So an expert judge is preferred only when loads already tie. Track scopes,
+conflicts, team membership, `maxPerJudge`, the `max − min ≤ 1` balance
+guarantee and determinism are unchanged; with AI off the output is byte-identical
+to the deterministic router. This is verified in `tests/unit/ai.test.ts`.

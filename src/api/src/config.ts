@@ -24,6 +24,12 @@ export interface Config {
   migrationsDir: string;
   webhookWorker: boolean;
   logRequests: boolean;
+  /** Optional AI sidecar. Off by default so the core stack stays offline and
+   *  single-command; every AI route degrades gracefully when disabled. */
+  aiEnabled: boolean;
+  aiServiceUrl: string;
+  aiTimeoutMs: number;
+  aiServiceKey: string | null;
 }
 
 function bool(value: string | undefined, fallback: boolean): boolean {
@@ -58,5 +64,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, exists?: (p: st
       firstExisting([path.join(here, "../migrations"), path.join(here, "migrations")], check),
     webhookWorker: bool(env.WEBHOOK_WORKER, true),
     logRequests: bool(env.LOG_REQUESTS, env.NODE_ENV !== "test"),
+    aiEnabled: bool(env.AI_ENABLED, false),
+    aiServiceUrl: (env.AI_SERVICE_URL ?? "http://127.0.0.1:8080").replace(/\/$/, ""),
+    aiTimeoutMs: Number(env.AI_TIMEOUT_MS ?? 5000),
+    aiServiceKey: env.AI_SERVICE_KEY && env.AI_SERVICE_KEY.length > 0 ? env.AI_SERVICE_KEY : null,
   };
 }
