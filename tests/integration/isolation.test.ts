@@ -124,6 +124,12 @@ describe("judge isolation enforced by Postgres RLS", () => {
     });
   });
 
+  it("the application role cannot read the signing key or app secret", async () => {
+    await expect(s.asDbUser("usr_admin", "admin", (q) => q("SELECT value FROM settings"))).rejects.toThrow(/permission denied/);
+    const [{ n }] = await s.sql("SELECT count(*)::int AS n FROM settings WHERE key IN ('app_secret', 'signing_key')");
+    expect(n).toBe(2);
+  });
+
   it("the application role cannot rewrite or delete audit history", async () => {
     await expect(s.asDbUser("usr_admin", "admin", (q) => q("UPDATE audit_log SET summary = 'x'"))).rejects.toThrow(/permission denied/);
     await expect(s.asDbUser("usr_admin", "admin", (q) => q("DELETE FROM audit_log"))).rejects.toThrow(/permission denied/);
