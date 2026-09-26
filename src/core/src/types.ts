@@ -110,6 +110,8 @@ export interface TeamDto {
   maxSize: number;
   deadlineExtensionUntil: string | null;
   submissionId: string | null;
+  /** Non-null while the team advertises open spots in the team finder. */
+  lookingFor: string | null;
 }
 
 export interface InviteDto {
@@ -302,4 +304,12 @@ export interface AnnouncementDto {
   authorName: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TeamFinderDto {
+  /** Whether new posts and joins are still possible (roster open). */
+  open: boolean;
+  me: { onTeam: boolean; posted: boolean; canPost: boolean };
+  seekers: { userId: string; name: string; skills: string[]; note: string; updatedAt: string }[];
+  teams: { teamId: string; name: string; members: string[]; openSpots: number; lookingFor: string }[];
 }

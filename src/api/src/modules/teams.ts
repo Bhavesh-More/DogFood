@@ -16,9 +16,9 @@ interface TeamRow {
 }
 
 export async function buildTeamDto(tx: Tx, teamId: string): Promise<TeamDto> {
-  const team = await one<TeamRow & { max_team_size: number; submission_id: string | null }>(
+  const team = await one<TeamRow & { max_team_size: number; submission_id: string | null; looking_for: string | null }>(
     tx,
-    `SELECT t.id, t.event_id, t.name, t.deadline_extension_until, e.max_team_size,
+    `SELECT t.id, t.event_id, t.name, t.deadline_extension_until, t.looking_for, e.max_team_size,
             (SELECT s.id FROM submissions s WHERE s.team_id = t.id) AS submission_id
        FROM teams t JOIN events e ON e.id = t.event_id WHERE t.id = $1`,
     [teamId],
@@ -39,6 +39,7 @@ export async function buildTeamDto(tx: Tx, teamId: string): Promise<TeamDto> {
     maxSize: team.max_team_size,
     deadlineExtensionUntil: team.deadline_extension_until,
     submissionId: team.submission_id,
+    lookingFor: team.looking_for,
   };
 }
 
@@ -51,7 +52,7 @@ export function assertRosterOpen(app: AppContext, event: EventRow, extensionUnti
   }
 }
 
-async function loadMyTeam(tx: Tx, actor: Actor, teamId: string) {
+export async function loadMyTeam(tx: Tx, actor: Actor, teamId: string) {
   const team = await one<TeamRow>(tx, "SELECT id, event_id, name, deadline_extension_until FROM teams WHERE id = $1", [teamId]);
   if (!team) throw notFound("Team");
   const member = await one<{ role: string }>(tx, "SELECT role FROM team_members WHERE team_id = $1 AND user_id = $2", [
