@@ -107,9 +107,11 @@ Requirements: Node 22.12+, pnpm 11, PostgreSQL 16, and Python 3.11+ (for
 the acceptance runner).
 
 ```bash
-pnpm install
-pnpm --filter @dogfood/api dev   # API on :8000, migrates and seeds a local "dogfood" DB
-pnpm --filter @dogfood/web dev   # Vite on :5173 (proxies /api to :8000)
+pnpm setup                       # .env files, pnpm install, docker images, Playwright Chromium
+pnpm dev                         # dev Postgres (docker, :5433) + Turbo TUI: API on :8001, web on :5173
+pnpm dashboard                   # full Docker stack on :8000 (runs alongside `pnpm dev`)
+pnpm dashboard:logs | dashboard:down | dashboard:reset
+pnpm dev:db:stop | dev:db:reset
 
 pnpm test                        # 57 unit + 97 integration tests (integration needs Postgres;
                                  #   set TEST_DATABASE_URL, default postgres://postgres@127.0.0.1:5432/postgres)

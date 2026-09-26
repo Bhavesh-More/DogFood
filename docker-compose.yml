@@ -46,6 +46,25 @@ services:
     networks: [backend, edge]
     restart: unless-stopped
 
+  # Dev-only Postgres for `pnpm dev` (API + Vite on the host). Not started by
+  # plain `docker compose up`; host port 5433 so it never clashes with a local 5432.
+  devdb:
+    image: postgres:16-alpine
+    profiles: [dev]
+    environment:
+      POSTGRES_DB: dogfood
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:${DEV_DB_PORT:-5433}:5432"
+    volumes:
+      - devdb-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dogfood"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
 networks:
   backend:
     internal: true
@@ -54,3 +73,4 @@ networks:
 volumes:
   db-data:
   uploads:
+  devdb-data:

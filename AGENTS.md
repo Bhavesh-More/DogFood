@@ -178,8 +178,9 @@ scripts/                 generate-fixtures.py, screenshots.mjs
 
 ```bash
 pnpm install
-pnpm --filter @dogfood/api dev        # API on :8000 (tsx watch); migrates + seeds DB "dogfood" at postgres://postgres@127.0.0.1:5432
-pnpm --filter @dogfood/web dev        # Vite on :5173, proxies /api, /uploads, /.well-known to :8000
+pnpm setup                            # copy .env.example files, install, pull docker images, Playwright Chromium
+pnpm dev                              # docker devdb (:5433) + Turbo TUI panes: API :8001 (src/api/.env), Vite :5173 (proxies to API_URL in src/web/.env)
+pnpm dashboard                        # docker compose stack on :8000 (coexists with `pnpm dev`); dashboard:logs|down|reset
 pnpm build                            # API bundle + web build (+ Brotli/gzip twins)
 pnpm lint                             # eslint --max-warnings 0 everywhere
 pnpm check-types                      # workspace tsc + `tsc -p tests`
