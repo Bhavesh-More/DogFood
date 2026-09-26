@@ -130,6 +130,18 @@ describe("API-first", () => {
     expect(Object.keys(r.body.paths).length).toBeGreaterThan(80);
   });
 
+  it("exports public events as an iCalendar file; drafts stay private", async () => {
+    const r = await s.anon.get("/api/events/evt_01/calendar.ics");
+    expect(r.status).toBe(200);
+    expect(r.headers.get("content-type")).toMatch(/^text\/calendar/);
+    expect(r.headers.get("content-disposition")).toContain("sample-hack-2026.ics");
+    expect(r.text).toMatch(/^BEGIN:VCALENDAR\r\n/);
+    expect(r.text).toContain("UID:evt_01-deadline@localhost:8000");
+    expect(r.text).toContain("TRIGGER:-PT60M");
+    expect(r.text).toContain("URL:http://localhost:8000/e/sample-hack-2026");
+    expect((await s.anon.get("/api/events/evt_04/calendar.ics")).status).toBe(404);
+  });
+
   it("round-trips an event through export → import", async () => {
     const exp = await s.as(TOKENS.organizer).get("/api/events/evt_01/export.json");
     expect(exp.status).toBe(200);

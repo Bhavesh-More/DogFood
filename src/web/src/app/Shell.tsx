@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import type { Role } from "@dogfood/core";
 import { cx } from "../lib/format";
 import { useLogout, useSession } from "../lib/session";
-import { useThemePref } from "../lib/theme";
+import { useTheme } from "../lib/theme";
 import { Avatar, Icon, IconButton, LinkButton, Menu, PageLoader, RoleBadge, type IconName } from "../ui";
 import { Logo } from "./Logo";
 
@@ -76,13 +76,14 @@ function UserMenu() {
   const { user } = useSession();
   const logout = useLogout();
   const navigate = useNavigate();
-  const [theme, setTheme] = useThemePref();
-  const nextTheme = theme === "system" ? "dark" : theme === "dark" ? "light" : "system";
-  const themeIcon: IconName = theme === "dark" ? "dark_mode" : theme === "light" ? "light_mode" : "contrast";
+  const [theme, toggleTheme] = useTheme();
+  // Show what a click will switch to: the moon in light mode, the sun in dark mode.
+  const themeIcon: IconName = theme === "dark" ? "light_mode" : "dark_mode";
+  const themeLabel = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
   if (!user) {
     return (
       <div className="flex items-center gap-1">
-        <IconButton icon={themeIcon} label={`Theme: ${theme}`} onClick={() => setTheme(nextTheme)} />
+        <IconButton icon={themeIcon} label={themeLabel} onClick={toggleTheme} />
         <LinkButton to="/login" variant="text" size="sm">
           Sign in
         </LinkButton>
@@ -94,7 +95,7 @@ function UserMenu() {
   }
   return (
     <div className="flex items-center gap-1">
-      <IconButton icon={themeIcon} label={`Theme: ${theme}`} onClick={() => setTheme(nextTheme)} />
+      <IconButton icon={themeIcon} label={themeLabel} onClick={toggleTheme} />
       <Menu
         trigger={({ toggle, open }) => (
           <button type="button" onClick={toggle} aria-expanded={open} aria-haspopup="menu" className="focus-ring flex items-center gap-2 rounded-full p-1 pr-2 hover:bg-on-surface/8">

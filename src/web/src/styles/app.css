@@ -151,6 +151,17 @@
   }
 }
 
+/* Scrollbars are hidden everywhere; content still scrolls with wheel, touch,
+   trackpad and keyboard, and edge fades (scroll-fade-x) mark hidden overflow. */
+@layer base {
+  * {
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }

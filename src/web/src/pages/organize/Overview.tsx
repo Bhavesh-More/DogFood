@@ -4,6 +4,7 @@ import { errorMessage, get, post } from "../../lib/api";
 import { pct } from "../../lib/format";
 import { formatDateTime } from "../../lib/time";
 import { Avatar, Banner, Button, Card, Icon, LinearProgress, LinkButton, SectionHeader, StatTile, useToast } from "../../ui";
+import { AnnouncementComposer, AnnouncementList } from "../../components/Announcements";
 import { useOrganize } from "./common";
 
 interface Coverage {
@@ -124,6 +125,17 @@ export function OverviewPage() {
           </Card>
         </section>
       </div>
+
+      <section aria-labelledby="announcements-heading" className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0">
+          <h2 id="announcements-heading" className="mb-3 type-title-lg text-on-surface">Announcements</h2>
+          <AnnouncementList eventId={e.id} manage emptyHint="Post news, schedule changes or reminders; they appear on the event page." />
+        </div>
+        <Card variant="filled" radius="2xl">
+          <p className="mb-3 type-title-md text-on-surface">New announcement</p>
+          <AnnouncementComposer eventId={e.id} />
+        </Card>
+      </section>
     </div>
   );
 }

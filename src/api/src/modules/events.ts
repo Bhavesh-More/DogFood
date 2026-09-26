@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  buildEventCalendar,
   criterionInput,
   criterionPatch,
   email,
@@ -515,6 +516,40 @@ export const eventRoutes = [
       track_id: b.trackId,
     }),
     validate: (t, eventId, b) => assertTrackOfEvent(t, eventId, b.trackId ?? null),
+  }),
+
+  route({
+    method: "get",
+    path: "/api/events/:eventId/calendar.ics",
+    summary: "Event milestones as an iCalendar file (hacking window, hard deadline with a reminder, judging, voting, results)",
+    tags: ["Events"],
+    auth: "public",
+    produces: "text/calendar",
+    async handler({ app, params, actor, res, tx }) {
+      const event = await tx((t) => loadVisibleEvent(t, actor, params.eventId!));
+      const url = `${app.config.publicUrl}/e/${event.slug}`;
+      const ics = buildEventCalendar(
+        {
+          id: event.id,
+          slug: event.slug,
+          name: event.name,
+          tagline: event.tagline,
+          location: event.location,
+          url,
+          startsAt: event.starts_at,
+          submissionDeadline: event.submission_deadline,
+          judgingEndsAt: event.judging_ends_at,
+          votingOpensAt: event.voting_opens_at,
+          votingClosesAt: event.voting_closes_at,
+          resultsPublishedAt: event.results_published_at,
+        },
+        app.now(),
+        new URL(app.config.publicUrl).host,
+      );
+      res.setHeader("Content-Type", "text/calendar; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="${event.slug}.ics"`);
+      res.status(200).send(ics);
+    },
   }),
 
   route({

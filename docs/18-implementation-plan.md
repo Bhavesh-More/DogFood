@@ -221,3 +221,16 @@ A development phase is declared **DONE** only when:
 | Test coverage | Test sources not type-checked; no browser tests; no CI | `tests/tsconfig.json` in `check-types`; 10 Playwright journeys; GitHub Actions workflow (checks → Docker stack → acceptance → e2e) |
 
 Re-verified on a fresh `docker compose` build: 156/156 Vitest, 10/10 Playwright, 38/38 acceptance (T4).
+
+### Iteration 3 — dark mode, theme switch, new features (PR #3)
+| Area | Change |
+| :--- | :--- |
+| Dark mode | Deep tone-30 primary/tertiary containers instead of the 2025 spec's bright ones; hero highlight and cover initials use paired "on" colours; a unit test enforces WCAG contrast for every pairing the UI uses in both themes |
+| Theme switch | Two states (light ⇄ dark); follows the OS until the viewer chooses; choice remembered |
+| Scrollbars | Hidden app-wide; scrolling unchanged |
+| Add to calendar | RFC 5545 `.ics` export of event milestones with a deadline reminder |
+| Announcements | Audience-targeted (everyone / participants / judges), pinnable, audited, copied to the outbox, webhook `announcement.published` |
+| Team finder | Solo seekers post skills; teams advertise open spots; trigger clears seekers who join; locks with the roster |
+
+Re-verified on a fresh `docker compose` build: 218/218 Vitest, 14/14 Playwright, 38/38 acceptance (T4), lint and types clean.
+

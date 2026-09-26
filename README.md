@@ -77,8 +77,18 @@ The seed data puts an event in every phase, with times relative to boot:
 | **Organizers.** Set up tracks, prizes, questions and the rubric, invite judges, preview and run the routing, and watch progress. In the **Results Lab** they compare raw and normalized scores, each judge's bias, the Spearman correlation and the invariant checks, then publish. They also get CSV exports, webhooks, event import/export and the audit trail. | ![Results Lab](docs/screenshots/results-lab-dark.png) |
 | **Everyone.** A public gallery with search, filters and a per-viewer shuffle while voting is open; a leaderboard; community choice; verifiable certificates; an embeddable widget; and interactive API docs. | ![Leaderboard](docs/screenshots/leaderboard.png) |
 
+Also built in:
+- **Add to calendar:** every public event exports its milestones as an
+  `.ics` file, with a reminder one hour before the hard deadline.
+- **Announcements:** organizers post news to everyone, to participants
+  only, or to judges only. Posts can be pinned. They show on the event's
+  News tab, are copied to the local mail outbox, and fire a webhook.
+- **Team finder:** solo participants list their skills, and teams list
+  their open spots and what they need. Emails are never shown.
+
 Every screen works at phone width (navigation bar and compact layouts),
-in light and dark themes.
+in light and dark themes. The theme switch has two states, light and
+dark; it follows your OS until you pick one.
 
 ## Tier coverage
 
@@ -113,7 +123,7 @@ pnpm dashboard                   # full Docker stack on :8000 (runs alongside `p
 pnpm dashboard:logs | dashboard:down | dashboard:reset
 pnpm dev:db:stop | dev:db:reset
 
-pnpm test                        # 57 unit + 97 integration tests (integration needs Postgres;
+pnpm test                        # 218 unit + integration tests (integration needs Postgres;
                                  #   set TEST_DATABASE_URL, default postgres://postgres@127.0.0.1:5432/postgres)
 pnpm test:e2e                    # Playwright journeys against a running stack (E2E_BASE_URL, default :8000)
 pnpm lint && pnpm check-types

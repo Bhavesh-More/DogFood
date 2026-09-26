@@ -296,7 +296,33 @@ export const apiTokenInput = z.object({
   expiresInDays: z.number().int().min(1).max(365).default(90),
 });
 
+export const seekerInput = z.object({
+  skills: z.array(techTag).max(8).default([]),
+  note: z.string().trim().max(500).default(""),
+});
+
+export const recruitingInput = z.object({
+  /** null stops recruiting. */
+  lookingFor: z.string().trim().min(3).max(200).nullable(),
+});
+
+export const ANNOUNCEMENT_AUDIENCES = ["everyone", "participants", "judges"] as const;
+
+const announcementShape = {
+  title: z.string().trim().min(3).max(120),
+  body: z.string().trim().min(1).max(5000),
+  audience: z.enum(ANNOUNCEMENT_AUDIENCES),
+  pinned: z.boolean(),
+};
+export const announcementInput = z.object({
+  ...announcementShape,
+  audience: announcementShape.audience.default("everyone"),
+  pinned: announcementShape.pinned.default(false),
+});
+export const announcementPatch = z.object(announcementShape).partial();
+
 export const WEBHOOK_EVENTS = [
+  "announcement.published",
   "submission.submitted",
   "submission.unsubmitted",
   "team.member_joined",

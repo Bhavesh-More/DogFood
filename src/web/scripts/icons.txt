@@ -12,3 +12,4 @@ description article print fingerprint lightbulb handshake diversity_3 shuffle so
 arrow_downward remove drag_indicator trending_up trending_down person_check group star_rate target
 workspace_premium qr_code data_object hourglass_empty stop_circle add_link link_off switch_account
 contrast
+ calendar_add_on campaign person_search keep

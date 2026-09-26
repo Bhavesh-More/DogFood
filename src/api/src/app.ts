@@ -10,6 +10,8 @@ import { authenticate, csrfGuard, errorHandler, globalRateLimit, requestLogger, 
 import { RateLimiter } from "./http/rate-limit";
 import { mountRoutes, openApiDocument, route, type RouteDef } from "./http/route";
 import { adminRoutes } from "./modules/admin";
+import { announcementRoutes } from "./modules/announcements";
+import { teamFinderRoutes } from "./modules/teamfinder";
 import { authRoutes } from "./modules/auth";
 import { eventRoutes } from "./modules/events";
 import { judgingRoutes } from "./modules/judging";
@@ -54,7 +56,9 @@ export function allRoutes(): RouteDef[] {
   return [
     ...authRoutes,
     ...eventRoutes,
+    ...announcementRoutes,
     ...teamRoutes,
+    ...teamFinderRoutes,
     ...submissionRoutes,
     ...judgingRoutes,
     ...resultRoutes,

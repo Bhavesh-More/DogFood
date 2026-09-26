@@ -5,6 +5,7 @@ import { expect, test, type BrowserContext } from "@playwright/test";
  * Anything a test changes is put back, so the demo data stays as seeded.
  */
 const TOKENS = {
+  participant2: "dfc_participant2_3e9a7c1d5b2f86024f",
   organizer: "dfc_organizer_8b1d3f5a7c9e20461a",
   judge: "dfc_judge_a_2c4e6a8b0d1f39571b",
   participant: "dfc_participant_7d3b1f9e5c2a48064e",
@@ -44,10 +45,28 @@ test.describe("public", () => {
     await expect(page.getByRole("table")).toContainText("Normalized score");
   });
 
-  test("theme toggle switches to dark", async ({ page }) => {
+  test("theme toggle has exactly two states and remembers the choice", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
     await page.goto("/");
-    await page.getByRole("button", { name: /^Theme:/ }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "Switch to dark theme" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "Switch to dark theme" }).click();
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("scrollbars are hidden but the page still scrolls", async ({ page }) => {
+    await page.goto("/");
+    const { width, scrolled } = await page.evaluate(async () => {
+      window.scrollTo(0, 400);
+      await new Promise((r) => requestAnimationFrame(r));
+      return { width: window.innerWidth - document.documentElement.clientWidth, scrolled: window.scrollY };
+    });
+    expect(width).toBe(0);
+    expect(scrolled).toBeGreaterThan(0);
   });
 
   test("@mobile the bottom navigation bar replaces the rail on phones", async ({ page }) => {
@@ -112,3 +131,52 @@ test.describe("organizer", () => {
     await expect(page.getByText(/comparisons/i).first()).toBeVisible();
   });
 });
+
+test.describe("announcements", () => {
+  test("an organizer posts news that appears on the event page, then removes it", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "organizer");
+    await page.goto("/organize/sample-hack-2026");
+    const form = page.getByRole("form", { name: "New announcement" });
+    const title = `E2E notice ${Date.now()}`;
+    await form.getByLabel(/^Title/).fill(title);
+    await form.getByLabel(/^Message/).fill("Posted by the browser test.");
+    await form.getByRole("button", { name: "Post announcement" }).click();
+    await expect(page.getByRole("heading", { name: title })).toBeVisible();
+
+    const visitor = await context.browser()!.newPage();
+    await visitor.goto(`${baseURL}/e/sample-hack-2026`);
+    await visitor.getByRole("tab", { name: /News/ }).click();
+    await expect(visitor.getByRole("heading", { name: title })).toBeVisible();
+    await visitor.close();
+
+    const item = page.getByRole("listitem").filter({ has: page.getByRole("heading", { name: title }) });
+    await item.getByRole("button", { name: "Delete announcement" }).click();
+    await expect(page.getByRole("heading", { name: title })).toHaveCount(0);
+  });
+
+  test("the event page offers an iCalendar download", async ({ page }) => {
+    await page.goto("/e/sample-hack-2026");
+    const link = page.getByRole("link", { name: "Add to calendar" });
+    await expect(link).toHaveAttribute("href", "/api/events/evt_01/calendar.ics");
+    const res = await page.request.get("/api/events/evt_01/calendar.ics");
+    expect(res.headers()["content-type"]).toContain("text/calendar");
+  });
+});
+
+test.describe("team finder", () => {
+  test("a solo participant posts their skills, sees the post, then takes it down", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "participant2");
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+    await page.goto("/e/autumn-build-week/team");
+    const form = page.getByRole("form", { name: "Look for a team" });
+    await form.getByLabel(/^Skills/).fill("rust, wasm");
+    await form.getByLabel(/^A line about you/).fill("Systems person, find me at the venue.");
+    await form.getByRole("button", { name: "Post myself" }).click();
+    const mine = page.getByRole("list", { name: "People looking for a team" }).getByRole("listitem").filter({ hasText: "Systems person" });
+    await expect(mine).toBeVisible();
+    await expect(mine.getByRole("list", { name: "Skills" })).toContainText("wasm");
+    await page.getByRole("button", { name: "Take me off the board" }).click();
+    await expect(mine).toHaveCount(0);
+  });
+});
+

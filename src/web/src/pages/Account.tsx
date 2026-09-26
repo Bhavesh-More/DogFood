@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Navigate } from "react-router";
 import { errorMessage, get, post, del } from "../lib/api";
 import { useSession } from "../lib/session";
-import { useThemePref } from "../lib/theme";
+import { useTheme } from "../lib/theme";
 import { formatDate, relativeTime } from "../lib/time";
 import { Avatar, Banner, Button, ButtonGroup, Card, EmptyState, IconButton, PageLoader, RoleBadge, SectionHeader, TextField, useToast } from "../ui";
 
@@ -19,7 +19,7 @@ export function AccountPage() {
   const { user, loading } = useSession();
   const qc = useQueryClient();
   const toast = useToast();
-  const [theme, setTheme] = useThemePref();
+  const [theme, , setTheme] = useTheme();
   const [label, setLabel] = useState("");
   const [fresh, setFresh] = useState<string | null>(null);
   const tokens = useQuery({ queryKey: ["tokens"], queryFn: () => get<TokenRow[]>("/api/auth/tokens"), enabled: Boolean(user) });
@@ -50,7 +50,7 @@ export function AccountPage() {
       </Card>
       <Card variant="filled" radius="2xl">
         <SectionHeader title="Appearance" level={3} />
-        <ButtonGroup label="Theme" value={theme} onChange={setTheme} options={[{ value: "system", label: "System" }, { value: "light", label: "Light", icon: "light_mode" }, { value: "dark", label: "Dark", icon: "dark_mode" }]} />
+        <ButtonGroup label="Theme" value={theme} onChange={setTheme} options={[{ value: "light", label: "Light", icon: "light_mode" }, { value: "dark", label: "Dark", icon: "dark_mode" }]} />
       </Card>
       <Card variant="filled" radius="2xl">
         <SectionHeader title="API tokens" subtitle="Personal tokens act as you on the REST API (Authorization: Bearer …). Shown once; stored hashed." level={3} />
