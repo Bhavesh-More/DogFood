@@ -44,10 +44,28 @@ test.describe("public", () => {
     await expect(page.getByRole("table")).toContainText("Normalized score");
   });
 
-  test("theme toggle switches to dark", async ({ page }) => {
+  test("theme toggle has exactly two states and remembers the choice", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
     await page.goto("/");
-    await page.getByRole("button", { name: /^Theme:/ }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "Switch to dark theme" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await page.getByRole("button", { name: "Switch to dark theme" }).click();
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("scrollbars are hidden but the page still scrolls", async ({ page }) => {
+    await page.goto("/");
+    const { width, scrolled } = await page.evaluate(async () => {
+      window.scrollTo(0, 400);
+      await new Promise((r) => requestAnimationFrame(r));
+      return { width: window.innerWidth - document.documentElement.clientWidth, scrolled: window.scrollY };
+    });
+    expect(width).toBe(0);
+    expect(scrolled).toBeGreaterThan(0);
   });
 
   test("@mobile the bottom navigation bar replaces the rail on phones", async ({ page }) => {
