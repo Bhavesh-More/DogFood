@@ -182,10 +182,10 @@ The final project complies with all rules and constraints specified in `01-hacka
 
 The final application is verified demo-ready:
 
-* [ ] **Runnable:** Launches immediately via single-command `docker compose up`.
-* [ ] **Stable:** Pre-seeded with realistic fixture data (`fixtures.json`) including test users, events, tracks, teams, rubrics, and draft submissions.
-* [ ] **Demonstrates Core Value Quickly:** Instantly showcases server UTC deadline enforcement, query-isolated judge scoring (`WHERE judge_id = auth.uid`), and statistical Z-score score normalization.
-* [ ] **Zero Primary Flow Blockers:** Primary user journey executes smoothly without crashes or required manual database interventions.
+* [x] **Runnable:** Launches immediately via single-command `docker compose up`.
+* [x] **Stable:** Pre-seeded with realistic fixture data (`fixtures.json`) including test users, events, tracks, teams, rubrics, and draft submissions.
+* [x] **Demonstrates Core Value Quickly:** Instantly showcases server UTC deadline enforcement, query-isolated judge scoring (`WHERE judge_id = auth.uid`), and statistical Z-score score normalization.
+* [x] **Zero Primary Flow Blockers:** Primary user journey executes smoothly without crashes or required manual database interventions.
 
 ---
 
@@ -193,14 +193,14 @@ The final application is verified demo-ready:
 
 The Dogfood 2026 project is officially declared **DONE** when every checkbox below is verified:
 
-* [ ] **All P0 Features Pass:** F001 through F010 satisfy all acceptance criteria.
-* [ ] **Primary Flow Verified:** End-to-end lifecycle executes successfully.
-* [ ] **Air-Gapped Execution Proven:** Platform runs 100% offline via `docker compose up` with zero cloud dependencies.
-* [ ] **Query Isolation Verified:** Score sheet privacy enforced at database level (`WHERE judge_id = auth.uid`).
-* [ ] **Mathematical Normalization Verified:** Z-score math with Min-Max fallback eliminates judge bias.
-* [ ] **Build & Tests Pass:** Container compilation succeeds and `acceptance-report.txt` logs 0 test failures.
-* [ ] **Documentation Complete:** All 10 required repository artifacts (`README`, `ARCHITECTURE`, `DATA-MODEL`, `JUDGING`, `docker-compose.yml`, `src/`, `tests/`, `acceptance-report.txt`, `LICENSE`, `.dogfood.toml`) and documentation specs (`docs/01`–`17`) are complete.
-* [ ] **Demo Ready:** Seeded local stack ready for recorded video demonstration.
+* [x] **All P0 Features Pass:** F001 through F010 satisfy all acceptance criteria.
+* [x] **Primary Flow Verified:** End-to-end lifecycle executes successfully.
+* [x] **Air-Gapped Execution Proven:** Platform runs 100% offline via `docker compose up` with zero cloud dependencies.
+* [x] **Query Isolation Verified:** Score sheet privacy enforced at database level (`WHERE judge_id = auth.uid`).
+* [x] **Mathematical Normalization Verified:** Z-score math with Min-Max fallback eliminates judge bias.
+* [x] **Build & Tests Pass:** Container compilation succeeds and `acceptance-report.txt` logs 0 test failures.
+* [x] **Documentation Complete:** All 10 required repository artifacts (`README`, `ARCHITECTURE`, `DATA-MODEL`, `JUDGING`, `docker-compose.yml`, `src/`, `tests/`, `acceptance-report.txt`, `LICENSE`, `.dogfood.toml`) and documentation specs (`docs/01`–`17`) are complete.
+* [x] **Demo Ready:** Seeded local stack ready for recorded video demonstration.
 
 ---
 
@@ -211,3 +211,21 @@ The following documented design choices are acceptable limitations for the hacka
 * **Local Offline Focus over Distributed Cloud Sync:** Designed strictly for single-host container orchestration (`docker compose up`) without multi-region cloud clustering or external SaaS auth integration.
 * **Min-Max Fallback for Small Judge Samples ($N_j < 5$):** Statistical Z-score normalization requires sample variance; judges reviewing fewer than 5 entries automatically fall back to Min-Max scaling as documented in `JUDGING.md`.
 * **In-Memory / Container Rate Limiting:** Rate limiting on public community voting uses local container memory/storage rather than enterprise cloud WAF services, perfectly matching the air-gapped requirement.
+
+---
+
+## 12. Verification Evidence
+
+| Feature | Verified by |
+| :--- | :--- |
+| F001 Auth & RBAC | `auth-rbac.test.ts`; acceptance T1.03–T1.05, T4.02 |
+| F002 Events, tracks, rubric | `lifecycle.test.ts`; acceptance T1.06, T2.04 |
+| F003 Teams & invites | `deadline-teams.test.ts` (incl. concurrent-accept race); acceptance T1.07, T1.08 |
+| F004 Drafts & gallery | `lifecycle.test.ts`; acceptance T1.09, T1.10, T3.04 |
+| F005 UTC hard deadline | `deadline-teams.test.ts` (spoofed headers, DB trigger, extensions); acceptance T1.11 (real deadline on the live stack) |
+| F006 Routing & balancing | `assignment.test.ts`, `lifecycle.test.ts`; acceptance T2.01, T2.02 |
+| F007 Query isolation | `isolation.test.ts` (raw SQL as the app role); acceptance T2.03 |
+| F008 Normalization | `normalization.test.ts`, `lifecycle.test.ts`; acceptance T2.06, T2.07, B.01 (independent recomputation); proofs in `JUDGING.md` |
+| F009 Docker & seeding | `docker compose up --build` → healthy, seeded; air-gapped run verified |
+| F010 Acceptance runner | `acceptance/run.py` → `acceptance-report.txt` (38/38) |
+| F011 Anti-Sybil voting | `voting.test.ts`; acceptance T3.01–T3.07 |
