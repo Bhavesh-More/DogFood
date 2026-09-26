@@ -214,3 +214,34 @@ Organizer                          │                              │
 ### UNKNOWN
 * [ ] Specific automated test runner CLI binary provided by organizers at kickoff
 * [ ] Exact containerized database engine preference (PostgreSQL, SQLite, MySQL are all compliant)
+
+---
+
+## 12. Chosen Stack (decision record, 2026-09-25)
+
+| Layer | Choice | Why |
+| :--- | :--- | :--- |
+| Runtime | **Node.js 24** (TypeScript, strict) | One language front to back; built-in `crypto` gives scrypt, SHA-256, HMAC and Ed25519 with zero native modules. |
+| API | **Express 5** + **Zod 4** | Mature, small; Zod schemas validate every request *and* generate the OpenAPI 3.1 document (`z.toJSONSchema`). |
+| Database | **PostgreSQL 16** via `pg` | Real transactions, `FOR UPDATE` locking for team capacity and invite consumption, full-text search, and **Row-Level Security** as the last isolation layer. |
+| Frontend | **React 19 + Vite + React Router + TanStack Query**, **Tailwind CSS v4** with Material 3 Expressive tokens | Built to static files and served by the API container — same origin, strict CSP, no runtime Node server for the UI, fully offline. |
+| Fonts & icons | `@fontsource-variable/google-sans-flex`, `@fontsource-variable/roboto-flex`, `material-symbols` (bundled at build) | No CDN; works with the network unplugged. |
+| Tests | **Vitest** (unit + integration against real Postgres), **Playwright** (UI e2e), **Python stdlib acceptance runner** (`acceptance/run.py`) | The acceptance runner needs nothing beyond `python3`. |
+| Packaging | pnpm workspace + Turborepo; multi-stage Dockerfile; `docker-compose.yml` with **two services**: `app` and `db` | Matches the "two containers" wording and the doc §9 deployment sketch (one web+API container, one DB container). |
+
+### Repository layout (required by the brief)
+```
+src/core   pure domain logic: normalization, Bradley-Terry, assignment, deadline, RBAC matrix, schemas
+src/api    Express server, repositories, migrations, seed, worker (webhooks)
+src/web    React SPA (Material 3 Expressive)
+tests/     unit, integration, security (isolation) and e2e suites
+acceptance/run.py  tier-by-tier acceptance runner → acceptance-report.txt
+```
+
+### Isolation in depth
+1. **Route guard** — `requireRole()` / `requireEventRole()` middleware.
+2. **Repository predicate** — every ballot query is written `WHERE judge_id = $currentUser`.
+3. **Postgres RLS** — `scores`, `ballots`, `assignments` and `pairwise_votes` have `FORCE ROW LEVEL SECURITY`; each request runs in a transaction with `set_config('app.user_id', …, true)` and `set_config('app.role', …, true)`. A forgotten `WHERE` still returns only the caller's rows.
+
+### Time source
+Deadlines compare against the **server clock** (`Date.now()` inside the API, `now()` inside the DB trigger). Client headers such as `Date` are ignored. A DB trigger on `submissions` rejects content changes after the deadline as a second line of defence.

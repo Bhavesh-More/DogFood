@@ -1,0 +1,1726 @@
+{
+  "format": "dogfood.fixtures.v1",
+  "description": "Deterministic demo data for the Dogfood portal. Every account uses the password 'dogfood-demo-2026'. Checker session tokens are mirrored in .dogfood.toml.",
+  "defaultPassword": "dogfood-demo-2026",
+  "users": [
+    {
+      "id": "usr_admin",
+      "email": "admin@dogfood.local",
+      "name": "Ada Lovelace",
+      "role": "admin"
+    },
+    {
+      "id": "usr_organizer",
+      "email": "organizer@dogfood.local",
+      "name": "Oscar Okafor",
+      "role": "organizer"
+    },
+    {
+      "id": "usr_organizer2",
+      "email": "organizer2@dogfood.local",
+      "name": "Grace Hopper",
+      "role": "organizer"
+    },
+    {
+      "id": "usr_judge_a",
+      "email": "judge.a@dogfood.local",
+      "name": "Jade Park",
+      "role": "judge"
+    },
+    {
+      "id": "usr_judge_b",
+      "email": "judge.b@dogfood.local",
+      "name": "Bruno Silva",
+      "role": "judge"
+    },
+    {
+      "id": "usr_judge_c",
+      "email": "judge.c@dogfood.local",
+      "name": "Chen Wei",
+      "role": "judge"
+    },
+    {
+      "id": "usr_judge_d",
+      "email": "judge.d@dogfood.local",
+      "name": "Dara Nguyen",
+      "role": "judge"
+    },
+    {
+      "id": "usr_judge_e",
+      "email": "judge.e@dogfood.local",
+      "name": "Emeka Obi",
+      "role": "judge"
+    },
+    {
+      "id": "usr_judge_f",
+      "email": "judge.f@dogfood.local",
+      "name": "Farah Haddad",
+      "role": "judge"
+    },
+    {
+      "id": "usr_participant",
+      "email": "participant@dogfood.local",
+      "name": "Priya Sharma",
+      "role": "participant"
+    },
+    {
+      "id": "usr_participant2",
+      "email": "participant2@dogfood.local",
+      "name": "Mateo Rossi",
+      "role": "participant"
+    },
+    {
+      "id": "usr_visitor",
+      "email": "visitor@dogfood.local",
+      "name": "Victor Hugo",
+      "role": "visitor"
+    },
+    {
+      "id": "usr_p01",
+      "email": "p01@dogfood.local",
+      "name": "Aarav Mehta",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p02",
+      "email": "p02@dogfood.local",
+      "name": "Bea Novak",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p03",
+      "email": "p03@dogfood.local",
+      "name": "Carlos Reyes",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p04",
+      "email": "p04@dogfood.local",
+      "name": "Divya Iyer",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p05",
+      "email": "p05@dogfood.local",
+      "name": "Elif Kaya",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p06",
+      "email": "p06@dogfood.local",
+      "name": "Finn Larsen",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p07",
+      "email": "p07@dogfood.local",
+      "name": "Gita Rao",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p08",
+      "email": "p08@dogfood.local",
+      "name": "Hana Sato",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p09",
+      "email": "p09@dogfood.local",
+      "name": "Ivan Petrov",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p10",
+      "email": "p10@dogfood.local",
+      "name": "Jia Li",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p11",
+      "email": "p11@dogfood.local",
+      "name": "Kofi Mensah",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p12",
+      "email": "p12@dogfood.local",
+      "name": "Lina Haddad",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p13",
+      "email": "p13@dogfood.local",
+      "name": "Milo Fischer",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p14",
+      "email": "p14@dogfood.local",
+      "name": "Nora Costa",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p15",
+      "email": "p15@dogfood.local",
+      "name": "Omar Farouk",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p16",
+      "email": "p16@dogfood.local",
+      "name": "Pia Weber",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p17",
+      "email": "p17@dogfood.local",
+      "name": "Quinn Adams",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p18",
+      "email": "p18@dogfood.local",
+      "name": "Rhea Kapoor",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p19",
+      "email": "p19@dogfood.local",
+      "name": "Sami Aziz",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p20",
+      "email": "p20@dogfood.local",
+      "name": "Tara Singh",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p21",
+      "email": "p21@dogfood.local",
+      "name": "Uma Menon",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p22",
+      "email": "p22@dogfood.local",
+      "name": "Vik Varga",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p23",
+      "email": "p23@dogfood.local",
+      "name": "Wen Zhou",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p24",
+      "email": "p24@dogfood.local",
+      "name": "Xena Nikolaidis",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p25",
+      "email": "p25@dogfood.local",
+      "name": "Yusuf Demir",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p26",
+      "email": "p26@dogfood.local",
+      "name": "Zoe Laurent",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p27",
+      "email": "p27@dogfood.local",
+      "name": "Arjun Nair",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p28",
+      "email": "p28@dogfood.local",
+      "name": "Bianca Romano",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p29",
+      "email": "p29@dogfood.local",
+      "name": "Cyrus Tehrani",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p30",
+      "email": "p30@dogfood.local",
+      "name": "Dalia Cohen",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p31",
+      "email": "p31@dogfood.local",
+      "name": "Ezra Mizrahi",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p32",
+      "email": "p32@dogfood.local",
+      "name": "Fatima Bello",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p33",
+      "email": "p33@dogfood.local",
+      "name": "Gabe Ortiz",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p34",
+      "email": "p34@dogfood.local",
+      "name": "Ines Moreau",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p35",
+      "email": "p35@dogfood.local",
+      "name": "Joon Kim",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p36",
+      "email": "p36@dogfood.local",
+      "name": "Kiara Das",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p37",
+      "email": "p37@dogfood.local",
+      "name": "Leo Brennan",
+      "role": "participant"
+    },
+    {
+      "id": "usr_p38",
+      "email": "p38@dogfood.local",
+      "name": "Maya Lopez",
+      "role": "participant"
+    }
+  ],
+  "checkerSessions": [
+    {
+      "userId": "usr_admin",
+      "token": "dfc_admin_4f9c2e7a1b8d60536e21",
+      "label": "checker: admin"
+    },
+    {
+      "userId": "usr_organizer",
+      "token": "dfc_organizer_8b1d3f5a7c9e20461a",
+      "label": "checker: organizer"
+    },
+    {
+      "userId": "usr_judge_a",
+      "token": "dfc_judge_a_2c4e6a8b0d1f39571b",
+      "label": "checker: judge A"
+    },
+    {
+      "userId": "usr_judge_b",
+      "token": "dfc_judge_b_9e7c5a3b1d2f40682c",
+      "label": "checker: judge B"
+    },
+    {
+      "userId": "usr_judge_f",
+      "token": "dfc_judge_f_5a1c9e3b7d2f60843d",
+      "label": "checker: track judge"
+    },
+    {
+      "userId": "usr_participant",
+      "token": "dfc_participant_7d3b1f9e5c2a48064e",
+      "label": "checker: participant"
+    },
+    {
+      "userId": "usr_participant2",
+      "token": "dfc_participant2_3e9a7c1d5b2f86024f",
+      "label": "checker: participant 2"
+    },
+    {
+      "userId": "usr_visitor",
+      "token": "dfc_visitor_1b5d9f3a7e2c64080a",
+      "label": "checker: visitor"
+    }
+  ],
+  "events": [
+    {
+      "id": "evt_01",
+      "slug": "sample-hack-2026",
+      "name": "Sample Hack 2026",
+      "tagline": "72 hours. One spec. Judged by the platform you build.",
+      "description": "Sample Hack 2026 is a 72-hour online sprint for builders of developer tools, applied AI and civic technology. Teams of one to four ship a working project, submit before the hard UTC deadline and are judged by a panel using a weighted rubric. Scores are normalized across judges so a strict judge cannot sink a project and a generous one cannot float it.",
+      "rules": "1. Teams of 1–4. One team per person.\n2. All code must be written during the event and published under an OSI-approved licence.\n3. The submission deadline is enforced by the server clock in UTC. There are no late submissions.\n4. Judges score against the published rubric; conflicts of interest are declared and excluded.\n5. Community voting is open to everyone; automated or duplicate votes are flagged and not counted.",
+      "location": "Online · Worldwide",
+      "status": "published",
+      "startsAt": "now-3d6h",
+      "submissionDeadline": "now-6h",
+      "judgingEndsAt": "now+7d",
+      "votingOpensAt": "now-6h",
+      "votingClosesAt": "now+2d",
+      "minTeamSize": 1,
+      "maxTeamSize": 4,
+      "votingMode": "open",
+      "votingStyle": "single",
+      "voteBudget": 3,
+      "reviewsPerSubmission": 3,
+      "organizers": [
+        "usr_organizer"
+      ],
+      "tracks": [
+        {
+          "id": "trk_01_tools",
+          "name": "Developer Tools",
+          "description": "Make developers faster, safer or happier."
+        },
+        {
+          "id": "trk_01_ai",
+          "name": "Applied AI",
+          "description": "Useful machine learning that runs where people are."
+        },
+        {
+          "id": "trk_01_civic",
+          "name": "Civic Tech",
+          "description": "Technology for communities and public services."
+        }
+      ],
+      "prizes": [
+        {
+          "name": "Grand Prize",
+          "description": "Best overall project across all tracks.",
+          "value": "₹80,000"
+        },
+        {
+          "name": "Runner-up",
+          "description": "Second place overall.",
+          "value": "₹50,000"
+        },
+        {
+          "name": "Best Developer Tool",
+          "description": "Top project in Developer Tools.",
+          "value": "₹15,000",
+          "trackId": "trk_01_tools"
+        },
+        {
+          "name": "Best Applied AI",
+          "description": "Top project in Applied AI.",
+          "value": "₹15,000",
+          "trackId": "trk_01_ai"
+        },
+        {
+          "name": "Best Civic Tech",
+          "description": "Top project in Civic Tech.",
+          "value": "₹15,000",
+          "trackId": "trk_01_civic"
+        },
+        {
+          "name": "Community Choice",
+          "description": "Most community votes after anti-abuse filtering.",
+          "value": "₹10,000"
+        }
+      ],
+      "questions": [
+        {
+          "id": "qst_01_hardest",
+          "label": "What was the hardest technical problem you solved?",
+          "kind": "textarea",
+          "required": true
+        },
+        {
+          "id": "qst_01_offline",
+          "label": "Does your project run fully offline?",
+          "kind": "boolean",
+          "required": false
+        },
+        {
+          "id": "qst_01_license",
+          "label": "Open-source licence",
+          "kind": "select",
+          "required": true,
+          "options": [
+            "MIT",
+            "Apache-2.0",
+            "GPL-3.0",
+            "MPL-2.0",
+            "Other OSI-approved"
+          ]
+        }
+      ],
+      "criteria": [
+        {
+          "id": "crt_01_impact",
+          "name": "Impact",
+          "description": "Does it solve a real problem for real people?",
+          "weight": 0.3,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_01_tech",
+          "name": "Technical depth",
+          "description": "Difficulty, correctness and engineering quality.",
+          "weight": 0.3,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_01_design",
+          "name": "Design & UX",
+          "description": "Is it usable, accessible and polished?",
+          "weight": 0.2,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_01_pitch",
+          "name": "Presentation",
+          "description": "Clarity of the demo and documentation.",
+          "weight": 0.2,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_01_ai_safety",
+          "name": "Responsible AI",
+          "description": "Privacy, bias and failure modes are handled.",
+          "weight": 0.15,
+          "maxScore": 10,
+          "trackId": "trk_01_ai"
+        }
+      ],
+      "judges": [
+        {
+          "userId": "usr_judge_a"
+        },
+        {
+          "userId": "usr_judge_b"
+        },
+        {
+          "userId": "usr_judge_c"
+        },
+        {
+          "userId": "usr_judge_d"
+        },
+        {
+          "userId": "usr_judge_e"
+        },
+        {
+          "userId": "usr_judge_f",
+          "trackIds": [
+            "trk_01_civic"
+          ]
+        }
+      ],
+      "teams": [
+        {
+          "id": "team_01_01",
+          "name": "Null Pointers",
+          "members": [
+            "usr_participant",
+            "usr_p01"
+          ],
+          "submission": {
+            "id": "sub_01_01",
+            "title": "Deadline Sentinel",
+            "tagline": "A server-clock-true countdown you can embed anywhere",
+            "description": "Deadline Sentinel is a tiny widget and CLI that shows the authoritative server-side time to every participant, flags client clock drift, and posts a warning to the team channel an hour before cutoff. It never trusts the browser clock.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/deadline-sentinel",
+            "demoVideoUrl": "https://videos.example.org/deadline-sentinel",
+            "liveUrl": "",
+            "techTags": [
+              "typescript",
+              "cli",
+              "time"
+            ],
+            "answers": {
+              "qst_01_hardest": "Clock drift detection without NTP: we estimate offset from round-trip timing to the portal.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.71
+          }
+        },
+        {
+          "id": "team_01_02",
+          "name": "Byte Club",
+          "members": [
+            "usr_p02",
+            "usr_p03"
+          ],
+          "submission": {
+            "id": "sub_01_02",
+            "title": "Schema Scout",
+            "tagline": "Visual, reviewable Postgres schema diffs",
+            "description": "Schema Scout renders two database schemas side by side, highlights breaking changes (dropped columns, narrowed types, missing indexes) and generates a reversible migration plan with a risk score.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/schema-scout",
+            "demoVideoUrl": "https://videos.example.org/schema-scout",
+            "liveUrl": "",
+            "techTags": [
+              "postgres",
+              "go",
+              "migrations"
+            ],
+            "answers": {
+              "qst_01_hardest": "Detecting renames versus drop-and-add without false positives.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.86
+          }
+        },
+        {
+          "id": "team_01_03",
+          "name": "Merge Conflict",
+          "members": [
+            "usr_p04",
+            "usr_p05",
+            "usr_p06"
+          ],
+          "submission": {
+            "id": "sub_01_03",
+            "title": "Flaky Hunter",
+            "tagline": "Finds and quarantines flaky tests before they waste your CI minutes",
+            "description": "Flaky Hunter replays your test suite under controlled randomness (seed, ordering, timing) and uses Bayesian failure-rate estimates to separate flaky tests from real regressions.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/flaky-hunter",
+            "demoVideoUrl": "https://videos.example.org/flaky-hunter",
+            "liveUrl": "",
+            "techTags": [
+              "python",
+              "ci",
+              "testing"
+            ],
+            "answers": {
+              "qst_01_hardest": "Reproducing timing-dependent failures deterministically.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.62
+          }
+        },
+        {
+          "id": "team_01_04",
+          "name": "Stack Smashers",
+          "members": [
+            "usr_p07"
+          ],
+          "submission": {
+            "id": "sub_01_04",
+            "title": "Offline Docs",
+            "tagline": "Instant full-text search across your dependencies' docs, no network",
+            "description": "Offline Docs indexes the documentation of every package in your lockfile into a 20 MB local index and serves sub-10ms search in the terminal and editor.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/offline-docs",
+            "demoVideoUrl": "https://videos.example.org/offline-docs",
+            "liveUrl": "",
+            "techTags": [
+              "rust",
+              "search",
+              "offline"
+            ],
+            "answers": {
+              "qst_01_hardest": "Fitting a BM25 index with typo tolerance into a small memory budget.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.78
+          }
+        },
+        {
+          "id": "team_01_05",
+          "name": "The Linters",
+          "members": [
+            "usr_p08",
+            "usr_p09"
+          ],
+          "submission": {
+            "id": "sub_01_05",
+            "title": "Commit Coach",
+            "tagline": "Commit message feedback that actually teaches",
+            "description": "Commit Coach reviews staged changes and suggests a conventional-commit message, explaining each suggestion so junior developers learn the convention rather than copy it.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/commit-coach",
+            "demoVideoUrl": "https://videos.example.org/commit-coach",
+            "liveUrl": "",
+            "techTags": [
+              "typescript",
+              "git",
+              "dx"
+            ],
+            "answers": {
+              "qst_01_hardest": "Summarising large diffs without a language model.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.41
+          }
+        },
+        {
+          "id": "team_01_06",
+          "name": "Race Condition",
+          "members": [
+            "usr_p10",
+            "usr_p11"
+          ],
+          "submission": {
+            "id": "sub_01_06",
+            "title": "Lock Radar",
+            "tagline": "Visualise lock contention in production Postgres",
+            "description": "Lock Radar samples pg_locks and pg_stat_activity to build a live wait-for graph, spotting deadlock cycles and the queries that cause them.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/lock-radar",
+            "demoVideoUrl": "https://videos.example.org/lock-radar",
+            "liveUrl": "",
+            "techTags": [
+              "postgres",
+              "observability",
+              "graphs"
+            ],
+            "answers": {
+              "qst_01_hardest": "Sampling often enough to catch short waits without adding load.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.55
+          }
+        },
+        {
+          "id": "team_01_07",
+          "name": "Gradient Descent",
+          "members": [
+            "usr_p12",
+            "usr_p13"
+          ],
+          "submission": {
+            "id": "sub_01_07",
+            "title": "Whisper Notes",
+            "tagline": "On-device meeting transcription and action items",
+            "description": "Whisper Notes runs a quantised speech model locally, diarises speakers and extracts action items, so sensitive meetings never leave the laptop.",
+            "trackId": "trk_01_ai",
+            "repoUrl": "https://github.com/dogfood-demo/whisper-notes",
+            "demoVideoUrl": "https://videos.example.org/whisper-notes",
+            "liveUrl": "",
+            "techTags": [
+              "python",
+              "speech",
+              "on-device"
+            ],
+            "answers": {
+              "qst_01_hardest": "Real-time diarisation on a CPU-only laptop.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.83
+          }
+        },
+        {
+          "id": "team_01_08",
+          "name": "Overfitters",
+          "members": [
+            "usr_p14",
+            "usr_p15",
+            "usr_p16"
+          ],
+          "submission": {
+            "id": "sub_01_08",
+            "title": "Tiny Tutor",
+            "tagline": "A patient maths tutor that works on a 2 GB phone, offline",
+            "description": "Tiny Tutor pairs a small local language model with a curriculum graph so students in low-bandwidth regions get step-by-step hints instead of answers.",
+            "trackId": "trk_01_ai",
+            "repoUrl": "https://github.com/dogfood-demo/tiny-tutor",
+            "demoVideoUrl": "https://videos.example.org/tiny-tutor",
+            "liveUrl": "",
+            "techTags": [
+              "kotlin",
+              "llm",
+              "education"
+            ],
+            "answers": {
+              "qst_01_hardest": "Keeping a 1B-parameter model responsive on low-end Android devices.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.91
+          }
+        },
+        {
+          "id": "team_01_09",
+          "name": "Tensor Tots",
+          "members": [
+            "usr_p17",
+            "usr_p18"
+          ],
+          "submission": {
+            "id": "sub_01_09",
+            "title": "Alt-Text Lens",
+            "tagline": "Meaningful image descriptions for screen-reader users",
+            "description": "Alt-Text Lens generates context-aware alt text for images in documents and flags decorative images, with a review queue for editors.",
+            "trackId": "trk_01_ai",
+            "repoUrl": "https://github.com/dogfood-demo/alt-text-lens",
+            "demoVideoUrl": "https://videos.example.org/alt-text-lens",
+            "liveUrl": "",
+            "techTags": [
+              "accessibility",
+              "vision",
+              "typescript"
+            ],
+            "answers": {
+              "qst_01_hardest": "Evaluating description quality with blind and low-vision testers.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.67
+          }
+        },
+        {
+          "id": "team_01_10",
+          "name": "Prompt Injection",
+          "members": [
+            "usr_p19",
+            "usr_p20"
+          ],
+          "submission": {
+            "id": "sub_01_10",
+            "title": "Guardrail Bench",
+            "tagline": "A reproducible benchmark for prompt-injection defences",
+            "description": "Guardrail Bench ships 1,200 adversarial cases and a harness that scores guardrail libraries on precision, recall and latency, fully offline.",
+            "trackId": "trk_01_ai",
+            "repoUrl": "https://github.com/dogfood-demo/guardrail-bench",
+            "demoVideoUrl": "https://videos.example.org/guardrail-bench",
+            "liveUrl": "",
+            "techTags": [
+              "security",
+              "llm",
+              "benchmark"
+            ],
+            "answers": {
+              "qst_01_hardest": "Writing attacks that generalise instead of overfitting to one model.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.58
+          }
+        },
+        {
+          "id": "team_01_11",
+          "name": "Latent Space",
+          "members": [
+            "usr_p21",
+            "usr_p22"
+          ],
+          "submission": {
+            "id": "sub_01_11",
+            "title": "Crop Doctor",
+            "tagline": "Plant disease detection from a phone photo, no signal needed",
+            "description": "Crop Doctor classifies 38 crop diseases on-device and recommends locally available treatments, designed with smallholder farmers.",
+            "trackId": "trk_01_ai",
+            "repoUrl": "https://github.com/dogfood-demo/crop-doctor",
+            "demoVideoUrl": "https://videos.example.org/crop-doctor",
+            "liveUrl": "",
+            "techTags": [
+              "mobile",
+              "vision",
+              "agriculture"
+            ],
+            "answers": {
+              "qst_01_hardest": "Collecting field photos that match real lighting conditions.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.74
+          }
+        },
+        {
+          "id": "team_01_12",
+          "name": "Open Ballot",
+          "members": [
+            "usr_p23",
+            "usr_p24"
+          ],
+          "submission": {
+            "id": "sub_01_12",
+            "title": "Ward Watch",
+            "tagline": "Residents report, the council responds, everyone sees the SLA",
+            "description": "Ward Watch is a municipal issue tracker with public response-time dashboards and duplicate report merging, deployable on a single council server.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/ward-watch",
+            "demoVideoUrl": "https://videos.example.org/ward-watch",
+            "liveUrl": "",
+            "techTags": [
+              "civic",
+              "maps",
+              "postgres"
+            ],
+            "answers": {
+              "qst_01_hardest": "Merging duplicate reports by location and description similarity.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.64
+          }
+        },
+        {
+          "id": "team_01_13",
+          "name": "Public Good",
+          "members": [
+            "usr_p25",
+            "usr_p26"
+          ],
+          "submission": {
+            "id": "sub_01_13",
+            "title": "Transit Pulse",
+            "tagline": "Crowd-sourced bus reliability for cities without open data",
+            "description": "Transit Pulse lets riders tap when a bus arrives and turns those taps into reliability scores per route and stop, with privacy-preserving aggregation.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/transit-pulse",
+            "demoVideoUrl": "https://videos.example.org/transit-pulse",
+            "liveUrl": "",
+            "techTags": [
+              "mobility",
+              "privacy",
+              "react"
+            ],
+            "answers": {
+              "qst_01_hardest": "Making aggregated data useful without exposing individual trips.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.47
+          }
+        },
+        {
+          "id": "team_01_14",
+          "name": "Civic Hackers",
+          "members": [
+            "usr_p27",
+            "usr_p28"
+          ],
+          "submission": {
+            "id": "sub_01_14",
+            "title": "Budget Lens",
+            "tagline": "Explore your city's budget like a map",
+            "description": "Budget Lens turns council budget PDFs into an explorable treemap with year-over-year diffs and plain-language explanations.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/budget-lens",
+            "demoVideoUrl": "https://videos.example.org/budget-lens",
+            "liveUrl": "",
+            "techTags": [
+              "data-viz",
+              "pdf",
+              "civic"
+            ],
+            "answers": {
+              "qst_01_hardest": "Extracting tables reliably from inconsistent PDF layouts.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.69
+          }
+        },
+        {
+          "id": "team_01_15",
+          "name": "Mesh Makers",
+          "members": [
+            "usr_p29",
+            "usr_p30",
+            "usr_p31"
+          ],
+          "submission": {
+            "id": "sub_01_15",
+            "title": "FloodNet",
+            "tagline": "LoRa mesh flood alerts that work when the grid is down",
+            "description": "FloodNet uses cheap LoRa river sensors and a mesh of solar relays to push flood warnings to villages downstream, with no dependence on cellular networks.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/floodnet",
+            "demoVideoUrl": "https://videos.example.org/floodnet",
+            "liveUrl": "",
+            "techTags": [
+              "hardware",
+              "lora",
+              "resilience"
+            ],
+            "answers": {
+              "qst_01_hardest": "Keeping relays alive through a week of monsoon cloud cover.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.88
+          }
+        },
+        {
+          "id": "team_01_16",
+          "name": "Data Commons",
+          "members": [
+            "usr_p32",
+            "usr_p33"
+          ],
+          "submission": {
+            "id": "sub_01_16",
+            "title": "Clinic Queue",
+            "tagline": "Fair, SMS-free queueing for walk-in clinics",
+            "description": "Clinic Queue gives patients a paper ticket with a QR code and shows a live queue on a TV, so no one waits outside and priority cases are visible to staff.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/clinic-queue",
+            "demoVideoUrl": "https://videos.example.org/clinic-queue",
+            "liveUrl": "",
+            "techTags": [
+              "health",
+              "qr",
+              "offline"
+            ],
+            "answers": {
+              "qst_01_hardest": "Designing for clinics with one shared computer and unreliable power.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.52
+          }
+        },
+        {
+          "id": "team_01_17",
+          "name": "Time Travellers",
+          "members": [
+            "usr_p34",
+            "usr_p35"
+          ],
+          "submission": {
+            "id": "sub_01_17",
+            "title": "Retro Relay",
+            "tagline": "A community radio schedule for neighbourhood announcements",
+            "description": "Retro Relay publishes neighbourhood announcements to low-power FM and a web page simultaneously.",
+            "trackId": "trk_01_civic",
+            "repoUrl": "https://github.com/dogfood-demo/retro-relay",
+            "demoVideoUrl": "https://videos.example.org/retro-relay",
+            "liveUrl": "",
+            "techTags": [
+              "radio",
+              "community"
+            ],
+            "answers": {
+              "qst_01_hardest": "Scheduling around licensing windows.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "submitted",
+            "submittedAt": "now-8h",
+            "eligibility": "ineligible",
+            "eligibilityNote": "Repository history shows the project was built before kickoff.",
+            "quality": 0.6
+          }
+        },
+        {
+          "id": "team_01_18",
+          "name": "Late Night Crew",
+          "members": [
+            "usr_p36"
+          ],
+          "submission": {
+            "id": "sub_01_18",
+            "title": "Half Baked",
+            "tagline": "We ran out of time",
+            "description": "An unfinished idea about recipe sharing.",
+            "trackId": "trk_01_tools",
+            "repoUrl": "https://github.com/dogfood-demo/half-baked",
+            "demoVideoUrl": "https://videos.example.org/half-baked",
+            "liveUrl": "",
+            "techTags": [
+              "wip"
+            ],
+            "answers": {
+              "qst_01_hardest": "Time management.",
+              "qst_01_offline": true,
+              "qst_01_license": "MIT"
+            },
+            "status": "draft",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.3
+          }
+        }
+      ],
+      "judging": {
+        "assign": true,
+        "noise": 0.7,
+        "judgeProfiles": {
+          "usr_judge_a": {
+            "leniency": -2.6,
+            "spread": 0.75,
+            "completion": 1.0
+          },
+          "usr_judge_b": {
+            "leniency": 2.4,
+            "spread": 0.55,
+            "completion": 1.0
+          },
+          "usr_judge_c": {
+            "leniency": 0.0,
+            "spread": 1.0,
+            "completion": 1.0
+          },
+          "usr_judge_d": {
+            "leniency": -0.6,
+            "spread": 1.1,
+            "completion": 0.8
+          },
+          "usr_judge_e": {
+            "leniency": 0.9,
+            "spread": 0.9,
+            "completion": 1.0
+          },
+          "usr_judge_f": {
+            "leniency": 0.3,
+            "spread": 1.0,
+            "completion": 0.6
+          }
+        },
+        "pairwise": {
+          "judges": [
+            "usr_judge_c",
+            "usr_judge_e"
+          ],
+          "comparisonsPerJudge": 14
+        },
+        "conflicts": [
+          {
+            "judgeId": "usr_judge_c",
+            "submissionId": "sub_01_13",
+            "reason": "Former colleague of a team member"
+          }
+        ]
+      },
+      "votes": {
+        "voters": 48,
+        "perVoter": 2,
+        "sybil": {
+          "submissionId": "sub_01_05",
+          "voters": 7
+        }
+      },
+      "comments": [
+        {
+          "submissionId": "sub_01_08",
+          "userId": "usr_visitor",
+          "body": "This is exactly what rural schools need. Does it support Hindi?"
+        },
+        {
+          "submissionId": "sub_01_08",
+          "userId": "usr_p15",
+          "body": "Hindi and Tamil curricula are in progress — thanks!"
+        },
+        {
+          "submissionId": "sub_01_15",
+          "userId": "usr_p02",
+          "body": "The relay power budget write-up is fantastic."
+        },
+        {
+          "submissionId": "sub_01_02",
+          "userId": "usr_visitor",
+          "body": "Would love a GitHub Action for this."
+        },
+        {
+          "submissionId": "sub_01_07",
+          "userId": "usr_p24",
+          "body": "Diarisation accuracy in the demo is impressive for CPU-only."
+        }
+      ],
+      "pendingJudgeInvites": [
+        {
+          "note": "Guest judge from a sponsor",
+          "trackIds": [
+            "trk_01_ai"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt_02",
+      "slug": "autumn-build-week",
+      "name": "Autumn Build Week 2026",
+      "tagline": "Ship something open source in a week. Submissions are open now.",
+      "description": "A relaxed, week-long build for open-source tools and learning resources. Form a team with an invite link, keep your draft up to date and lock it in before the countdown hits zero.",
+      "rules": "Teams of 1–3. Drafts can be edited until the deadline; after that the server rejects every change.",
+      "location": "Online",
+      "status": "published",
+      "startsAt": "now-1d",
+      "submissionDeadline": "now+3d",
+      "judgingEndsAt": "now+10d",
+      "votingOpensAt": "now+3d",
+      "votingClosesAt": "now+5d",
+      "maxTeamSize": 3,
+      "votingMode": "email",
+      "votingStyle": "quadratic",
+      "voteBudget": 25,
+      "reviewsPerSubmission": 2,
+      "organizers": [
+        "usr_organizer"
+      ],
+      "registrations": [
+        "usr_participant2",
+        "usr_p37"
+      ],
+      "tracks": [
+        {
+          "id": "trk_02_oss",
+          "name": "Open Source",
+          "description": "Libraries, tools and infrastructure."
+        },
+        {
+          "id": "trk_02_edu",
+          "name": "Education",
+          "description": "Teaching and learning resources."
+        }
+      ],
+      "prizes": [
+        {
+          "name": "Best Project",
+          "description": "Highest normalized score.",
+          "value": "₹25,000"
+        },
+        {
+          "name": "Community Choice",
+          "description": "Quadratic community vote.",
+          "value": "₹5,000"
+        }
+      ],
+      "questions": [
+        {
+          "id": "qst_02_license",
+          "label": "Licence",
+          "kind": "select",
+          "required": true,
+          "options": [
+            "MIT",
+            "Apache-2.0",
+            "GPL-3.0"
+          ]
+        },
+        {
+          "id": "qst_02_help",
+          "label": "What kind of help would you like from mentors?",
+          "kind": "textarea"
+        }
+      ],
+      "criteria": [
+        {
+          "id": "crt_02_useful",
+          "name": "Usefulness",
+          "weight": 0.4,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_02_quality",
+          "name": "Code quality",
+          "weight": 0.35,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_02_docs",
+          "name": "Documentation",
+          "weight": 0.25,
+          "maxScore": 5
+        }
+      ],
+      "judges": [
+        {
+          "userId": "usr_judge_a"
+        },
+        {
+          "userId": "usr_judge_c"
+        }
+      ],
+      "teams": [
+        {
+          "id": "team_02_01",
+          "name": "Night Owls",
+          "members": [
+            "usr_participant"
+          ],
+          "submission": {
+            "id": "sub_02_01",
+            "title": "Pantry Planner",
+            "tagline": "Turn what's in your cupboard into a week of meals",
+            "description": "Pantry Planner suggests recipes from what you already have and builds a shopping list for the gaps.",
+            "trackId": "trk_02_oss",
+            "repoUrl": "https://github.com/dogfood-demo/pantry-planner",
+            "demoVideoUrl": "https://videos.example.org/pantry-planner",
+            "liveUrl": "",
+            "techTags": [
+              "svelte",
+              "food"
+            ],
+            "answers": {},
+            "status": "draft",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.6
+          }
+        },
+        {
+          "id": "team_02_02",
+          "name": "Pixel Pushers",
+          "members": [
+            "usr_p38",
+            "usr_p36"
+          ],
+          "submission": {
+            "id": "sub_02_02",
+            "title": "Colour Contrast Coach",
+            "tagline": "Teach designers WCAG contrast by example",
+            "description": "An interactive tutorial that fixes contrast failures live in your palette.",
+            "trackId": "trk_02_edu",
+            "repoUrl": "https://github.com/dogfood-demo/colour-contrast-coach",
+            "demoVideoUrl": "https://videos.example.org/colour-contrast-coach",
+            "liveUrl": "",
+            "techTags": [
+              "a11y",
+              "design"
+            ],
+            "answers": {},
+            "status": "draft",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.7
+          }
+        },
+        {
+          "id": "team_02_03",
+          "name": "Quantum Quokkas",
+          "members": [
+            "usr_p37"
+          ],
+          "submission": {
+            "id": "sub_02_03",
+            "title": "Regex Dojo",
+            "tagline": "Learn regular expressions through tiny daily katas",
+            "description": "Regex Dojo serves one bite-sized regex challenge per day with instant, visual feedback on what your pattern matched and why.",
+            "trackId": "trk_02_edu",
+            "repoUrl": "https://github.com/dogfood-demo/regex-dojo",
+            "demoVideoUrl": "https://videos.example.org/regex-dojo",
+            "liveUrl": "",
+            "techTags": [
+              "education",
+              "regex",
+              "typescript"
+            ],
+            "answers": {
+              "qst_02_license": "MIT",
+              "qst_02_help": "Feedback on the difficulty curve."
+            },
+            "status": "submitted",
+            "submittedAt": "now-2h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.75
+          }
+        }
+      ],
+      "pendingJudgeInvites": [
+        {
+          "note": "Mentor from the community",
+          "trackIds": []
+        }
+      ]
+    },
+    {
+      "id": "evt_03",
+      "slug": "spring-hack-2026",
+      "name": "Spring Hack 2026",
+      "tagline": "Last season's hackathon — results, certificates and signed judge records.",
+      "description": "A 48-hour spring hackathon. Judging is complete, results are published and every judge and participant received a signed, verifiable record.",
+      "rules": "Teams of 1–4. Quadratic community voting with 25 credits per voter.",
+      "location": "Online",
+      "status": "archived",
+      "startsAt": "now-120d",
+      "submissionDeadline": "now-118d",
+      "judgingEndsAt": "now-110d",
+      "votingOpensAt": "now-118d",
+      "votingClosesAt": "now-115d",
+      "votingMode": "open",
+      "votingStyle": "quadratic",
+      "voteBudget": 25,
+      "reviewsPerSubmission": 3,
+      "organizers": [
+        "usr_organizer",
+        "usr_organizer2"
+      ],
+      "tracks": [],
+      "prizes": [
+        {
+          "name": "Winner",
+          "description": "Top normalized score.",
+          "value": "₹30,000"
+        }
+      ],
+      "criteria": [
+        {
+          "id": "crt_03_idea",
+          "name": "Idea",
+          "weight": 1,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_03_build",
+          "name": "Build",
+          "weight": 2,
+          "maxScore": 10
+        },
+        {
+          "id": "crt_03_demo",
+          "name": "Demo",
+          "weight": 1,
+          "maxScore": 10
+        }
+      ],
+      "judges": [
+        {
+          "userId": "usr_judge_a"
+        },
+        {
+          "userId": "usr_judge_b"
+        },
+        {
+          "userId": "usr_judge_c"
+        },
+        {
+          "userId": "usr_judge_e"
+        }
+      ],
+      "teams": [
+        {
+          "id": "team_03_01",
+          "name": "Team Pocket",
+          "members": [
+            "usr_p01",
+            "usr_p02"
+          ],
+          "submission": {
+            "id": "sub_03_01",
+            "title": "Pocket Planetarium",
+            "tagline": "Offline star maps for night-sky walks",
+            "description": "Pocket Planetarium: Offline star maps for night-sky walks. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/pocket-planetarium",
+            "demoVideoUrl": "https://videos.example.org/pocket-planetarium",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.82
+          }
+        },
+        {
+          "id": "team_03_02",
+          "name": "Team Queue",
+          "members": [
+            "usr_p03"
+          ],
+          "submission": {
+            "id": "sub_03_02",
+            "title": "Queue Tips",
+            "tagline": "Shorter lines at the canteen with a 3-button kiosk",
+            "description": "Queue Tips: Shorter lines at the canteen with a 3-button kiosk. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/queue-tips",
+            "demoVideoUrl": "https://videos.example.org/queue-tips",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.55
+          }
+        },
+        {
+          "id": "team_03_03",
+          "name": "Team Leaf",
+          "members": [
+            "usr_p04",
+            "usr_p05"
+          ],
+          "submission": {
+            "id": "sub_03_03",
+            "title": "Leaf Ledger",
+            "tagline": "Community garden plot sharing",
+            "description": "Leaf Ledger: Community garden plot sharing. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/leaf-ledger",
+            "demoVideoUrl": "https://videos.example.org/leaf-ledger",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.64
+          }
+        },
+        {
+          "id": "team_03_04",
+          "name": "Team Bug",
+          "members": [
+            "usr_p06",
+            "usr_p07"
+          ],
+          "submission": {
+            "id": "sub_03_04",
+            "title": "Bug Bounty Board",
+            "tagline": "A friendly on-ramp to responsible disclosure",
+            "description": "Bug Bounty Board: A friendly on-ramp to responsible disclosure. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/bug-bounty-board",
+            "demoVideoUrl": "https://videos.example.org/bug-bounty-board",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.71
+          }
+        },
+        {
+          "id": "team_03_05",
+          "name": "Team Sign",
+          "members": [
+            "usr_p08",
+            "usr_p09",
+            "usr_p10"
+          ],
+          "submission": {
+            "id": "sub_03_05",
+            "title": "Sign Sprint",
+            "tagline": "Learn sign language alphabets with your webcam",
+            "description": "Sign Sprint: Learn sign language alphabets with your webcam. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/sign-sprint",
+            "demoVideoUrl": "https://videos.example.org/sign-sprint",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.9
+          }
+        },
+        {
+          "id": "team_03_06",
+          "name": "Team Repair",
+          "members": [
+            "usr_p11"
+          ],
+          "submission": {
+            "id": "sub_03_06",
+            "title": "Repair Radar",
+            "tagline": "Find someone nearby who can fix it",
+            "description": "Repair Radar: Find someone nearby who can fix it. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/repair-radar",
+            "demoVideoUrl": "https://videos.example.org/repair-radar",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.48
+          }
+        },
+        {
+          "id": "team_03_07",
+          "name": "Team Study",
+          "members": [
+            "usr_p12",
+            "usr_p13"
+          ],
+          "submission": {
+            "id": "sub_03_07",
+            "title": "Study Swarm",
+            "tagline": "Anonymous study groups by course code",
+            "description": "Study Swarm: Anonymous study groups by course code. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/study-swarm",
+            "demoVideoUrl": "https://videos.example.org/study-swarm",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.6
+          }
+        },
+        {
+          "id": "team_03_08",
+          "name": "Team Water",
+          "members": [
+            "usr_p14",
+            "usr_p15"
+          ],
+          "submission": {
+            "id": "sub_03_08",
+            "title": "Water Watch",
+            "tagline": "Borewell level logging for farmers",
+            "description": "Water Watch: Borewell level logging for farmers. Built in 48 hours during Spring Hack 2026.",
+            "trackId": null,
+            "repoUrl": "https://github.com/dogfood-demo/water-watch",
+            "demoVideoUrl": "https://videos.example.org/water-watch",
+            "liveUrl": "",
+            "techTags": [
+              "spring-hack"
+            ],
+            "answers": {},
+            "status": "submitted",
+            "submittedAt": "now-118d1h",
+            "eligibility": "eligible",
+            "eligibilityNote": "",
+            "quality": 0.77
+          }
+        }
+      ],
+      "judging": {
+        "assign": true,
+        "noise": 0.6,
+        "judgeProfiles": {
+          "usr_judge_a": {
+            "leniency": -2.0,
+            "spread": 0.8
+          },
+          "usr_judge_b": {
+            "leniency": 2.0,
+            "spread": 0.6
+          }
+        },
+        "pairwise": {
+          "judges": [
+            "usr_judge_c"
+          ],
+          "comparisonsPerJudge": 10
+        }
+      },
+      "votes": {
+        "voters": 30,
+        "perVoter": 3
+      },
+      "publishResultsAt": "now-109d",
+      "issueRecords": true
+    },
+    {
+      "id": "evt_04",
+      "slug": "winter-jam-2027",
+      "name": "Winter Jam 2027",
+      "tagline": "Draft — only its organizers can see this.",
+      "description": "Planning in progress.",
+      "status": "draft",
+      "startsAt": "now+60d",
+      "submissionDeadline": "now+63d",
+      "organizers": [
+        "usr_organizer2"
+      ],
+      "tracks": [
+        {
+          "id": "trk_04_games",
+          "name": "Games",
+          "description": "Small games with big ideas."
+        }
+      ],
+      "criteria": [
+        {
+          "id": "crt_04_fun",
+          "name": "Fun",
+          "weight": 1,
+          "maxScore": 10
+        }
+      ]
+    }
+  ]
+}

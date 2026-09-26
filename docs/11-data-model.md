@@ -316,3 +316,14 @@ Archived ◄── Score Export ◄── Z-Score Normalized ◄── Evaluated
 
 ### UNKNOWN
 * [ ] Specific internal database runner schema requirements from organizers beyond `.dogfood.toml`
+
+---
+
+## 11. Implemented Schema
+
+The implemented schema is documented in the repository-root **`DATA-MODEL.md`** (ER diagram, every table, the database-enforced rules, the RLS matrix, indexes, fixtures and bundle formats). Source of truth: `src/api/migrations/001_schema.sql`, `002_security.sql`, `003_harden_secrets.sql`. Decisions that refined this planning document during implementation:
+
+* One-team-per-person and one-submission-per-team are `UNIQUE` constraints; cross-event references are prevented with composite foreign keys `(x_id, event_id)`.
+* Ballot ownership columns are derived by trigger from the assignment, and score bounds are checked by trigger — never trusted from the writer.
+* Normalization runs are stored as complete JSON snapshots (inputs, per-judge statistics, every normalized entry, invariants) so any published ranking can be re-derived; `published_results` is the public projection without per-judge data.
+* Secrets (HMAC key, Ed25519 signing key) live in `settings`, unreadable by the request role.

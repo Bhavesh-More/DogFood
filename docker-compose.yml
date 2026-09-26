@@ -1,39 +1,56 @@
-name: dogfood-2026
+# One command, fully local:  docker compose up --build
+# App: http://localhost:8000   ·   API docs: http://localhost:8000/api-docs
+name: dogfood
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: dogfood-2026-api:local
-    command: pnpm --filter api start
+  db:
+    image: postgres:16-alpine
     environment:
-      NODE_ENV: production
-      PORT: "3001"
-    ports:
-      - "3001:3001"
+      POSTGRES_DB: dogfood
+      POSTGRES_USER: dogfood
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dogfood-local-only}
+    volumes:
+      - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U dogfood -d dogfood"]
+      interval: 3s
       timeout: 3s
-      retries: 5
-      start_period: 10s
+      retries: 30
+    # Not published to the host, and on a network with no route out.
+    networks: [backend]
     restart: unless-stopped
 
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: dogfood-2026-web:local
-    command: pnpm --filter web start
-    environment:
-      NODE_ENV: production
-      HOSTNAME: "0.0.0.0"
-      PORT: "3000"
-      API_URL: http://api:3001
-    ports:
-      - "3000:3000"
+  app:
+    build: .
+    image: dogfood-portal:local
     depends_on:
-      api:
+      db:
         condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://dogfood:${POSTGRES_PASSWORD:-dogfood-local-only}@db:5432/dogfood
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8000}
+      # Leave empty to generate a random secret on first boot (stored in the DB).
+      APP_SECRET: ${APP_SECRET:-}
+      SEED_ON_BOOT: ${SEED_ON_BOOT:-true}
+      CHECKER_SESSIONS: ${CHECKER_SESSIONS:-true}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      WEBHOOK_WORKER: "true"
+    ports:
+      - "${PORT:-8000}:8000"
+    volumes:
+      - uploads:/app/data/uploads
+    # Lets webhooks reach receivers running on the host (e.g. the acceptance runner).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [backend, edge]
     restart: unless-stopped
+
+networks:
+  backend:
+    internal: true
+  edge: {}
+
+volumes:
+  db-data:
+  uploads:

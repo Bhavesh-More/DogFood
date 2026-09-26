@@ -118,7 +118,15 @@ Actionable instructions derived directly from hackathon rules for AI coding agen
 
 ---
 
-## 8. Important Unknowns
+## 8. Research Updates (2026-09-25)
+
+* **Acceptance command:** `python3 acceptance/run.py .dogfood.toml > acceptance-report.txt` — the runner reads base URL and **stable per-role session tokens** from `.dogfood.toml`, and finds `fixtures.json` at the repository root.
+* **Overclaiming penalty:** a tier claimed in `.dogfood.toml` but not confirmed by the suite is scored at the highest *verified* tier, and "overclaiming costs more than the tier was worth".
+* **Team invites** must be **single-use and expiring**.
+* **Isolation is judged by direct API calls**, not by the UI: "If a judge can make an API request and retrieve another judge's ballot, the system has failed."
+* **Containers:** "Everything runs in the containers defined in `docker-compose.yml` … the app works with the network cable unplugged."
+
+## 9. Important Unknowns
 
 Information that is missing, unstated, or subject to configuration in the provided sources:
 
@@ -128,7 +136,7 @@ Information that is missing, unstated, or subject to configuration in the provid
 
 ---
 
-## 9. Agent Checklist
+## 10. Agent Checklist
 
 * [ ] All mandatory requirements satisfied (Tier 1 core features, UTC deadline, RBAC)
 * [ ] Technology restrictions satisfied (Docker containerized, zero external cloud dependencies)
