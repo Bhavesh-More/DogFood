@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router";
 import type { CriterionDto, EventDto } from "@dogfood/core";
+import { AnnouncementList, useAnnouncements } from "../components/Announcements";
 import { Countdown } from "../components/Countdown";
 import { PhasePill } from "../components/EventCard";
 import { get, post, errorMessage } from "../lib/api";
@@ -11,7 +12,7 @@ import { useSession } from "../lib/session";
 import { formatDateTime, formatUtc } from "../lib/time";
 import { Banner, Button, Card, ErrorState, GeneratedArt, Icon, LinkButton, PageLoader, Pill, Shape, Tabs, useToast, type IconName } from "../ui";
 
-type Tab = "overview" | "timeline" | "prizes" | "rubric" | "rules";
+type Tab = "overview" | "news" | "timeline" | "prizes" | "rubric" | "rules";
 
 function Paragraphs({ text }: { text: string }) {
   return (
@@ -149,6 +150,8 @@ export function EventPage() {
   const { slug } = useParams();
   const event = useEvent(slug);
   const [tab, setTab] = useState<Tab>("overview");
+  const news = useAnnouncements(event.data?.id ?? "");
+  const pinned = news.data?.filter((a) => a.pinned) ?? [];
   if (event.isPending) return <PageLoader label="Loading event" />;
   if (event.error) return <ErrorState error={event.error} onRetry={() => event.refetch()} />;
   const e = event.data;
@@ -184,6 +187,7 @@ export function EventPage() {
             onChange={setTab}
             tabs={[
               { value: "overview", label: "Overview", icon: "article" },
+              { value: "news", label: "News", icon: "campaign", badge: news.data?.length || undefined },
               { value: "timeline", label: "Timeline", icon: "schedule" },
               { value: "prizes", label: `Tracks & prizes`, icon: "trophy" },
               { value: "rubric", label: "Judging", icon: "balance" },
@@ -191,8 +195,15 @@ export function EventPage() {
             ]}
           />
           <div className="py-6" role="tabpanel">
-            {tab === "overview" ? (
+            {tab === "news" ? (
+              <AnnouncementList eventId={e.id} emptyHint="Organizer news and schedule changes will show up here." />
+            ) : tab === "overview" ? (
               <div className="flex flex-col gap-6">
+                {pinned.length ? (
+                  <div className="flex flex-col gap-2">
+                    <AnnouncementList eventId={e.id} limit={pinned.length} />
+                  </div>
+                ) : null}
                 <Paragraphs text={e.description || "No description yet."} />
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <Card variant="primary" className="flex flex-col gap-1">
