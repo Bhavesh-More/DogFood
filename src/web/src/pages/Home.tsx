@@ -3,7 +3,9 @@ import type { EventSummaryDto } from "@dogfood/core";
 import { EventCard } from "../components/EventCard";
 import { get } from "../lib/api";
 import { useSession } from "../lib/session";
-import { Card, Icon, LinkButton, SectionHeader, Shape, Skeleton, type IconName, type ShapeName } from "../ui";
+import { roleTour } from "../tour/steps";
+import { useTour } from "../tour/TourProvider";
+import { Button, Card, Icon, LinkButton, SectionHeader, Shape, Skeleton, type IconName, type ShapeName } from "../ui";
 
 const PIPELINE: { label: string; icon: IconName; shape: ShapeName }[] = [
   { label: "Registration", icon: "how_to_reg", shape: "cookie9" },
@@ -38,6 +40,8 @@ function BiasIllustration() {
 
 export function HomePage() {
   const { user } = useSession();
+  const { demo, run } = useTour();
+  const quickTour = () => run(roleTour(user?.role ?? null));
   const events = useQuery({ queryKey: ["events"], queryFn: () => get<EventSummaryDto[]>("/api/events") });
   const live = (events.data ?? []).filter((e) => e.phase !== "archived");
   const past = (events.data ?? []).filter((e) => e.phase === "archived" || e.phase === "results");
@@ -81,6 +85,14 @@ export function HomePage() {
                 Create an account
               </LinkButton>
             )}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button variant="text" icon="play_circle" onClick={demo}>
+              Watch the full feature demo
+            </Button>
+            <Button variant="text" icon="explore" onClick={quickTour}>
+              Quick tour
+            </Button>
           </div>
         </div>
       </section>

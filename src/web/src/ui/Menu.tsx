@@ -11,7 +11,7 @@ interface MenuItem {
 }
 
 /** Small anchored menu with outside-click and Escape handling. */
-export function Menu({ trigger, items, header, align = "end" }: { trigger: (props: { open: boolean; toggle: () => void }) => ReactNode; items: MenuItem[]; header?: ReactNode; align?: "start" | "end" }) {
+export function Menu({ trigger, items, header, align = "end", placement = "bottom" }: { trigger: (props: { open: boolean; toggle: () => void }) => ReactNode; items: MenuItem[]; header?: ReactNode; align?: "start" | "end"; placement?: "bottom" | "top" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -36,8 +36,11 @@ export function Menu({ trigger, items, header, align = "end" }: { trigger: (prop
         <div
           role="menu"
           className={cx(
-            "absolute z-40 mt-2 min-w-56 overflow-hidden rounded-lg bg-surface-container py-2 shadow-2 animate-pop",
-            align === "end" ? "right-0 origin-top-right" : "left-0 origin-top-left",
+            "absolute z-40 min-w-56 overflow-hidden rounded-lg bg-surface-container py-2 shadow-2 animate-pop",
+            placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
+            align === "end"
+              ? placement === "top" ? "right-0 origin-bottom-right" : "right-0 origin-top-right"
+              : placement === "top" ? "left-0 origin-bottom-left" : "left-0 origin-top-left",
           )}
         >
           {header ? <div className="px-4 pb-2">{header}</div> : null}

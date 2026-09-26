@@ -90,6 +90,17 @@ Every screen works at phone width (navigation bar and compact layouts),
 in light and dark themes. The theme switch has two states, light and
 dark; it follows your OS until you pick one.
 
+### Guided tour & full demo
+
+Every screen can walk you through itself. Open the **Tour** menu in the
+navigation rail (or the buttons on the home page) to start a **quick tour**
+of the features available to the current account, or the **full feature
+demo**: 94 steps that sign in and out of the seeded demo accounts to show
+the entire journey — an organizer creates an event and invites judges,
+participants form teams and submit, judges score and compare, admins manage
+accounts and read the audit trail — then restore your original session.
+The tour only navigates and highlights; it never changes your data.
+
 ## Tier coverage
 
 | Tier | What's in it | Acceptance |

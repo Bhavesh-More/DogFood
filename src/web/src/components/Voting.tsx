@@ -99,7 +99,7 @@ export function VotingBar({ event, state }: { event: EventDto; state: VoteState 
     );
   }
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-tertiary-container p-4 text-on-tertiary-container medium:flex-row medium:items-center medium:gap-6">
+    <div data-tour="voting-bar" className="flex flex-col gap-3 rounded-xl bg-tertiary-container p-4 text-on-tertiary-container medium:flex-row medium:items-center medium:gap-6">
       <div className="flex items-center gap-3">
         <Icon name="how_to_vote" size={28} />
         <div>
@@ -152,7 +152,7 @@ export function VoteControl({ event, state, submissionId, compact }: { event: Ev
   if (state.style === "quadratic") {
     const nextCost = (mine + 1) ** 2 - mine ** 2;
     return (
-      <div className={cx("inline-flex items-center gap-1 rounded-full bg-surface-container-high p-1", compact && "scale-95")}>
+      <div data-tour="vote-control" className={cx("inline-flex items-center gap-1 rounded-full bg-surface-container-high p-1", compact && "scale-95")}>
         <IconButton icon="remove" label="Remove a vote" size="sm" disabled={blocked || mine === 0 || cast.isPending} onClick={() => cast.mutate(mine - 1)} />
         <span className="min-w-8 text-center type-title-sm tabular-nums text-on-surface" aria-live="polite">
           {mine}
@@ -165,6 +165,7 @@ export function VoteControl({ event, state, submissionId, compact }: { event: Ev
   return (
     <button
       type="button"
+      data-tour="vote-control"
       aria-pressed={selected}
       disabled={blocked || cast.isPending || (!selected && state.remaining <= 0)}
       onClick={() => cast.mutate(selected ? 0 : 1)}

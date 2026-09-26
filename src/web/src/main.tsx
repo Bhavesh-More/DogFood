@@ -1,3 +1,4 @@
+import "driver.js/dist/driver.css";
 import "./styles/app.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
@@ -7,6 +8,7 @@ import { ApiError } from "./lib/api";
 import { SessionProvider } from "./lib/session";
 import { initTheme } from "./lib/theme";
 import { router } from "./routes";
+import { TourProvider } from "./tour/TourProvider";
 import { ToastProvider } from "./ui";
 
 initTheme();
@@ -26,7 +28,9 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
         <ToastProvider>
-          <RouterProvider router={router} />
+          <TourProvider>
+            <RouterProvider router={router} />
+          </TourProvider>
         </ToastProvider>
       </SessionProvider>
     </QueryClientProvider>

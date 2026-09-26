@@ -4,6 +4,7 @@ import type { Role } from "@dogfood/core";
 import { cx } from "../lib/format";
 import { useLogout, useSession } from "../lib/session";
 import { useTheme } from "../lib/theme";
+import { TourMenu } from "../tour/TourLauncher";
 import { Avatar, Button, Dialog, Icon, IconButton, LinkButton, Menu, PageLoader, RoleBadge, type IconName } from "../ui";
 import { Logo } from "./Logo";
 
@@ -53,20 +54,20 @@ function ContextFab() {
   const { role } = useSession();
   if (role === "organizer" || role === "admin") {
     return (
-      <Link to="/organize/new" aria-label="Create event" title="Create event" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 transition-[border-radius] duration-300 ease-[var(--ease-spring-fast)] hover:shadow-2 active:rounded-xl">
+      <Link to="/organize/new" aria-label="Create event" title="Create event" data-tour="context-fab" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 transition-[border-radius] duration-300 ease-[var(--ease-spring-fast)] hover:shadow-2 active:rounded-xl">
         <Icon name="add" size={26} className="relative z-[1]" />
       </Link>
     );
   }
   if (role === "judge") {
     return (
-      <Link to="/judge" aria-label="Continue judging" title="Continue judging" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 active:rounded-xl">
+      <Link to="/judge" aria-label="Continue judging" title="Continue judging" data-tour="context-fab" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 active:rounded-xl">
         <Icon name="rate_review" size={26} className="relative z-[1]" />
       </Link>
     );
   }
   return (
-    <Link to="/events" aria-label="Find a hackathon" title="Find a hackathon" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 active:rounded-xl">
+    <Link to="/events" aria-label="Find a hackathon" title="Find a hackathon" data-tour="context-fab" className="state-layer focus-ring grid h-14 w-14 place-items-center rounded-lg bg-tertiary-container text-on-tertiary-container shadow-1 active:rounded-xl">
       <Icon name="rocket_launch" size={26} className="relative z-[1]" />
     </Link>
   );
@@ -83,8 +84,8 @@ function UserMenu() {
   const themeLabel = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
   if (!user) {
     return (
-      <div className="flex items-center gap-1">
-        <IconButton icon={themeIcon} label={themeLabel} onClick={toggleTheme} />
+      <div className="flex items-center gap-1" data-tour="user-menu">
+        <IconButton icon={themeIcon} label={themeLabel} data-tour="theme-toggle" onClick={toggleTheme} />
         <LinkButton to="/login" variant="text" size="sm">
           Sign in
         </LinkButton>
@@ -99,7 +100,7 @@ function UserMenu() {
       <IconButton icon={themeIcon} label={themeLabel} onClick={toggleTheme} />
       <Menu
         trigger={({ toggle, open }) => (
-          <button type="button" onClick={toggle} aria-expanded={open} aria-haspopup="menu" className="focus-ring flex items-center gap-2 rounded-full p-1 pr-2 hover:bg-on-surface/8">
+          <button type="button" onClick={toggle} aria-expanded={open} aria-haspopup="menu" data-tour="user-menu" className="focus-ring flex items-center gap-2 rounded-full p-1 pr-2 hover:bg-on-surface/8">
             <Avatar name={user.name} size={36} />
             <Icon name="keyboard_arrow_down" size={20} className="text-on-surface-variant" />
           </button>
@@ -154,7 +155,7 @@ export function Shell() {
         Skip to content
       </a>
       {/* Navigation rail (≥ 840px) */}
-      <nav aria-label="Primary" className="fixed inset-y-0 left-0 z-30 hidden w-24 flex-col items-center gap-6 bg-surface-container pb-6 pt-4 medium:flex">
+      <nav aria-label="Primary" data-tour="nav-rail" className="fixed inset-y-0 left-0 z-30 hidden w-24 flex-col items-center gap-6 bg-surface-container pb-6 pt-4 medium:flex">
         <Link to="/" aria-label="Dogfood home" className="focus-ring rounded-lg">
           <Logo size={44} />
         </Link>
@@ -164,6 +165,7 @@ export function Shell() {
             <RailItem key={d.to} d={d} />
           ))}
         </div>
+        <TourMenu />
         <NavLink to="/api-docs" className="focus-ring flex flex-col items-center gap-1 rounded-lg text-on-surface-variant">
           <Icon name="api" size={22} />
           <span className="type-label-sm">API</span>
@@ -171,7 +173,7 @@ export function Shell() {
       </nav>
 
       <div className="medium:pl-24">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 bg-surface/85 px-4 backdrop-blur-md medium:px-8">
+        <header data-tour="topbar" className="sticky top-0 z-20 flex h-16 items-center gap-3 bg-surface/85 px-4 backdrop-blur-md medium:px-8">
           <Link to="/" className="flex items-center gap-2 medium:hidden" aria-label="Dogfood home">
             <Logo size={32} />
           </Link>
@@ -180,7 +182,7 @@ export function Shell() {
             <span className="type-label-md text-on-surface-variant">hackathon platform</span>
           </Link>
           <div className="flex-1" />
-          <span className="hidden items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1 type-label-md text-on-surface-variant lg:inline-flex" title="Everything runs locally; no external services">
+          <span data-tour="offline-badge" className="hidden items-center gap-1.5 rounded-full bg-surface-container-high px-3 py-1 type-label-md text-on-surface-variant lg:inline-flex" title="Everything runs locally; no external services">
             <Icon name="cloud_off" size={16} /> Offline-first
           </span>
           <UserMenu />
@@ -193,7 +195,7 @@ export function Shell() {
       </div>
 
       {/* Navigation bar (< 840px) */}
-      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 flex h-20 items-stretch justify-around bg-surface-container px-2 medium:hidden">
+      <nav aria-label="Primary" data-tour="nav-bottom" className="fixed inset-x-0 bottom-0 z-30 flex h-20 items-stretch justify-around bg-surface-container px-2 medium:hidden">
         {bottom.map((d) => (
           <NavLink key={d.to} to={d.to} end={d.end} className="focus-ring flex flex-1 flex-col items-center justify-center gap-1 rounded-lg">
             {({ isActive }) => (

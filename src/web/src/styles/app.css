@@ -339,3 +339,39 @@
   --chart-warm: #e66767;
   --chart-mid: #383835;
 }
+
+/* driver.js guided-tour theming (Material 3 roles; app.css loads after driver.css) */
+.driver-popover {
+  background-color: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  border-radius: 16px;
+  padding: 18px;
+  min-width: 260px;
+  max-width: 360px;
+  font-family: var(--font-sans, inherit);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+.driver-popover-title { font-weight: 600; font-size: 18px; }
+.driver-popover-description { color: var(--md-on-surface-variant); margin-top: 6px; }
+.driver-popover-progress-text { color: var(--md-on-surface-variant); }
+.driver-popover-close-btn { color: var(--md-on-surface-variant); }
+.driver-popover-close-btn:hover,
+.driver-popover-close-btn:focus { color: var(--md-on-surface); }
+.driver-popover-footer-btn {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-weight: 500;
+}
+.driver-popover-footer-btn:hover,
+.driver-popover-footer-btn:focus { background-color: var(--md-primary); filter: brightness(1.08); }
+.driver-popover-prev-btn { background-color: transparent; color: var(--md-primary); }
+.driver-popover-prev-btn:hover,
+.driver-popover-prev-btn:focus { background-color: color-mix(in srgb, var(--md-primary) 12%, transparent); filter: none; }
+.driver-popover-arrow { border-color: var(--md-surface-container-high); }
+.driver-popover-arrow-side-left { border-top-color: transparent; border-bottom-color: transparent; border-right-color: transparent; }
+.driver-popover-arrow-side-right { border-top-color: transparent; border-bottom-color: transparent; border-left-color: transparent; }
+.driver-popover-arrow-side-top { border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+.driver-popover-arrow-side-bottom { border-top-color: transparent; border-left-color: transparent; border-right-color: transparent; }

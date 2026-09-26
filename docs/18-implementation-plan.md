@@ -246,3 +246,15 @@ Re-verified on a fresh `docker compose` build: 218/218 Vitest, 14/14 Playwright,
 | Accessibility | `Dialog` is labelled by its title (`aria-labelledby`) |
 
 Re-verified on a fresh `docker compose` build: 218/218 Vitest, 17/17 Playwright, 38/38 acceptance (T4), lint and types clean; a crawl of 66 routes × 8 roles × desktop/mobile found no page errors, 5xx, error screens or overflow.
+
+### Iteration 5 — guided tours and the full feature demo
+| Area | Change |
+| :--- | :--- |
+| Tour engine | `driver.js` behind a small React provider (`src/web/src/tour/`). Steps declare a target, an optional route, an optional `before` DOM action, and an optional demo account; the engine navigates, swaps accounts, waits for each target and advances manually so nothing races the router |
+| Auto-navigation | Each step can carry a `route`; the engine navigates before highlighting, waits for the element (up to 3 s), and falls back to a centred popover when a target is missing |
+| Quick tour | Role-aware: public pages for visitors, then the participant, judge, organizer or admin screens. Never signs in or out (`stripAs`) |
+| Full feature demo | 94 steps across every role and every screen: public → visitor → participant → organizer → judge → admin, logging in/out of the seeded demo accounts as it goes, and restoring the original session at the end |
+| Entry points | Rail “Tour” menu (Quick tour / Full feature demo), Home hero buttons, and `data-tour` anchors in the Shell and voting controls |
+| Theme | driver.js popovers restyled with the M3 colour roles (light and dark) |
+
+Verified against the production container: full demo 94/94 steps, quick tours (organizer 40, judge 17, admin 48) with zero console errors, no 4xx/5xx and no page errors; 17/17 Playwright, 38/38 acceptance (T4), lint and types clean.
