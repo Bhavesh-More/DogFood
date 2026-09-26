@@ -111,8 +111,9 @@ pnpm install
 pnpm --filter @dogfood/api dev   # API on :8000, migrates and seeds a local "dogfood" DB
 pnpm --filter @dogfood/web dev   # Vite on :5173 (proxies /api to :8000)
 
-pnpm test                        # 57 unit + 93 integration tests (integration needs Postgres;
+pnpm test                        # 57 unit + 97 integration tests (integration needs Postgres;
                                  #   set TEST_DATABASE_URL, default postgres://postgres@127.0.0.1:5432/postgres)
+pnpm test:e2e                    # Playwright journeys against a running stack (E2E_BASE_URL, default :8000)
 pnpm lint && pnpm check-types
 pnpm build                       # API bundle (dist/server.mjs) + static web build
 ```
@@ -121,7 +122,7 @@ pnpm build                       # API bundle (dist/server.mjs) + static web bui
 src/core   pure TypeScript shared by API and UI: scoring, normalization, routing, rules, schemas
 src/api    Express 5 + pg, SQL migrations, route table → OpenAPI, domain modules
 src/web    React 19 + Vite + Tailwind v4, Material 3 Expressive component kit
-tests      unit/ and integration/ (Vitest)
+tests      unit/, integration/ (Vitest) and e2e/ (Playwright)
 acceptance run.py: stdlib black-box tier checker
 ```
 

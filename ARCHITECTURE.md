@@ -203,10 +203,11 @@ See THREAT-MODEL.md for threats, residual risks and the deployment checklist.
 | Layer | Tooling | What it proves |
 |---|---|---|
 | Unit (`tests/unit`, 57 tests) | Vitest | Normalization maths and invariants; the Bradley–Terry MLE balance condition and convergence; routing balance, conflicts and scope; timeline rules; CSV injection; hash distribution |
-| Integration (`tests/integration`, 93 tests) | Vitest + real Postgres + real HTTP | Auth and RBAC; RLS isolation with raw SQL as the app role; deadline and DB trigger; single-use invites under a race; a full event lifecycle on a controlled clock; voting abuse controls; webhooks against a real receiver; Ed25519 verification and tampering; OpenAPI coverage; audit tamper detection |
+| Integration (`tests/integration`, 97 tests) | Vitest + real Postgres + real HTTP | Auth and RBAC; RLS isolation with raw SQL as the app role; deadline and DB trigger; single-use invites under a race; a full event lifecycle on a controlled clock; voting abuse controls; webhooks against a real receiver; Ed25519 verification and tampering; OpenAPI coverage; audit tamper detection; precompressed asset delivery |
+| E2E (`tests/e2e`, 10 journeys) | Playwright + Chromium, desktop and phone | Every role's key journey in a real browser; no horizontal overflow on phones |
 | Acceptance (`acceptance/run.py`, 38 checks) | Python stdlib, black-box HTTP | The claimed tiers T1–T4 plus bonuses, against the running stack (Docker, or native), with maths recomputed independently |
 
-`pnpm test` runs unit and integration tests. It needs a local Postgres;
+`pnpm test` runs unit and integration tests; `pnpm test:e2e` runs the browser journeys against a running stack. It needs a local Postgres;
 set `TEST_DATABASE_URL` to point at one. `pnpm test:acceptance` writes
 `acceptance-report.txt`.
 

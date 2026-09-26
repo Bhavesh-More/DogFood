@@ -169,8 +169,9 @@ cat acceptance-report.txt
 | :--- | :--- | :--- | :--- | :--- |
 | Unit | `tests/unit/*.test.ts` | 57 | Pure `@dogfood/core` | Normalization invariants and edge cases (σ=0, n<5), Bradley–Terry MLE balance condition and convergence, routing balance/conflicts/scopes, hash distribution, timeline rules, CSV injection |
 | Integration | `tests/integration/*.test.ts` | 93 | Real Postgres (throw-away DB per file) + the real Express app on an ephemeral port | `auth-rbac` (sessions, RBAC, CSRF, headers, no email leaks), `isolation` (raw SQL as `dogfood_app` proves RLS), `deadline-teams` (spoofed clocks, DB trigger, invite race), `lifecycle` (a whole event on a controllable clock), `voting` (budgets, quadratic, Sybil, hashed identities), `platform` (webhooks to a real receiver, Ed25519 + tamper, OpenAPI coverage, bundles, uploads, embed, rate limits, audit tamper) |
+| E2E | `tests/e2e/smoke.spec.ts` | 10 | Playwright (Chromium) against a running stack, desktop + phone | Every role's key journey; no horizontal overflow on phones; tests restore what they change |
 | Acceptance | `acceptance/run.py` | 38 | Any running stack (Docker or native), black-box HTTP | Tier-by-tier T1–T4 + bonuses; waits for a real deadline and voting window; recomputes normalization, BT fixed point, HMACs and Ed25519 independently; archives its own events |
 
-Commands: `pnpm test` (unit + integration; `TEST_DATABASE_URL` selects the Postgres server), `pnpm test:acceptance` (writes `acceptance-report.txt`).
+Commands: `pnpm test` (unit + integration; `TEST_DATABASE_URL` selects the Postgres server), `pnpm test:e2e` (`E2E_BASE_URL`, default `:8000`), `pnpm test:acceptance` (writes `acceptance-report.txt`), `pnpm check-types` (workspace + test sources).
 
-**Result on the submission build:** 150/150 Vitest tests, 38/38 acceptance checks (T4 verified), lint and typecheck clean, container logs free of errors and 5xx responses. The air-gap variant (app detached from every routable network) also verifies T1–T4.
+**Result on the submission build:** 154/154 Vitest tests, 10/10 Playwright journeys, 38/38 acceptance checks (T4 verified), lint and typecheck clean, container logs free of errors and 5xx responses. The air-gap variant (app detached from every routable network) also verifies T1–T4.
