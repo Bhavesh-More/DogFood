@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://dogfood-api.onrender.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://dogfood-api.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/.well-known/:path*",
+      "destination": "https://dogfood-api.onrender.com/.well-known/:path*"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
