@@ -41,6 +41,7 @@
     "test:integration": "vitest run --project integration",
     "test:e2e": "playwright test",
     "test:acceptance": "python3 acceptance/run.py .dogfood.toml > acceptance-report.txt; cat acceptance-report.txt",
+    "keepalive": "node scripts/keepalive.ts",
     "db:migrate": "pnpm --filter @dogfood/api migrate",
     "db:seed": "pnpm --filter @dogfood/api seed"
   },
