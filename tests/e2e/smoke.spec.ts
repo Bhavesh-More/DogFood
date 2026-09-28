@@ -287,6 +287,40 @@ test.describe("team finder", () => {
   });
 });
 
+test.describe("profiles", () => {
+  test("a user edits their profile and it persists", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "participant2");
+    const headers = { authorization: `Bearer ${TOKENS.participant2}` };
+    const before = await (await page.request.get("/api/profile/me", { headers })).json();
+    await page.goto("/profile");
+    const form = page.getByRole("form", { name: "Edit profile" });
+    await form.getByLabel(/^Headline/).fill("E2E headline");
+    await form.getByLabel(/^Tech stack/).fill("rust, wasm");
+    await form.getByRole("button", { name: "Save profile" }).click();
+    await expect(page.getByText("Profile saved")).toBeVisible();
+    await page.reload();
+    await expect(page.getByLabel(/^Headline/)).toHaveValue("E2E headline");
+    await expect(page.getByLabel(/^Tech stack/)).toHaveValue("rust, wasm");
+    // Restore the seeded profile.
+    await page.request.put("/api/profile/me", {
+      headers,
+      data: { headline: before.headline, bio: before.bio, techStack: before.techStack, qualifications: before.qualifications, links: before.links },
+    });
+  });
+
+  test("a captain can open an applicant's profile from the board", async ({ page, context, baseURL }) => {
+    const p2 = { authorization: `Bearer ${TOKENS.participant2}` };
+    await page.request.put("/api/events/evt_02/team-finder/me", { headers: p2, data: { skills: ["rust"], note: "Profile check" } });
+    await signInAs(context, baseURL!, "participant");
+    await page.goto("/e/autumn-build-week/team");
+    const card = page.getByRole("list", { name: "People looking for a team" }).getByRole("listitem").filter({ hasText: "Profile check" });
+    await card.getByRole("link", { name: "View profile" }).click();
+    await expect(page).toHaveURL(/\/u\/usr_participant2$/);
+    await expect(page.getByRole("heading", { name: "Mateo Rossi", exact: true })).toBeVisible();
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: p2 });
+  });
+});
+
 test.describe("notifications", () => {
   test("an announcement to participants lands in the bell and the feed", async ({ page, context, baseURL }) => {
     await signInAs(context, baseURL!, "organizer");

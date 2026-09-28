@@ -21,6 +21,22 @@ export interface UserDto {
   createdAt: string;
 }
 
+/** Public profile shown to other users (never carries an email address). */
+export interface UserProfileDto {
+  id: string;
+  name: string;
+  role: Role;
+  headline: string;
+  bio: string;
+  /** Participant tech stack (lowercased tags). */
+  techStack: string[];
+  /** Judge qualifications / experience. */
+  qualifications: string;
+  links: { website: string; github: string; linkedin: string };
+  createdAt: string;
+  isSelf: boolean;
+}
+
 export interface SessionDto {
   user: UserDto | null;
   capabilities: string[];

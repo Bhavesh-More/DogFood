@@ -63,8 +63,8 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
-  - **243/243 Vitest tests** (107 unit + 136 integration), run with `pnpm test`.
-  - **21/21 Playwright journeys.**
+  - **249/249 Vitest tests** (107 unit + 142 integration), run with `pnpm test`.
+  - **23/23 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
   - Lint and type-check are clean.
@@ -481,9 +481,10 @@ grepped from `src/api/src/modules`.
 | `lifecycle` | 18 | A whole event on a controllable clock, one-way status machine |
 | `voting` | 15 | Voting modes, budgets and anti-Sybil controls |
 | `judging-integrity` | 3 | Withdrawn/ineligible projects hidden from every judge path; submitted assignments protected |
+| `profile` | 6 | Public profiles: owner-only edits, no email leak, disabled accounts hidden |
 | `platform` | 16 | Webhooks to a real receiver, Ed25519 + tampering, OpenAPI coverage, bundles, uploads, embed, rate limit, audit tamper |
 | `web-assets` | 5 | Precompressed assets and compressed JSON |
-| `tests/e2e/smoke.spec.ts` | 20 | Playwright journeys; they restore any data they change |
+| `tests/e2e/smoke.spec.ts` | 22 | Playwright journeys; they restore any data they change |
 | `acceptance/run.py` | 38 | See `acceptance-report.txt` |
 
 The runner:
@@ -709,6 +710,14 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
     `pages/Notifications.tsx`.
   - The team finder's **Invite** button now sends a targeted invitation
     (link + notification) rather than asking the captain to copy a link.
+- **Profiles.**
+  - `modules/profiles.ts` and migration `009` (columns on `users`:
+    `headline`, `bio`, `tech_stack`, `qualifications`, `links`).
+  - Routes: `GET/PUT /api/profile/me`, `GET /api/users/:userId/profile`
+    (`auth: user`, no email in the DTO). `lib/notify.ts` is not involved.
+  - UI: `pages/Profile.tsx` on `/profile` (edit) and `/u/:userId` (view);
+    the team finder's seeker cards link there so a captain can vet an
+    applicant before inviting. Fixtures seed demo profile data.
 
 ## 11. Known limitations and next ideas
 

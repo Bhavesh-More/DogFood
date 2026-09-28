@@ -37,6 +37,11 @@ export const fixtureUser = z.object({
   name: z.string().min(1),
   role: z.enum(["visitor", "participant", "judge", "organizer", "admin"]),
   password: z.string().min(8).optional(),
+  headline: z.string().default(""),
+  bio: z.string().default(""),
+  techStack: z.array(z.string()).default([]),
+  qualifications: z.string().default(""),
+  links: z.record(z.string(), z.string()).default({}),
 });
 
 export const fixtureSubmission = z.object({

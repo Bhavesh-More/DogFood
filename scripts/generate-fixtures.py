@@ -17,18 +17,39 @@ import json
 DEFAULT_PASSWORD = "dogfood-demo-2026"
 
 users = [
-    {"id": "usr_admin", "email": "admin@dogfood.local", "name": "Ada Lovelace", "role": "admin"},
-    {"id": "usr_organizer", "email": "organizer@dogfood.local", "name": "Oscar Okafor", "role": "organizer"},
-    {"id": "usr_organizer2", "email": "organizer2@dogfood.local", "name": "Grace Hopper", "role": "organizer"},
-    {"id": "usr_judge_a", "email": "judge.a@dogfood.local", "name": "Jade Park", "role": "judge"},
-    {"id": "usr_judge_b", "email": "judge.b@dogfood.local", "name": "Bruno Silva", "role": "judge"},
-    {"id": "usr_judge_c", "email": "judge.c@dogfood.local", "name": "Chen Wei", "role": "judge"},
-    {"id": "usr_judge_d", "email": "judge.d@dogfood.local", "name": "Dara Nguyen", "role": "judge"},
-    {"id": "usr_judge_e", "email": "judge.e@dogfood.local", "name": "Emeka Obi", "role": "judge"},
-    {"id": "usr_judge_f", "email": "judge.f@dogfood.local", "name": "Farah Haddad", "role": "judge"},
-    {"id": "usr_participant", "email": "participant@dogfood.local", "name": "Priya Sharma", "role": "participant"},
-    {"id": "usr_participant2", "email": "participant2@dogfood.local", "name": "Mateo Rossi", "role": "participant"},
-    {"id": "usr_visitor", "email": "visitor@dogfood.local", "name": "Victor Hugo", "role": "visitor"},
+    {"id": "usr_admin", "email": "admin@dogfood.local", "name": "Ada Lovelace", "role": "admin",
+     "headline": "Platform administrator", "bio": "Keeps the lights on and the audit chain honest."},
+    {"id": "usr_organizer", "email": "organizer@dogfood.local", "name": "Oscar Okafor", "role": "organizer",
+     "headline": "Hackathon organizer", "bio": "Runs the Sample Hack series.", "links": {"website": "https://dogfood.local"}},
+    {"id": "usr_organizer2", "email": "organizer2@dogfood.local", "name": "Grace Hopper", "role": "organizer",
+     "headline": "Community organizer", "bio": "Autumn Build Week and Winter Jam."},
+    {"id": "usr_judge_a", "email": "judge.a@dogfood.local", "name": "Jade Park", "role": "judge",
+     "headline": "Staff engineer, distributed systems",
+     "qualifications": "10 years in payments infrastructure; judged 14 hackathons across 3 continents.",
+     "links": {"linkedin": "https://www.linkedin.com/in/jadepark"}},
+    {"id": "usr_judge_b", "email": "judge.b@dogfood.local", "name": "Bruno Silva", "role": "judge",
+     "headline": "Product designer & mentor",
+     "qualifications": "Led design at two startups; mentors at Design Buddies."},
+    {"id": "usr_judge_c", "email": "judge.c@dogfood.local", "name": "Chen Wei", "role": "judge",
+     "headline": "ML researcher",
+     "qualifications": "PhD in computer vision; 20+ peer-reviewed publications."},
+    {"id": "usr_judge_d", "email": "judge.d@dogfood.local", "name": "Dara Nguyen", "role": "judge",
+     "headline": "Founder & angel investor",
+     "qualifications": "Founded three developer-tools companies; invests at pre-seed."},
+    {"id": "usr_judge_e", "email": "judge.e@dogfood.local", "name": "Emeka Obi", "role": "judge",
+     "headline": "Site reliability engineer",
+     "qualifications": "SRE at scale; trains incident commanders."},
+    {"id": "usr_judge_f", "email": "judge.f@dogfood.local", "name": "Farah Haddad", "role": "judge",
+     "headline": "Civic-tech lead",
+     "qualifications": "Leads open-data programmes for a city government."},
+    {"id": "usr_participant", "email": "participant@dogfood.local", "name": "Priya Sharma", "role": "participant",
+     "headline": "Full-stack developer", "bio": "I like shipping small, sharp products.",
+     "techStack": ["typescript", "react", "postgres", "node"], "links": {"github": "https://github.com/priya"}},
+    {"id": "usr_participant2", "email": "participant2@dogfood.local", "name": "Mateo Rossi", "role": "participant",
+     "headline": "ML engineer", "bio": "Second-time hackathon builder.",
+     "techStack": ["python", "pytorch", "ml", "docker"]},
+    {"id": "usr_visitor", "email": "visitor@dogfood.local", "name": "Victor Hugo", "role": "visitor",
+     "headline": "Curious onlooker"},
 ]
 
 FIRST = ["Aarav", "Bea", "Carlos", "Divya", "Elif", "Finn", "Gita", "Hana", "Ivan", "Jia", "Kofi", "Lina",
@@ -39,12 +60,19 @@ LAST = ["Mehta", "Novak", "Reyes", "Iyer", "Kaya", "Larsen", "Rao", "Sato", "Pet
         "Haddad", "Fischer", "Costa", "Farouk", "Weber", "Adams", "Kapoor", "Aziz", "Singh", "Menon",
         "Varga", "Zhou", "Nikolaidis", "Demir", "Laurent", "Nair", "Romano", "Tehrani", "Cohen",
         "Mizrahi", "Bello", "Ortiz", "Moreau", "Kim", "Das", "Brennan", "Lopez"]
+TECH_POOL = ["typescript", "react", "node", "postgres", "python", "django", "rust", "go", "kotlin",
+             "swift", "css", "figma", "graphql", "aws", "docker", "pytorch", "vue", "svelte", "java", "next.js"]
+HEADLINES = ["Frontend developer", "Backend developer", "Full-stack developer", "Mobile developer",
+             "Data scientist", "Designer", "DevOps engineer", "Student"]
 for i in range(1, 39):
     users.append({
         "id": f"usr_p{i:02d}",
         "email": f"p{i:02d}@dogfood.local",
         "name": f"{FIRST[i - 1]} {LAST[i - 1]}",
         "role": "participant",
+        "headline": HEADLINES[i % len(HEADLINES)],
+        "bio": "Hackathon enthusiast, always up for a new team.",
+        "techStack": [TECH_POOL[(i + k) % len(TECH_POOL)] for k in range(3)],
     })
 
 checker_sessions = [

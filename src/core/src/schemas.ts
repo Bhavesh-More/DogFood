@@ -301,6 +301,24 @@ export const seekerInput = z.object({
   note: z.string().trim().max(500).default(""),
 });
 
+const profileLink = z.union([httpUrl, z.literal("")]);
+
+/** Public profile a user edits for themselves (never includes an email). */
+export const profileInput = z.object({
+  headline: z.string().trim().max(120).default(""),
+  bio: z.string().trim().max(1000).default(""),
+  techStack: z.array(techTag).max(12).default([]),
+  qualifications: z.string().trim().max(1000).default(""),
+  links: z
+    .object({
+      website: profileLink.default(""),
+      github: profileLink.default(""),
+      linkedin: profileLink.default(""),
+    })
+    .default({ website: "", github: "", linkedin: "" }),
+});
+export type ProfileInput = z.infer<typeof profileInput>;
+
 export const recruitingInput = z.object({
   /** null stops recruiting. */
   lookingFor: z.string().trim().min(3).max(200).nullable(),

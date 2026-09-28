@@ -19,6 +19,7 @@ import { eventRoutes } from "./modules/events";
 import { judgingRoutes } from "./modules/judging";
 import { notificationRoutes } from "./modules/notifications";
 import { platformRoutes } from "./modules/platform";
+import { profileRoutes } from "./modules/profiles";
 import { recordRoutes } from "./modules/records";
 import { resultRoutes } from "./modules/results";
 import { submissionRoutes } from "./modules/submissions";
@@ -61,6 +62,7 @@ export function allRoutes(): RouteDef[] {
     ...eventRoutes,
     ...aiRoutes,
     ...announcementRoutes,
+    ...profileRoutes,
     ...teamRoutes,
     ...teamFinderRoutes,
     ...submissionRoutes,

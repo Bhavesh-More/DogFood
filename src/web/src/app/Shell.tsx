@@ -141,6 +141,7 @@ function UserMenu() {
           </div>
         }
         items={[
+          { label: "My profile", icon: "account_circle", onSelect: () => navigate("/profile") },
           { label: "Settings & API tokens", icon: "settings", onSelect: () => navigate("/settings") },
           { label: "My certificates", icon: "workspace_premium", onSelect: () => navigate("/dashboard#records") },
           { label: "API reference", icon: "api", onSelect: () => navigate("/api-docs") },

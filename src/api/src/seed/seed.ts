@@ -74,9 +74,10 @@ async function seedUsers(t: Tx, fixtures: Fixtures) {
     // One scrypt per distinct password keeps boot fast; demo accounts share a documented password.
     if (!hashes.has(pw)) hashes.set(pw, await hashPassword(pw));
     await t.query(
-      `INSERT INTO users (id, email, name, password_hash, role) VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO users (id, email, name, password_hash, role, headline, bio, tech_stack, qualifications, links)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        ON CONFLICT (id) DO NOTHING`,
-      [u.id, u.email.toLowerCase(), u.name, hashes.get(pw), u.role],
+      [u.id, u.email.toLowerCase(), u.name, hashes.get(pw), u.role, u.headline, u.bio, u.techStack, u.qualifications, JSON.stringify(u.links)],
     );
   }
 }

@@ -91,6 +91,10 @@ Also built in:
   their open spots and what they need. A team member can invite someone on
   the board, and a solo participant can **ask to join** a recruiting team;
   either way it arrives as a notification and emails are never shown.
+- **Profiles:** every user has a public profile — participants show a tech
+  stack, judges show qualifications, and everyone can add a headline, an
+  about section and links. Captains open an applicant's profile from the
+  team finder before inviting them. Emails are never exposed.
 
 Every screen works at phone width (navigation bar and compact layouts),
 in light and dark themes. The theme switch has two states, light and

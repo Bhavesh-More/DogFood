@@ -319,4 +319,21 @@ A read-only audit of every subsystem produced the following fixes:
 
 Re-verified on a fresh `docker compose` build: 243/243 Vitest (107 unit + 136 integration), 21/21 Playwright (incl. a published-event-cannot-unpublish journey), acceptance 38/38 T4, lint and types clean.
 
+### Iteration 10 — public user profiles
+
+A captain vetting a join request previously saw only a name and a one-line note. Every user now has a public profile.
+
+| Area | Change |
+| :--- | :--- |
+| Data | Migration `009` adds `headline`, `bio`, `tech_stack`, `qualifications` and `links` (jsonb) to `users`. No email is ever part of a profile |
+| API | `modules/profiles.ts`: `GET/PUT /api/profile/me` (owner) and `GET /api/users/:userId/profile` (any signed-in user). Links are validated as http(s); tech tags are lowercased and deduped; edits are audit-logged |
+| Web | `pages/Profile.tsx` on `/profile` (edit) and `/u/:userId` (view): participant tech stack, judge qualifications, headline, about and links; a "My profile" item in the account menu |
+| Team finder | Each seeker card has a **View profile** link, so a captain can read an applicant's profile before clicking **Invite** |
+| Seed | The fixture generator emits deterministic profile data for the demo accounts; `fixtureUser` and `seedUsers` carry the new fields |
+| Tour | A profile step was added to the participant journey |
+| Tests | `tests/integration/profile.test.ts` (6: auth, round-trip, link validation, no-email, disabled hidden, audit) and two Playwright journeys (edit-and-persist, captain-opens-applicant) |
+
+Re-verified on a fresh `docker compose` build: 249/249 Vitest (107 unit + 142 integration), 23/23 Playwright, acceptance 38/38 T4, lint and types clean.
+
+
 

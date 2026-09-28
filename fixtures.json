@@ -7,301 +7,611 @@
       "id": "usr_admin",
       "email": "admin@dogfood.local",
       "name": "Ada Lovelace",
-      "role": "admin"
+      "role": "admin",
+      "headline": "Platform administrator",
+      "bio": "Keeps the lights on and the audit chain honest."
     },
     {
       "id": "usr_organizer",
       "email": "organizer@dogfood.local",
       "name": "Oscar Okafor",
-      "role": "organizer"
+      "role": "organizer",
+      "headline": "Hackathon organizer",
+      "bio": "Runs the Sample Hack series.",
+      "links": {
+        "website": "https://dogfood.local"
+      }
     },
     {
       "id": "usr_organizer2",
       "email": "organizer2@dogfood.local",
       "name": "Grace Hopper",
-      "role": "organizer"
+      "role": "organizer",
+      "headline": "Community organizer",
+      "bio": "Autumn Build Week and Winter Jam."
     },
     {
       "id": "usr_judge_a",
       "email": "judge.a@dogfood.local",
       "name": "Jade Park",
-      "role": "judge"
+      "role": "judge",
+      "headline": "Staff engineer, distributed systems",
+      "qualifications": "10 years in payments infrastructure; judged 14 hackathons across 3 continents.",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/jadepark"
+      }
     },
     {
       "id": "usr_judge_b",
       "email": "judge.b@dogfood.local",
       "name": "Bruno Silva",
-      "role": "judge"
+      "role": "judge",
+      "headline": "Product designer & mentor",
+      "qualifications": "Led design at two startups; mentors at Design Buddies."
     },
     {
       "id": "usr_judge_c",
       "email": "judge.c@dogfood.local",
       "name": "Chen Wei",
-      "role": "judge"
+      "role": "judge",
+      "headline": "ML researcher",
+      "qualifications": "PhD in computer vision; 20+ peer-reviewed publications."
     },
     {
       "id": "usr_judge_d",
       "email": "judge.d@dogfood.local",
       "name": "Dara Nguyen",
-      "role": "judge"
+      "role": "judge",
+      "headline": "Founder & angel investor",
+      "qualifications": "Founded three developer-tools companies; invests at pre-seed."
     },
     {
       "id": "usr_judge_e",
       "email": "judge.e@dogfood.local",
       "name": "Emeka Obi",
-      "role": "judge"
+      "role": "judge",
+      "headline": "Site reliability engineer",
+      "qualifications": "SRE at scale; trains incident commanders."
     },
     {
       "id": "usr_judge_f",
       "email": "judge.f@dogfood.local",
       "name": "Farah Haddad",
-      "role": "judge"
+      "role": "judge",
+      "headline": "Civic-tech lead",
+      "qualifications": "Leads open-data programmes for a city government."
     },
     {
       "id": "usr_participant",
       "email": "participant@dogfood.local",
       "name": "Priya Sharma",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "I like shipping small, sharp products.",
+      "techStack": [
+        "typescript",
+        "react",
+        "postgres",
+        "node"
+      ],
+      "links": {
+        "github": "https://github.com/priya"
+      }
     },
     {
       "id": "usr_participant2",
       "email": "participant2@dogfood.local",
       "name": "Mateo Rossi",
-      "role": "participant"
+      "role": "participant",
+      "headline": "ML engineer",
+      "bio": "Second-time hackathon builder.",
+      "techStack": [
+        "python",
+        "pytorch",
+        "ml",
+        "docker"
+      ]
     },
     {
       "id": "usr_visitor",
       "email": "visitor@dogfood.local",
       "name": "Victor Hugo",
-      "role": "visitor"
+      "role": "visitor",
+      "headline": "Curious onlooker"
     },
     {
       "id": "usr_p01",
       "email": "p01@dogfood.local",
       "name": "Aarav Mehta",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Backend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "react",
+        "node",
+        "postgres"
+      ]
     },
     {
       "id": "usr_p02",
       "email": "p02@dogfood.local",
       "name": "Bea Novak",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "node",
+        "postgres",
+        "python"
+      ]
     },
     {
       "id": "usr_p03",
       "email": "p03@dogfood.local",
       "name": "Carlos Reyes",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Mobile developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "postgres",
+        "python",
+        "django"
+      ]
     },
     {
       "id": "usr_p04",
       "email": "p04@dogfood.local",
       "name": "Divya Iyer",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Data scientist",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "python",
+        "django",
+        "rust"
+      ]
     },
     {
       "id": "usr_p05",
       "email": "p05@dogfood.local",
       "name": "Elif Kaya",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Designer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "django",
+        "rust",
+        "go"
+      ]
     },
     {
       "id": "usr_p06",
       "email": "p06@dogfood.local",
       "name": "Finn Larsen",
-      "role": "participant"
+      "role": "participant",
+      "headline": "DevOps engineer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "rust",
+        "go",
+        "kotlin"
+      ]
     },
     {
       "id": "usr_p07",
       "email": "p07@dogfood.local",
       "name": "Gita Rao",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Student",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "go",
+        "kotlin",
+        "swift"
+      ]
     },
     {
       "id": "usr_p08",
       "email": "p08@dogfood.local",
       "name": "Hana Sato",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Frontend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "kotlin",
+        "swift",
+        "css"
+      ]
     },
     {
       "id": "usr_p09",
       "email": "p09@dogfood.local",
       "name": "Ivan Petrov",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Backend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "swift",
+        "css",
+        "figma"
+      ]
     },
     {
       "id": "usr_p10",
       "email": "p10@dogfood.local",
       "name": "Jia Li",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "css",
+        "figma",
+        "graphql"
+      ]
     },
     {
       "id": "usr_p11",
       "email": "p11@dogfood.local",
       "name": "Kofi Mensah",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Mobile developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "figma",
+        "graphql",
+        "aws"
+      ]
     },
     {
       "id": "usr_p12",
       "email": "p12@dogfood.local",
       "name": "Lina Haddad",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Data scientist",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "graphql",
+        "aws",
+        "docker"
+      ]
     },
     {
       "id": "usr_p13",
       "email": "p13@dogfood.local",
       "name": "Milo Fischer",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Designer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "aws",
+        "docker",
+        "pytorch"
+      ]
     },
     {
       "id": "usr_p14",
       "email": "p14@dogfood.local",
       "name": "Nora Costa",
-      "role": "participant"
+      "role": "participant",
+      "headline": "DevOps engineer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "docker",
+        "pytorch",
+        "vue"
+      ]
     },
     {
       "id": "usr_p15",
       "email": "p15@dogfood.local",
       "name": "Omar Farouk",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Student",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "pytorch",
+        "vue",
+        "svelte"
+      ]
     },
     {
       "id": "usr_p16",
       "email": "p16@dogfood.local",
       "name": "Pia Weber",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Frontend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "vue",
+        "svelte",
+        "java"
+      ]
     },
     {
       "id": "usr_p17",
       "email": "p17@dogfood.local",
       "name": "Quinn Adams",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Backend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "svelte",
+        "java",
+        "next.js"
+      ]
     },
     {
       "id": "usr_p18",
       "email": "p18@dogfood.local",
       "name": "Rhea Kapoor",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "java",
+        "next.js",
+        "typescript"
+      ]
     },
     {
       "id": "usr_p19",
       "email": "p19@dogfood.local",
       "name": "Sami Aziz",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Mobile developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "next.js",
+        "typescript",
+        "react"
+      ]
     },
     {
       "id": "usr_p20",
       "email": "p20@dogfood.local",
       "name": "Tara Singh",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Data scientist",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "typescript",
+        "react",
+        "node"
+      ]
     },
     {
       "id": "usr_p21",
       "email": "p21@dogfood.local",
       "name": "Uma Menon",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Designer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "react",
+        "node",
+        "postgres"
+      ]
     },
     {
       "id": "usr_p22",
       "email": "p22@dogfood.local",
       "name": "Vik Varga",
-      "role": "participant"
+      "role": "participant",
+      "headline": "DevOps engineer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "node",
+        "postgres",
+        "python"
+      ]
     },
     {
       "id": "usr_p23",
       "email": "p23@dogfood.local",
       "name": "Wen Zhou",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Student",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "postgres",
+        "python",
+        "django"
+      ]
     },
     {
       "id": "usr_p24",
       "email": "p24@dogfood.local",
       "name": "Xena Nikolaidis",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Frontend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "python",
+        "django",
+        "rust"
+      ]
     },
     {
       "id": "usr_p25",
       "email": "p25@dogfood.local",
       "name": "Yusuf Demir",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Backend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "django",
+        "rust",
+        "go"
+      ]
     },
     {
       "id": "usr_p26",
       "email": "p26@dogfood.local",
       "name": "Zoe Laurent",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "rust",
+        "go",
+        "kotlin"
+      ]
     },
     {
       "id": "usr_p27",
       "email": "p27@dogfood.local",
       "name": "Arjun Nair",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Mobile developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "go",
+        "kotlin",
+        "swift"
+      ]
     },
     {
       "id": "usr_p28",
       "email": "p28@dogfood.local",
       "name": "Bianca Romano",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Data scientist",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "kotlin",
+        "swift",
+        "css"
+      ]
     },
     {
       "id": "usr_p29",
       "email": "p29@dogfood.local",
       "name": "Cyrus Tehrani",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Designer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "swift",
+        "css",
+        "figma"
+      ]
     },
     {
       "id": "usr_p30",
       "email": "p30@dogfood.local",
       "name": "Dalia Cohen",
-      "role": "participant"
+      "role": "participant",
+      "headline": "DevOps engineer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "css",
+        "figma",
+        "graphql"
+      ]
     },
     {
       "id": "usr_p31",
       "email": "p31@dogfood.local",
       "name": "Ezra Mizrahi",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Student",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "figma",
+        "graphql",
+        "aws"
+      ]
     },
     {
       "id": "usr_p32",
       "email": "p32@dogfood.local",
       "name": "Fatima Bello",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Frontend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "graphql",
+        "aws",
+        "docker"
+      ]
     },
     {
       "id": "usr_p33",
       "email": "p33@dogfood.local",
       "name": "Gabe Ortiz",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Backend developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "aws",
+        "docker",
+        "pytorch"
+      ]
     },
     {
       "id": "usr_p34",
       "email": "p34@dogfood.local",
       "name": "Ines Moreau",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Full-stack developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "docker",
+        "pytorch",
+        "vue"
+      ]
     },
     {
       "id": "usr_p35",
       "email": "p35@dogfood.local",
       "name": "Joon Kim",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Mobile developer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "pytorch",
+        "vue",
+        "svelte"
+      ]
     },
     {
       "id": "usr_p36",
       "email": "p36@dogfood.local",
       "name": "Kiara Das",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Data scientist",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "vue",
+        "svelte",
+        "java"
+      ]
     },
     {
       "id": "usr_p37",
       "email": "p37@dogfood.local",
       "name": "Leo Brennan",
-      "role": "participant"
+      "role": "participant",
+      "headline": "Designer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "svelte",
+        "java",
+        "next.js"
+      ]
     },
     {
       "id": "usr_p38",
       "email": "p38@dogfood.local",
       "name": "Maya Lopez",
-      "role": "participant"
+      "role": "participant",
+      "headline": "DevOps engineer",
+      "bio": "Hackathon enthusiast, always up for a new team.",
+      "techStack": [
+        "java",
+        "next.js",
+        "typescript"
+      ]
     }
   ],
   "checkerSessions": [

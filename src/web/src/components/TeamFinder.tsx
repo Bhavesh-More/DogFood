@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router";
 import type { TeamDto, TeamFinderDto } from "@dogfood/core";
 import { ApiError, del, errorMessage, get, post, put } from "../lib/api";
 import { cx } from "../lib/format";
@@ -237,17 +238,25 @@ export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true 
                           <p className="type-title-sm text-on-surface">
                             {p.name} <span className="type-body-sm text-on-surface-variant">· {relativeTime(p.updatedAt, now)}</span>
                           </p>
-                          {canInvite ? (
-                            <Button
-                              size="xs"
-                              icon="person_add"
-                              loading={invite.isPending && invite.variables?.name === p.name}
-                              disabled={invite.isPending}
-                              onClick={() => invite.mutate({ teamId: team.data!.id, userId: p.userId, name: p.name })}
+                          <div className="flex items-center gap-1">
+                            <Link
+                              to={`/u/${p.userId}`}
+                              className="focus-ring inline-flex h-8 items-center rounded-full px-2.5 type-label-md text-primary hover:bg-primary/8"
                             >
-                              Invite
-                            </Button>
-                          ) : null}
+                              View profile
+                            </Link>
+                            {canInvite ? (
+                              <Button
+                                size="xs"
+                                icon="person_add"
+                                loading={invite.isPending && invite.variables?.name === p.name}
+                                disabled={invite.isPending}
+                                onClick={() => invite.mutate({ teamId: team.data!.id, userId: p.userId, name: p.name })}
+                              >
+                                Invite
+                              </Button>
+                            ) : null}
+                          </div>
                         </div>
                         {p.note ? <p className="whitespace-pre-line break-words type-body-md text-on-surface">{p.note}</p> : null}
                         <Skills skills={p.skills} />

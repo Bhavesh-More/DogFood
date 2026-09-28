@@ -441,6 +441,17 @@ const participantSteps: TourStep[] = [
   },
   {
     as: ACCOUNTS.participant,
+    route: "/profile",
+    element: at("main h1"),
+    popover: {
+      title: "Your public profile",
+      description:
+        "Add a headline, your tech stack (or judging qualifications) and links. Captains open an applicant's profile before deciding whether to invite them.",
+      side: "bottom",
+    },
+  },
+  {
+    as: ACCOUNTS.participant,
     route: `/e/${SLUGS.open}/team`,
     element: at("h2", "Invite links"),
     popover: {
