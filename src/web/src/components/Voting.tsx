@@ -67,12 +67,12 @@ function EmailVerifyDialog({ eventId, open, onClose }: { eventId: string; open: 
       <div className="flex flex-col gap-4">
         <p>
           One person, one ballot: we send a 6-digit code to your inbox. This offline deployment delivers mail to the platform's local outbox, which
-          organizers and admins can read.
+          admins can read.
         </p>
         {err ? <Banner tone="error">{errorMessage(err)}</Banner> : null}
         <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={sent} leadingIcon="mail" />
         {sent ? (
-          <TextField label="6-digit code" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} leadingIcon="key" supporting="Check your inbox (or ask an organizer for the outbox entry)." />
+          <TextField label="6-digit code" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} leadingIcon="key" supporting="Check your inbox (or ask an admin for the outbox entry)." />
         ) : null}
       </div>
     </Dialog>
@@ -136,6 +136,7 @@ export function VotingBar({ event, state }: { event: EventDto; state: VoteState 
 export function VoteControl({ event, state, submissionId, compact }: { event: EventDto; state: VoteState; submissionId: string; compact?: boolean }) {
   const qc = useQueryClient();
   const toast = useToast();
+  const { user } = useSession();
   const mine = state.allocation[submissionId] ?? 0;
   const cast = useMutation({
     mutationFn: (votes: number) => put<{ allocation: Record<string, number> }>(`/api/submissions/${submissionId}/vote`, { votes }),
@@ -148,7 +149,7 @@ export function VoteControl({ event, state, submissionId, compact }: { event: Ev
       else toast.error(errorMessage(e));
     },
   });
-  const blocked = (state.mode === "email" && !state.identified) || !state.votingOpen;
+  const blocked = (state.mode === "email" && !state.identified) || (state.mode === "authenticated" && !user) || !state.votingOpen;
   if (state.style === "quadratic") {
     const nextCost = (mine + 1) ** 2 - mine ** 2;
     return (

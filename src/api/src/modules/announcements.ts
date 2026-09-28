@@ -99,7 +99,8 @@ export const announcementRoutes = [
             eventId: event.id,
             kind: "announcement" as const,
             title: body.title,
-            body: body.body,
+            // The feed caps at 2000 chars; the full text lives on the event page.
+            body: body.body.length > 2000 ? `${body.body.slice(0, 1999)}…` : body.body,
             link: `/e/${event.slug}`,
           })),
         );

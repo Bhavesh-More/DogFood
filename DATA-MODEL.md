@@ -112,7 +112,7 @@ erDiagram
 | `vote_email_codes` | One-time codes stored as an HMAC, with an attempt counter and an expiry. |
 | `outbox` | The local mail spool. The platform never calls an external email API, so it works offline; admins can read the spool. |
 | `comments` | Moderation via `hidden_at` and `hidden_by`. |
-| `notifications` | A per-user in-app feed. `kind ∈ {announcement, assignment, invite}` with an optional `event_id`, a `link` and `read_at`. Reads always filter `user_id = <caller>`; rows are written by the announcement, assignment and invitation code paths in the same transaction as the change. |
+| `notifications` | A per-user in-app feed. `kind ∈ {announcement, assignment, invite, team_request}` with an optional `event_id`, a `link` and `read_at`. Reads always filter `user_id = <caller>`; rows are written by the announcement, assignment, invitation and team-join-request code paths in the same transaction as the change. |
 
 ### Integrations and trust
 

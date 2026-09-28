@@ -5,7 +5,7 @@ export interface NotificationInput {
   /** Who receives it. */
   userId: string;
   eventId?: string | null;
-  kind: "announcement" | "assignment" | "invite";
+  kind: "announcement" | "assignment" | "invite" | "team_request";
   title: string;
   body?: string;
   /** In-app path (relative) the notification opens. */

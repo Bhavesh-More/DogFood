@@ -49,6 +49,16 @@ describe("announcements", () => {
     expect(pmails).toHaveLength(registered);
   });
 
+  it("posts long announcements without tripping the notification length cap", async () => {
+    const long = "a".repeat(2500);
+    const r = await post({ title: "Long update", body: long, audience: "participants" });
+    expect(r.status).toBe(201);
+    expect(r.body.body).toHaveLength(2500);
+    const [n] = await s.sql("SELECT max(char_length(body))::int AS m FROM notifications WHERE title = 'Long update'");
+    expect(n!.m).toBeGreaterThan(0);
+    expect(n!.m).toBeLessThanOrEqual(2000);
+  });
+
   it("pinned announcements come first; pinning is an audited edit", async () => {
     const list = (await s.anon.get("/api/events/evt_01/announcements")).body as { id: string; title: string }[];
     const target = list.find((a) => a.title === "Judging starts now")!;

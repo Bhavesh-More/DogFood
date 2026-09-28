@@ -51,9 +51,11 @@ describe("webhooks", () => {
     expect(list.text).not.toContain(hook.secret);
   });
 
-  it("refuses cloud-metadata targets", async () => {
-    const r = await s.as(TOKENS.organizer).post("/api/events/evt_02/webhooks", { url: "http://169.254.169.254/latest", events: ["vote.cast"] });
-    expect(r.body.code).toBe("UNSAFE_WEBHOOK_TARGET");
+  it("refuses cloud-metadata targets, including mapped and dotted forms", async () => {
+    for (const url of ["http://169.254.169.254/latest", "http://[::ffff:169.254.169.254]/latest", "http://metadata.google.internal./latest"]) {
+      const r = await s.as(TOKENS.organizer).post("/api/events/evt_02/webhooks", { url, events: ["vote.cast"] });
+      expect(r.body.code, url).toBe("UNSAFE_WEBHOOK_TARGET");
+    }
   });
 
   it("delivers domain events with a verifiable HMAC-SHA256 signature", async () => {

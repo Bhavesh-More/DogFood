@@ -133,7 +133,8 @@ export const authRoutes = [
     tags: ["Auth"],
     auth: "public",
     async handler({ app, res, actor }) {
-      if (actor.sessionId && actor.via === "cookie") {
+      // Ends whichever session authenticated the call, cookie or bearer.
+      if (actor.sessionId) {
         await app.db.pool.query("DELETE FROM sessions WHERE id = $1", [actor.sessionId]);
       }
       clearCookie(res, SESSION_COOKIE, app.config.cookieSecure);

@@ -435,7 +435,7 @@ const participantSteps: TourStep[] = [
     popover: {
       title: "Team finder",
       description:
-        "Post yourself on the board with your skills, or list your team as recruiting. The board clears a post automatically once the person joins a team.",
+        "Post yourself on the board with your skills, or list your team as recruiting. Solo participants can also ask to join a recruiting team, and its captain is notified. The board clears a post automatically once the person joins a team.",
       side: "bottom",
     },
   },
@@ -1137,7 +1137,7 @@ const adminSteps: TourStep[] = [
     popover: {
       title: "Publish when ready",
       description:
-        "Publishing reveals the event to everyone. You can return to draft later — as long as nobody has registered yet.",
+        "Publishing reveals the event to everyone and cannot be undone. When the event is over, archive it to make it read-only history.",
       side: "bottom",
     },
   },

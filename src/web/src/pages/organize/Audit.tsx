@@ -2,6 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { AuditEntryDto, Paginated } from "@dogfood/core";
 import { get } from "../../lib/api";
+import { useSession } from "../../lib/session";
 import { formatDateTime } from "../../lib/time";
 import { Avatar, Banner, Button, Chip, EmptyState, Icon, LinkButton, PageLoader, TextField } from "../../ui";
 import { useOrganize } from "./common";
@@ -31,7 +32,9 @@ export function AuditTable({ endpoint, csvHref }: { endpoint: string; csvHref?: 
     queryFn: () => get<AuditResponse>(endpoint, { q: dq, action, page, pageSize: 50 }),
     placeholderData: keepPreviousData,
   });
-  const verify = useQuery({ queryKey: ["audit-verify"], queryFn: () => get<{ valid: boolean; entries: number; headHash: string | null; problems: { seq: number; problem: string }[] }>("/api/audit/verify") });
+  const { role } = useSession();
+  // Chain verification is platform-wide, so it is admin-only.
+  const verify = useQuery({ queryKey: ["audit-verify"], queryFn: () => get<{ valid: boolean; entries: number; headHash: string | null; problems: { seq: number; problem: string }[] }>("/api/audit/verify"), enabled: role === "admin" });
   const families = [...new Set((log.data?.actions ?? []).map((a) => a.split(".")[0]!))];
   return (
     <div className="flex flex-col gap-4">

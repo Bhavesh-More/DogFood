@@ -173,6 +173,19 @@ test.describe("organizer", () => {
     await page.getByRole("tab", { name: /Pairwise/ }).click();
     await expect(page.getByText(/comparisons/i).first()).toBeVisible();
   });
+
+  test("a published event cannot be returned to draft", async ({ page, context, baseURL }) => {
+    await signInAs(context, baseURL!, "organizer");
+    await page.goto("/organize/sample-hack-2026/settings");
+    await expect(page.getByRole("button", { name: "Archive" })).toBeVisible();
+    // The Unpublish action is gone from the UI...
+    await expect(page.getByRole("button", { name: "Unpublish" })).toHaveCount(0);
+    // ...and the endpoint no longer exists.
+    const res = await page.request.post("/api/events/evt_01/unpublish", {
+      headers: { authorization: `Bearer ${TOKENS.organizer}` },
+    });
+    expect(res.status()).toBe(404);
+  });
 });
 
 test.describe("announcements", () => {
@@ -243,6 +256,34 @@ test.describe("team finder", () => {
 
     await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
     await page.request.delete(`/api/teams/team_02_01/invites/${invite.id}`, { headers: { authorization: `Bearer ${TOKENS.participant}` } });
+  });
+
+  test("a solo participant asks to join a recruiting team and its captain is notified", async ({ page, context, baseURL }) => {
+    const admin = { authorization: `Bearer ${TOKENS.participant}` };
+    await page.request.put("/api/teams/team_02_01/recruiting", { headers: admin, data: { lookingFor: "e2e recruiting ping" } });
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+
+    await signInAs(context, baseURL!, "participant2");
+    await page.goto("/e/autumn-build-week/team");
+    const card = page
+      .getByRole("list", { name: "Teams recruiting" })
+      .getByRole("listitem")
+      .filter({ hasText: "e2e recruiting ping" });
+    const [res] = await Promise.all([
+      page.waitForResponse((r) => r.url().endsWith("/api/teams/team_02_01/join-requests") && r.request().method() === "POST"),
+      card.getByRole("button", { name: "Ask to join" }).click(),
+    ]);
+    expect(res.ok()).toBe(true);
+    await expect(page.getByText("Request sent to")).toBeVisible();
+    await expect(card.getByRole("button", { name: "Request sent" })).toBeVisible();
+
+    // The captain sees the request in their own notification feed.
+    const feed = await (await page.request.get("/api/notifications", { headers: admin })).json();
+    expect(feed.items.some((n: { kind: string; title: string }) => n.kind === "team_request" && n.title.includes("asked to join"))).toBe(true);
+
+    // Restore the demo data.
+    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+    await page.request.put("/api/teams/team_02_01/recruiting", { headers: admin, data: { lookingFor: null } });
   });
 });
 

@@ -1,8 +1,10 @@
 import { can, isBeforeDeadline, recruitingInput, seekerInput, type TeamFinderDto } from "@dogfood/core";
 import { many, one } from "../db/pool";
-import { conflict, forbidden } from "../lib/errors";
+import { audit } from "../lib/audit";
+import { conflict, forbidden, notFound } from "../lib/errors";
+import { notify } from "../lib/notify";
 import { route } from "../http/route";
-import { judgeScope, loadVisibleEvent, teamOf } from "./access";
+import { findEvent, judgeScope, loadVisibleEvent, teamOf } from "./access";
 import { assertRosterOpen, loadMyTeam } from "./teams";
 
 /**
@@ -35,7 +37,7 @@ export const teamFinderRoutes = [
         const teams = await many<TeamFinderDto["teams"][number]>(
           t,
           `SELECT t.id AS "teamId", t.name, t.looking_for AS "lookingFor",
-                  array_agg(u.name ORDER BY (m.role = 'captain') DESC, m.joined_at) AS members,
+                  array_agg(u.name ORDER BY (m.role = 'captain') DESC, m.joined_at, u.id) AS members,
                   ($2::int - count(m.user_id)::int) AS "openSpots"
              FROM teams t JOIN team_members m ON m.team_id = t.id JOIN users u ON u.id = m.user_id
             WHERE t.event_id = $1 AND t.looking_for IS NOT NULL
@@ -106,6 +108,76 @@ export const teamFinderRoutes = [
         assertRosterOpen(app, event, team.deadline_extension_until);
         await t.query("UPDATE teams SET looking_for = $2 WHERE id = $1", [team.id, body.lookingFor]);
         return { teamId: team.id, lookingFor: body.lookingFor };
+      });
+    },
+  }),
+
+  route({
+    method: "post",
+    path: "/api/teams/:teamId/join-requests",
+    summary: "Ask to join a recruiting team (notifies its captains and lists you on the finder)",
+    description: "For solo participants. Fails with 409 NOT_RECRUITING, ALREADY_ON_TEAM, JUDGE_CONFLICT or TEAM_FULL.",
+    tags: ["Teams"],
+    auth: "team:manage",
+    status: 201,
+    async handler({ app, params, actor, user, tx }) {
+      return tx(async (t) => {
+        const team = await one<{ id: string; event_id: string; name: string; looking_for: string | null; deadline_extension_until: string | null }>(
+          t,
+          "SELECT id, event_id, name, looking_for, deadline_extension_until FROM teams WHERE id = $1",
+          [params.teamId!],
+        );
+        if (!team) throw notFound("Team");
+        const event = (await findEvent(t, team.event_id))!;
+        if (event.status !== "published") throw forbidden("This event is not open", "EVENT_NOT_OPEN");
+        assertRosterOpen(app, event, team.deadline_extension_until);
+        if (!team.looking_for) throw conflict("This team is not recruiting", "NOT_RECRUITING");
+        if (await judgeScope(t, user.id, event.id)) throw conflict("Judges cannot join teams", "JUDGE_CONFLICT");
+        if (await teamOf(t, user.id, event.id)) throw conflict("You are already on a team in this event", "ALREADY_ON_TEAM");
+        const size = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM team_members WHERE team_id = $1", [team.id]);
+        if ((size?.n ?? 0) >= event.max_team_size) throw conflict(`Team is full (${event.max_team_size} members max)`, "TEAM_FULL");
+        // Put the requester on the board so the captain can invite them from the roster.
+        await t.query("INSERT INTO registrations (event_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [event.id, user.id]);
+        await t.query(
+          `INSERT INTO team_seekers (event_id, user_id, skills, note) VALUES ($1, $2, '{}', '')
+           ON CONFLICT (event_id, user_id) DO NOTHING`,
+          [event.id, user.id],
+        );
+        const captains = await many<{ id: string; name: string }>(
+          t,
+          "SELECT u.id, u.name FROM team_members m JOIN users u ON u.id = m.user_id WHERE m.team_id = $1 AND m.role = 'captain'",
+          [team.id],
+        );
+        const link = `/e/${event.slug}/team`;
+        const title = `${user.name} asked to join "${team.name}"`;
+        // Dedup on stable ids, not the rendered title (two people can share a name).
+        const already = await one(
+          t,
+          "SELECT 1 FROM audit_log WHERE action = 'team.join_requested' AND entity_id = $1 AND data->>'userId' = $2",
+          [team.id, user.id],
+        );
+        if (!already) {
+          await notify(
+            t,
+            captains.map((c) => ({
+              userId: c.id,
+              eventId: event.id,
+              kind: "team_request" as const,
+              title,
+              body: `They're on the team finder now — open your team page to invite them.`,
+              link,
+            })),
+          );
+          await audit(t, actor, {
+            eventId: event.id,
+            action: "team.join_requested",
+            entityType: "team",
+            entityId: team.id,
+            summary: `${user.name} asked to join "${team.name}"`,
+            data: { userId: user.id },
+          });
+        }
+        return { requested: true };
       });
     },
   }),

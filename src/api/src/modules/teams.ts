@@ -29,7 +29,7 @@ export async function buildTeamDto(tx: Tx, teamId: string): Promise<TeamDto> {
     tx,
     `SELECT m.user_id AS "userId", u.name, m.role, m.joined_at AS "joinedAt"
        FROM team_members m JOIN users u ON u.id = m.user_id
-      WHERE m.team_id = $1 ORDER BY (m.role = 'captain') DESC, m.joined_at`,
+      WHERE m.team_id = $1 ORDER BY (m.role = 'captain') DESC, m.joined_at, m.user_id`,
     [teamId],
   );
   return {
@@ -46,6 +46,12 @@ export async function buildTeamDto(tx: Tx, teamId: string): Promise<TeamDto> {
 
 /** Roster changes are locked at the (team-specific) deadline, like submissions. */
 export function assertRosterOpen(app: AppContext, event: EventRow, extensionUntil: string | null = null) {
+  if (event.status !== "published") {
+    throw forbidden(
+      event.status === "archived" ? "This event is archived and read-only" : "This event is not open",
+      "EVENT_NOT_OPEN",
+    );
+  }
   if (!isBeforeDeadline(event.submission_deadline, app.now(), extensionUntil)) {
     throw new HttpError(403, "DEADLINE_PASSED", "Teams are locked: the submission deadline has passed", {
       deadline: event.submission_deadline,
@@ -135,7 +141,8 @@ export const teamRoutes = [
     body: teamInput,
     async handler({ app, params, body, actor, tx }) {
       return tx(async (t) => {
-        const { team, event } = await loadMyTeam(t, actor, params.teamId!);
+        const { team, event, role } = await loadMyTeam(t, actor, params.teamId!);
+        if (role !== "captain") throw forbidden("Only the captain can rename the team", "NOT_CAPTAIN");
         assertRosterOpen(app, event, team.deadline_extension_until);
         await t.query("UPDATE teams SET name = $2 WHERE id = $1", [team.id, body.name]);
         await audit(t, actor, {
@@ -394,7 +401,7 @@ export const teamRoutes = [
         await t.query("DELETE FROM team_members WHERE team_id = $1 AND user_id = $2", [team.id, user.id]);
         const remaining = await many<{ user_id: string }>(
           t,
-          "SELECT user_id FROM team_members WHERE team_id = $1 ORDER BY joined_at",
+          "SELECT user_id FROM team_members WHERE team_id = $1 ORDER BY joined_at, user_id",
           [team.id],
         );
         if (remaining.length === 0) {

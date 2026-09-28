@@ -149,4 +149,22 @@ describe("F004 — teams & single-use invites", () => {
     expect(actions).toContain("team.invite_created");
     expect(actions).toContain("team.member_joined");
   });
+
+  it("only the captain can rename a team", async () => {
+    const member = await s.tokenFor("usr_p36"); // member of team_02_02
+    const r = await s.as(member).patch("/api/teams/team_02_02", { name: "Hijacked" });
+    expect(r.status).toBe(403);
+    expect(r.body.code).toBe("NOT_CAPTAIN");
+  });
+
+  it("archiving an event locks rosters and invite minting", async () => {
+    expect((await s.as(TOKENS.organizer).post("/api/events/evt_02/archive")).status).toBe(200);
+    const captain = await s.tokenFor("usr_p38"); // captain of team_02_02
+    const mint = await s.as(captain).post("/api/teams/team_02_02/invites");
+    expect(mint.status).toBe(403);
+    expect(mint.body.code).toBe("EVENT_NOT_OPEN");
+    const rename = await s.as(captain).patch("/api/teams/team_02_02", { name: "Nope" });
+    expect(rename.status).toBe(403);
+    expect(rename.body.code).toBe("EVENT_NOT_OPEN");
+  });
 });

@@ -87,7 +87,7 @@ export const adminRoutes = [
     summary: "Recompute the SHA-256 hash chain of the audit trail",
     description: "Any edited, deleted or re-ordered row breaks the chain and is reported here.",
     tags: ["Audit"],
-    auth: "event:manage",
+    auth: "audit:system",
     async handler({ tx }) {
       return tx(async (t) => {
         const problems = await many<{ seq: number; problem: string }>(t, "SELECT seq, problem FROM audit_log_verify()");
@@ -141,8 +141,9 @@ export const adminRoutes = [
         const before = await one<{ role: string; name: string }>(t, "SELECT role, name FROM users WHERE id = $1", [params.userId]);
         if (!before) throw notFound("User");
         await t.query("UPDATE users SET role = $2 WHERE id = $1", [params.userId, body.role]);
-        // Role changes invalidate existing sessions so new privileges apply cleanly.
-        await t.query("DELETE FROM sessions WHERE user_id = $1 AND kind = 'web'", [params.userId]);
+        // Role changes invalidate web and API sessions so new privileges apply
+        // cleanly (checker sessions are left for the acceptance harness).
+        await t.query("DELETE FROM sessions WHERE user_id = $1 AND kind IN ('web', 'api')", [params.userId]);
         await audit(t, actor, {
           action: "user.role_changed",
           entityType: "user",

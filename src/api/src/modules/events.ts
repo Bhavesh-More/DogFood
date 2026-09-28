@@ -437,32 +437,25 @@ export const eventRoutes = [
     },
   }),
 
-  ...(["publish", "archive", "unpublish"] as const).map((action) =>
+  // One-way status machine: draft → published → archived. Publishing is
+  // irreversible (no unpublish), and an archived event is terminal.
+  ...(["publish", "archive"] as const).map((action) =>
     route({
       method: "post",
       path: `/api/events/:eventId/${action}`,
-      summary:
-        action === "publish"
-          ? "Publish the event (visible to everyone)"
-          : action === "archive"
-            ? "Archive the event (read-only history)"
-            : "Return the event to draft",
+      summary: action === "publish" ? "Publish the event (visible to everyone; irreversible)" : "Archive the event (read-only history)",
       tags: ["Events"],
       auth: "event:manage",
       async handler({ app, params, actor, tx }) {
         return tx(async (t) => {
           const event = await loadManagedEvent(t, actor, params.eventId!);
-          const status = action === "publish" ? "published" : action === "archive" ? "archived" : "draft";
-          if (action === "unpublish") {
-            const regs = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM registrations WHERE event_id = $1", [
-              event.id,
-            ]);
-            if ((regs?.n ?? 0) > 0) throw conflict("Participants have registered; archive instead", "HAS_REGISTRATIONS");
-          }
+          const status = action === "publish" ? "published" : "archived";
+          if (event.status === status) return buildEventDto(t, event, actor, app.now());
+          if (event.status === "archived") throw conflict("This event is archived and read-only", "EVENT_ARCHIVED");
           await t.query("UPDATE events SET status = $2, updated_at = now() WHERE id = $1", [event.id, status]);
           await audit(t, actor, {
             eventId: event.id,
-            action: { publish: "event.published", archive: "event.archived", unpublish: "event.unpublished" }[action],
+            action: action === "publish" ? "event.published" : "event.archived",
             entityType: "event",
             entityId: event.id,
             summary: `Event ${status}`,

@@ -223,6 +223,18 @@ describe("event lifecycle", () => {
     const v = await s.as(TOKENS.admin).get("/api/audit/verify");
     expect(v.body.valid).toBe(true);
   });
+
+  it("event status is a one-way machine: no unpublish, and archive is terminal", async () => {
+    // Republishing a live event is a safe no-op.
+    expect((await org.post(`/api/events/${eventId}/publish`)).status).toBe(200);
+    // Unpublish no longer exists.
+    expect((await org.post(`/api/events/${eventId}/unpublish`)).status).toBe(404);
+    expect((await org.post(`/api/events/${eventId}/archive`)).status).toBe(200);
+    expect((await org.post(`/api/events/${eventId}/archive`)).status).toBe(200);
+    const back = await org.post(`/api/events/${eventId}/publish`);
+    expect(back.status).toBe(409);
+    expect(back.body.code).toBe("EVENT_ARCHIVED");
+  });
 });
 
 function crt(name: string): string {

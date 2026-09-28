@@ -68,7 +68,7 @@ export async function toSubmissionDto(tx: Tx, row: SubmissionRow, full: boolean)
   const members = await many<{ userId: string; name: string }>(
     tx,
     `SELECT m.user_id AS "userId", u.name FROM team_members m JOIN users u ON u.id = m.user_id
-      WHERE m.team_id = $1 ORDER BY (m.role = 'captain') DESC, m.joined_at`,
+      WHERE m.team_id = $1 ORDER BY (m.role = 'captain') DESC, m.joined_at, m.user_id`,
     [row.team_id],
   );
   const comments = await one<{ n: number }>(

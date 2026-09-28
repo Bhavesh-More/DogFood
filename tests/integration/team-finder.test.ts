@@ -59,6 +59,24 @@ describe("team finder", () => {
     expect((await s.as(TOKENS.participant).get("/api/events/evt_02/my-team")).body.lookingFor).toBe("A backend dev who likes Postgres");
   });
 
+  it("a solo participant can ask to join a recruiting team; its captain is notified once", async () => {
+    // team_02_02 is not recruiting, so the request is refused.
+    const closed = await s.as(tok.usr_p01!).post("/api/teams/team_02_02/join-requests");
+    expect(closed.status).toBe(409);
+    expect(closed.body.code).toBe("NOT_RECRUITING");
+    // team_02_01 is recruiting and usr_p01 is a solo participant.
+    const r = await s.as(tok.usr_p01!).post("/api/teams/team_02_01/join-requests");
+    expect(r.status).toBe(201);
+    expect(r.body).toEqual({ requested: true });
+    const [n] = await s.sql("SELECT kind, title FROM notifications WHERE user_id = 'usr_participant' AND kind = 'team_request'");
+    expect(n).toMatchObject({ kind: "team_request" });
+    expect(n!.title).toContain("asked to join");
+    // Asking again does not spam the captain.
+    expect((await s.as(tok.usr_p01!).post("/api/teams/team_02_01/join-requests")).status).toBe(201);
+    const [count] = await s.sql("SELECT count(*)::int AS n FROM notifications WHERE user_id = 'usr_participant' AND kind = 'team_request'");
+    expect(count!.n).toBe(1);
+  });
+
   it("joining a team takes you off the board automatically (database trigger)", async () => {
     const inv = (await s.as(TOKENS.participant).post("/api/teams/team_02_01/invites")).body;
     expect((await s.as(tok.usr_p01!).post(`/api/invites/${inv.token}/accept`)).status).toBe(200);

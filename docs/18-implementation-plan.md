@@ -290,3 +290,33 @@ Verified: `python3 -m pytest` 9/9; Vitest 230/230 (107 unit + 123 integration); 
 | Tests | `tests/integration/notifications.test.ts` (5); the team-finder and notifications Playwright journeys |
 
 Re-verified on a fresh `docker compose` build: 235/235 Vitest (107 unit + 128 integration), 19/19 Playwright, lint and types clean.
+
+### Iteration 8 — bug fixes: two-way team finder and a one-way event status
+
+| Area | Change |
+| :--- | :--- |
+| Team finder | A solo participant could see a team advertising open spots but had no way to act (the card was read-only). Added `POST /api/teams/:teamId/join-requests` and an **Ask to join** button on each recruiting team: it notifies every captain (new notification kind `team_request`, migration `008`), adds the requester to the finder board, and the captain accepts with the existing **Invite** action. Re-asking is idempotent |
+| Event status | Publishing was reversible and `publish` could resurrect an archived event. `unpublish` is removed entirely; status is now a one-way `draft → published → archived` machine, archive is terminal, and republishing while published is a no-op (`EVENT_ARCHIVED` otherwise). The organizer settings UI no longer offers **Unpublish** |
+| Tests | `tests/integration/team-finder.test.ts` (join-request guards + idempotency), `tests/integration/lifecycle.test.ts` (status machine), plus an end-to-end Playwright journey for the seeker→captain request |
+| Docs | AGENTS.md §2/§10b, DATA-MODEL; API reference auto (OpenAPI) |
+
+Re-verified on a fresh `docker compose` build: 237/237 Vitest (107 unit + 130 integration), 20/20 Playwright, acceptance 38/38 T4, lint and types clean.
+
+### Iteration 9 — full-audit bug sweep (security, integrity, consistency)
+
+A read-only audit of every subsystem produced the following fixes:
+
+| Area | Change |
+| :--- | :--- |
+| Judging integrity | A withdrawn (`unsubmit`) or `ineligible` project stayed visible and scorable to a judge who held an assignment. The queue now filters `status='submitted' AND eligibility<>'ineligible'` and re-applies the judge's track scope, the detail route 404s non-submitted/ineligible, and the ballot route rejects drafts (`NOT_SUBMITTED`). Deleting an assignment with a submitted ballot is refused (`HAS_BALLOTS`), matching the judge-removal guard |
+| Open-link Sybil | The per-IP cap only flagged a device's first vote: `bool_or(voter_key = $3)` was true for the flagged voter's own row, so every later vote was `counted`. The heuristic now counts distinct *other* voters and keeps an already-flagged device flagged |
+| Roster status | `assertRosterOpen` checked only the deadline, so invite minting/accept, join requests, rename, leave and remove still worked after an event was archived. It now requires `status='published'` (`EVENT_NOT_OPEN`), covering all seven callers at once |
+| Auth throttling | The `auth` rate-limit bucket keyed on `user.id` when any session was attached, so login/registration could escape the per-IP cap. Public `auth` throttling is now keyed on the IP hash |
+| RLS | *(Out of scope this pass.)* The four AI tables declare `FORCE ROW LEVEL SECURITY` without `ENABLE`, so their policies are inert (`pg_class.relrowsecurity = false`), and the AI summary endpoint's visibility check has a draft/ineligible gap. Both are AI-side and were deliberately left untouched. The core judge tables (`assignments`, `ballots`, `scores`, `pairwise_votes`) were re-checked and are correctly enabled and enforced |
+| DB/schema | An announcement body of 2001–5000 chars rolled back with a `CONSTRAINT_VIOLATION` because the notification fan-out copies it verbatim into a 2000-char column; it is now truncated (full text stays on the event). CSV import now locks the team row before the capacity check. Member ordering and captain promotion are deterministic (`joined_at, user_id`) |
+| Hardening | Webhook targets are resolved and rejected on any metadata/link-local address (IPv4-mapped IPv6, hex forms, trailing-dot hosts) and redirects are no longer followed. Join-request dedup keys on ids, not the display name. Only the captain can rename a team. `/api/audit/verify` is admin-only (`audit:system`) and the UI gates on role. Role changes revoke API tokens too; bearer logout ends the session. Authenticated-mode vote controls are disabled while logged out. Signed-record verification documents raw-UTF-8 (`ensure_ascii=False`) canonicalisation |
+| Tests | New `tests/integration/judging-integrity.test.ts` (3); Sybil, archive-lock, captain-rename, long-announcement and mapped-IPv6 webhook cases added to the existing suites; 243 Vitest total |
+
+Re-verified on a fresh `docker compose` build: 243/243 Vitest (107 unit + 136 integration), 21/21 Playwright (incl. a published-event-cannot-unpublish journey), acceptance 38/38 T4, lint and types clean.
+
+

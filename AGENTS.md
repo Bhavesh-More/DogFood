@@ -63,8 +63,8 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
-  - **235/235 Vitest tests** (107 unit + 128 integration), run with `pnpm test`.
-  - **19/19 Playwright journeys.**
+  - **243/243 Vitest tests** (107 unit + 136 integration), run with `pnpm test`.
+  - **21/21 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
   - Lint and type-check are clean.
@@ -319,7 +319,15 @@ client; use `mapSeq`, because pg 9 removes the implicit queue.
   - Append-only: the app role has no UPDATE/DELETE, and an owner-level
     trigger refuses changes.
   - Each `hash` is SHA-256 over `prev_hash` and the row.
-  - `audit_log_verify()` finds the first broken row.
+  - `audit_log_verify()` finds the first broken row. Verification is
+    **platform-wide and admin-only** (`GET /api/audit/verify`, cap
+    `audit:system`); per-event reads are `event:manage`.
+- **Judge reads follow submission state:** the review queue and assignment
+  detail require `s.status='submitted' AND s.eligibility<>'ineligible'` and
+  re-apply the judge's track scope; the ballot route rejects drafts
+  (`NOT_SUBMITTED`) and an assignment with a submitted ballot cannot be
+  deleted (`HAS_BALLOTS`). Withdrawing a project (`unsubmit`) leaves the
+  assignment in place, so these guards are what keep a draft private.
 - **Constraints:** one team per person per event (`UNIQUE (event_id,
   user_id)`); one submission per team; composite FKs `(x_id, event_id)`
   keep children in their own event.
@@ -339,6 +347,16 @@ A single injectable clock, `app.now()`, drives every rule:
 Rules are pure functions in `core/timeline.ts`. Client time headers are
 ignored. Sessions and webhook backoff use the DB clock internally; that's
 fine, because they never compare against the app clock.
+
+### Event status
+
+Status is a **one-way** machine: `draft → published → archived`.
+`POST /api/events/:eventId/publish` moves a draft (or is a no-op while
+published); `.../archive` moves a published event to read-only history and
+is terminal. There is **no unpublish** and an archived event can never be
+republished (`EVENT_ARCHIVED`). Organizers may still edit details and
+export results of an archived event, which is why the status is not
+enforced in `loadManagedEvent`.
 
 ### Normalization (see JUDGING.md for the proofs)
 
@@ -459,12 +477,13 @@ grepped from `src/api/src/modules`.
 | `tests/unit/*` | 57 | Normalization, Bradley–Terry, assignment, rules |
 | `auth-rbac` | 18 | Sessions, RBAC, tenancy, headers, CSRF, no email leaks, malformed input → 4xx |
 | `isolation` | 14 | Raw SQL as the app role proves RLS; secrets hidden; audit append-only |
-| `deadline-teams` | 14 | Deadline, DB trigger, extensions, invite race |
-| `lifecycle` | 17 | A whole event on a controllable clock |
+| `deadline-teams` | 16 | Deadline, DB trigger, extensions, invite race, archived roster lock, captain-only rename |
+| `lifecycle` | 18 | A whole event on a controllable clock, one-way status machine |
 | `voting` | 15 | Voting modes, budgets and anti-Sybil controls |
+| `judging-integrity` | 3 | Withdrawn/ineligible projects hidden from every judge path; submitted assignments protected |
 | `platform` | 16 | Webhooks to a real receiver, Ed25519 + tampering, OpenAPI coverage, bundles, uploads, embed, rate limit, audit tamper |
 | `web-assets` | 5 | Precompressed assets and compressed JSON |
-| `tests/e2e/smoke.spec.ts` | 10 | Playwright journeys; they restore any data they change |
+| `tests/e2e/smoke.spec.ts` | 20 | Playwright journeys; they restore any data they change |
 | `acceptance/run.py` | 38 | See `acceptance-report.txt` |
 
 The runner:
@@ -566,7 +585,8 @@ maps the latter to the host gateway.
 
 **Rate limits during tests**
 
-- Anonymous traffic is keyed by IP:
+- Anonymous traffic is keyed by IP; the `auth` bucket stays IP-keyed even
+  when a session is attached, so login/registration cannot escape the cap:
   - `auth`: 10 per minute.
   - `vote`: 20 per minute (also used by code verification).
   - `emailCode`: a burst of 3.
@@ -668,6 +688,11 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
     they join or found a team.
   - `teams.looking_for` holds the recruiting text; `null` means the team
     is not recruiting.
+  - Two-way: seekers post themselves and captains **Invite** them; a solo
+    participant can also **Ask to join** a recruiting team
+    (`POST /api/teams/:teamId/join-requests`), which notifies its captains
+    (notification kind `team_request`, migration `008`), puts the requester
+    on the board, and is idempotent. Acceptance is the normal invite flow.
   - UI: `components/TeamFinder.tsx`, shown on the team page.
 - **Notifications (in-app feed).**
   - `modules/notifications.ts` and migration `007`.

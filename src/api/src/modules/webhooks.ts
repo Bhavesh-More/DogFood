@@ -1,3 +1,4 @@
+import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 import { WEBHOOK_EVENTS, webhookInput } from "@dogfood/core";
 import { many, one, type Db, type Tx } from "../db/pool";
@@ -36,10 +37,42 @@ export function createWebhookSink(db: Db): WebhookSink {
   };
 }
 
+/** The IPv4 address behind an IPv4-mapped IPv6 form, dotted or hex. */
+function mappedV4(v: string): string | null {
+  const dotted = /^::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/.exec(v);
+  if (dotted) return dotted[1]!;
+  const hex = /^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/.exec(v);
+  if (hex) {
+    const hi = parseInt(hex[1]!, 16);
+    const lo = parseInt(hex[2]!, 16);
+    return `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+  }
+  return null;
+}
+
+/** True for cloud-metadata / link-local addresses, including IPv4-mapped IPv6. */
+function isBlockedAddress(ip: string): boolean {
+  const v = ip.toLowerCase();
+  if (v === "fd00:ec2::254") return true; // AWS IPv6 IMDS
+  const v4 = isIP(ip) === 4 ? ip : mappedV4(v);
+  if (v4) return v4.startsWith("169.254.");
+  // fe80::/10 link-local
+  return isIP(ip) === 6 && /^fe[89ab]/.test(v);
+}
+
 /** Block cloud metadata endpoints; organizers are trusted to target their own LAN. */
-function assertSafeTarget(url: string) {
-  const host = new URL(url).hostname.replace(/^\[|\]$/g, "");
-  if (host === "169.254.169.254" || host === "metadata.google.internal" || (isIP(host) === 6 && host.startsWith("fe80"))) {
+async function assertSafeTarget(url: string) {
+  const host = new URL(url).hostname.replace(/^\[|\]$/g, "").replace(/\.$/, "");
+  if (host === "metadata.google.internal") {
+    throw unprocessable("That webhook target is not allowed", undefined, "UNSAFE_WEBHOOK_TARGET");
+  }
+  let addresses: string[];
+  try {
+    addresses = (await lookup(host, { all: true })).map((r) => r.address);
+  } catch {
+    addresses = isIP(host) ? [host] : [];
+  }
+  if (addresses.some(isBlockedAddress)) {
     throw unprocessable("That webhook target is not allowed", undefined, "UNSAFE_WEBHOOK_TARGET");
   }
 }
@@ -92,6 +125,8 @@ export async function deliverDue(db: Db, fetchImpl: typeof fetch = fetch, limit 
             "x-dogfood-signature": signBody(d.secret, timestamp, body),
           },
           body,
+          // Never follow redirects: a 3xx to a metadata address would bypass the target check.
+          redirect: "manual",
           signal: AbortSignal.timeout(5000),
         });
         status = res.status;
@@ -170,7 +205,7 @@ export const webhookRoutes = [
     body: webhookInput,
     status: 201,
     async handler({ params, body, actor, tx }) {
-      assertSafeTarget(body.url);
+      await assertSafeTarget(body.url);
       return tx(async (t) => {
         const event = await loadManagedEvent(t, actor, params.eventId!);
         const id = newId("hook");

@@ -158,25 +158,28 @@ export const judgingRoutes = [
     summary: "Your review queue (WHERE judge_id = you)",
     tags: ["Judging"],
     auth: "judging:score",
-    async handler({ params, actor, tx }) {
-      return tx(async (t): Promise<AssignmentDto[]> => {
-        const event = await findEvent(t, params.eventId!);
-        if (!event) throw notFound("Event");
-        await requireEventJudge(t, actor, event.id);
-        return many<AssignmentDto>(
-          t,
-          `SELECT a.id, a.submission_id AS "submissionId", s.title AS "submissionTitle", tm.name AS "teamName",
-                  s.track_id AS "trackId", tr.name AS "trackName", a.status, a.updated_at AS "updatedAt"
-             FROM assignments a
-             JOIN submissions s ON s.id = a.submission_id
-             JOIN teams tm ON tm.id = s.team_id
-             LEFT JOIN tracks tr ON tr.id = s.track_id
-            WHERE a.event_id = $1 AND a.judge_id = $2
-            ORDER BY (a.status = 'submitted'), s.title`,
-          [event.id, actor.user!.id],
-        );
-      });
-    },
+      async handler({ params, actor, tx }) {
+        return tx(async (t): Promise<AssignmentDto[]> => {
+          const event = await findEvent(t, params.eventId!);
+          if (!event) throw notFound("Event");
+          const scope = await requireEventJudge(t, actor, event.id);
+          const rows = await many<AssignmentDto & { trackId: string | null }>(
+            t,
+            `SELECT a.id, a.submission_id AS "submissionId", s.title AS "submissionTitle", tm.name AS "teamName",
+                    s.track_id AS "trackId", tr.name AS "trackName", a.status, a.updated_at AS "updatedAt"
+               FROM assignments a
+               JOIN submissions s ON s.id = a.submission_id
+               JOIN teams tm ON tm.id = s.team_id
+               LEFT JOIN tracks tr ON tr.id = s.track_id
+              WHERE a.event_id = $1 AND a.judge_id = $2
+                AND s.status = 'submitted' AND s.eligibility <> 'ineligible'
+              ORDER BY (a.status = 'submitted'), s.title`,
+            [event.id, actor.user!.id],
+          );
+          // A narrowed track scope must drop existing assignments too.
+          return rows.filter((r) => inScope(scope, r.trackId));
+        });
+      },
   }),
 
   route({
@@ -190,7 +193,7 @@ export const judgingRoutes = [
         const a = await loadOwnAssignment(t, actor, params.assignmentId!);
         const scope = await requireEventJudge(t, actor, a.event_id);
         const sub = await loadSubmission(t, a.submission_id);
-        if (!sub) throw notFound("Submission");
+        if (!sub || sub.status !== "submitted" || sub.eligibility === "ineligible") throw notFound("Submission");
         if (!inScope(scope, sub.track_id)) throw forbidden("Outside your track scope", "OUT_OF_SCOPE");
         const criteria = criteriaForTrack(await loadCriteria(t, a.event_id), sub.track_id);
         return {
@@ -221,6 +224,7 @@ export const judgingRoutes = [
         assertJudgingOpen(app, event);
         const sub = await loadSubmission(t, a.submission_id);
         if (!sub || !inScope(scope, sub.track_id)) throw forbidden("Outside your track scope", "OUT_OF_SCOPE");
+        if (sub.status !== "submitted") throw conflict("This project is not submitted", "NOT_SUBMITTED");
         if (sub.eligibility === "ineligible") throw conflict("This project was ruled ineligible", "INELIGIBLE");
 
         const criteria = criteriaForTrack(await loadCriteria(t, event.id), sub.track_id);
@@ -869,21 +873,32 @@ export const judgingRoutes = [
     summary: "Remove an assignment (its ballot is deleted too)",
     tags: ["Judge management"],
     auth: "event:manage",
-    async handler({ params, actor, tx }) {
-      await tx(async (t) => {
-        const event = await loadManagedEvent(t, actor, params.eventId!);
-        const res = await t.query("DELETE FROM assignments WHERE id = $1 AND event_id = $2 RETURNING status", [params.assignmentId, event.id]);
-        if (res.rowCount === 0) throw notFound("Assignment");
-        await audit(t, actor, {
-          eventId: event.id,
-          action: "assignment.removed",
-          entityType: "assignment",
-          entityId: params.assignmentId,
-          summary: `Assignment removed (was ${(res.rows[0] as { status: string }).status})`,
+      async handler({ params, actor, tx }) {
+        await tx(async (t) => {
+          const event = await loadManagedEvent(t, actor, params.eventId!);
+          const res = await t.query(
+            "DELETE FROM assignments WHERE id = $1 AND event_id = $2 AND status <> 'submitted' RETURNING status",
+            [params.assignmentId, event.id],
+          );
+          if (res.rowCount === 0) {
+            const row = await one<{ status: string }>(
+              t,
+              "SELECT status FROM assignments WHERE id = $1 AND event_id = $2",
+              [params.assignmentId, event.id],
+            );
+            if (!row) throw notFound("Assignment");
+            throw conflict("This assignment has a submitted ballot and cannot be removed", "HAS_BALLOTS");
+          }
+          await audit(t, actor, {
+            eventId: event.id,
+            action: "assignment.removed",
+            entityType: "assignment",
+            entityId: params.assignmentId,
+            summary: `Assignment removed (was ${(res.rows[0] as { status: string }).status})`,
+          });
         });
-      });
-      return undefined;
-    },
+        return undefined;
+      },
   }),
 
   route({

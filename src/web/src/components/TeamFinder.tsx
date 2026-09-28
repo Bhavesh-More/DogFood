@@ -149,16 +149,26 @@ export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true 
   const team = useMyTeam(eventId, Boolean(user));
   const toast = useToast();
   const now = useServerNow(60_000);
+  const [requested, setRequested] = useState<ReadonlySet<string>>(new Set());
   const invite = useMutation({
     mutationFn: (v: { teamId: string; userId: string; name: string }) =>
       post(`/api/teams/${v.teamId}/invitations`, { userId: v.userId }),
     onSuccess: (_d, v) => toast.success(`Invitation sent to ${v.name}`),
     onError: (err) => toast.error(errorMessage(err)),
   });
+  const join = useMutation({
+    mutationFn: (v: { teamId: string; name: string }) => post(`/api/teams/${v.teamId}/join-requests`),
+    onSuccess: (_d, v) => {
+      setRequested((prev) => new Set(prev).add(v.teamId));
+      toast.success(`Request sent to ${v.name} — they'll see it and can invite you`);
+    },
+    onError: (err) => toast.error(errorMessage(err)),
+  });
   if (q.isPending || !q.data) return null;
   const { seekers, teams, me, open } = q.data;
   const mine = seekers.find((p) => p.userId === user?.id);
   const canInvite = open && Boolean(team.data) && team.data!.members.length < team.data!.maxSize;
+  const canRequest = me.canPost;
   return (
     <section aria-labelledby="team-finder-heading" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -187,7 +197,23 @@ export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true 
                         <Pill tone="secondary" icon="group_add">{t.openSpots} open</Pill>
                       </div>
                       <p className="type-body-md text-on-surface">{t.lookingFor}</p>
-                      <p className="type-body-sm text-on-surface-variant">{t.members.join(", ")} · ask the captain for an invite link</p>
+                      <p className="type-body-sm text-on-surface-variant">{t.members.join(", ")}</p>
+                      {canRequest ? (
+                        <div>
+                          <Button
+                            size="xs"
+                            icon={requested.has(t.teamId) ? "check" : "how_to_reg"}
+                            variant={requested.has(t.teamId) ? "text" : "tonal"}
+                            loading={join.isPending && join.variables?.teamId === t.teamId}
+                            disabled={requested.has(t.teamId) || join.isPending}
+                            onClick={() => join.mutate({ teamId: t.teamId, name: t.name })}
+                          >
+                            {requested.has(t.teamId) ? "Request sent" : "Ask to join"}
+                          </Button>
+                        </div>
+                      ) : (
+                        <p className="type-body-sm text-on-surface-variant">Ask the captain for an invite link</p>
+                      )}
                     </Card>
                   </li>
                 ))}

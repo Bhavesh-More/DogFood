@@ -89,8 +89,8 @@ Also built in:
   count; clicking one opens the event, review queue or invitation.
 - **Team finder:** solo participants list their skills, and teams list
   their open spots and what they need. A team member can invite someone on
-  the board and they receive the invitation as a notification. Emails are
-  never shown.
+  the board, and a solo participant can **ask to join** a recruiting team;
+  either way it arrives as a notification and emails are never shown.
 
 Every screen works at phone width (navigation bar and compact layouts),
 in light and dark themes. The theme switch has two states, light and

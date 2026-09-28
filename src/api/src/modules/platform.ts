@@ -202,6 +202,8 @@ export const platformRoutes = [
               await t.query("INSERT INTO teams (id, event_id, name, created_by) VALUES ($1, $2, $3, $4)", [teamId, event.id, p.team, u.id]);
             }
             teamIds.set(p.team, teamId);
+            // Serialise capacity checks per team (invite-accept does the same).
+            await t.query("SELECT 1 FROM teams WHERE id = $1 FOR UPDATE", [teamId]);
             const size = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM team_members WHERE team_id = $1", [teamId]);
             const already = await one(t, "SELECT 1 FROM team_members WHERE event_id = $1 AND user_id = $2", [event.id, u.id]);
             if (!already && (size?.n ?? 0) < event.max_team_size) {

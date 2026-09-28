@@ -12,7 +12,7 @@ export function EventSettingsPage() {
   const qc = useQueryClient();
   const toast = useToast();
   const navigate = useNavigate();
-  const [confirm, setConfirm] = useState<null | "archive" | "unpublish">(null);
+  const [confirm, setConfirm] = useState<null | "archive">(null);
   const [f, setF] = useState({
     name: e.name,
     slug: e.slug,
@@ -68,7 +68,7 @@ export function EventSettingsPage() {
     onError: (err) => toast.error(errorMessage(err)),
   });
   const status = useMutation({
-    mutationFn: (action: "publish" | "archive" | "unpublish") => post(`/api/events/${e.id}/${action}`),
+    mutationFn: (action: "publish" | "archive") => post(`/api/events/${e.id}/${action}`),
     onSuccess: () => {
       setConfirm(null);
       qc.invalidateQueries({ queryKey: keys.event(e.slug) });
@@ -150,7 +150,6 @@ export function EventSettingsPage() {
       <div className="sticky bottom-24 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface-container-high p-3 shadow-2 medium:bottom-4">
         <div className="flex flex-wrap gap-2">
           {e.status === "draft" ? <Button variant="tonal" icon="public" onClick={() => status.mutate("publish")} loading={status.isPending}>Publish</Button> : null}
-          {e.status === "published" ? <Button variant="text" icon="visibility_off" onClick={() => setConfirm("unpublish")}>Unpublish</Button> : null}
           {e.status !== "archived" ? <Button variant="text" icon="history" onClick={() => setConfirm("archive")}>Archive</Button> : null}
         </div>
         <Button type="submit" size="md" icon="check" loading={save.isPending}>
@@ -161,18 +160,18 @@ export function EventSettingsPage() {
       <Dialog
         open={confirm !== null}
         onClose={() => setConfirm(null)}
-        title={confirm === "archive" ? "Archive this event?" : "Return to draft?"}
-        icon={confirm === "archive" ? "history" : "visibility_off"}
+        title="Archive this event?"
+        icon="history"
         actions={
           <>
             <Button variant="text" onClick={() => setConfirm(null)}>Cancel</Button>
             <Button variant="danger" loading={status.isPending} onClick={() => confirm && status.mutate(confirm)}>
-              {confirm === "archive" ? "Archive" : "Unpublish"}
+              Archive
             </Button>
           </>
         }
       >
-        {confirm === "archive" ? "Archived events stay visible as read-only history." : "Only possible before anyone registers."}
+        Archived events stay visible as read-only history. This cannot be undone.
       </Dialog>
     </form>
   );

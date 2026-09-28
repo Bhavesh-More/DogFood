@@ -259,13 +259,16 @@ export const votingRoutes = [
           let status = "counted";
           let reason: string | null = null;
           if (event.voting_mode === "open") {
-            const distinct = await one<{ n: number; mine: boolean }>(
+            const ip = await one<{ others: number; flagged: boolean | null }>(
               t,
-              `SELECT count(DISTINCT voter_key)::int AS n, bool_or(voter_key = $3) AS mine
+              `SELECT (count(DISTINCT voter_key) FILTER (WHERE voter_key <> $3))::int AS others,
+                      bool_or(voter_key = $3 AND status = 'flagged') AS flagged
                  FROM votes WHERE event_id = $1 AND ip_hash = $2`,
               [event.id, actor.ipHash, voter.key],
             );
-            if (!distinct?.mine && (distinct?.n ?? 0) >= OPEN_VOTERS_PER_IP) {
+            // Flag the new device once the IP is over the cap, and keep every
+            // later vote from an already-flagged device flagged too.
+            if (ip?.flagged || (ip?.others ?? 0) >= OPEN_VOTERS_PER_IP) {
               status = "flagged";
               reason = `more than ${OPEN_VOTERS_PER_IP} voters from one IP`;
             }

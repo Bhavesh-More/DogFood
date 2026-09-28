@@ -49,17 +49,20 @@ describe("open-link voting (evt_01, single style, 3 picks)", () => {
     expect((await s.as(TOKENS.organizer).put("/api/submissions/sub_01_02/vote", { votes: 1 })).body.code).toBe("ORGANIZER_CANNOT_VOTE");
   });
 
-  it("flags the fourth distinct device behind one IP, even with a spoofed X-Forwarded-For", async () => {
-    const before = (await s.as(TOKENS.organizer).get("/api/events/evt_01/votes?status=flagged")).body.length;
+  it("flags the fourth distinct device behind one IP, and keeps flagging it thereafter", async () => {
+    const beforeRows = (await s.as(TOKENS.organizer).get("/api/events/evt_01/votes?status=flagged")).body as { id: string }[];
+    const beforeIds = new Set(beforeRows.map((v) => v.id));
     expect((await vote(s.cookieJar(), "sub_01_07")).status).toBe(200);
     expect((await vote(s.cookieJar(), "sub_01_07")).status).toBe(200);
     // jar + 2 more = 3 voters on this IP; the next one is flagged.
-    const r = await vote(s.cookieJar(), "sub_01_07", 1, { "x-forwarded-for": "203.0.113.9" });
+    const spam = s.cookieJar();
+    const r = await vote(spam, "sub_01_07", 1, { "x-forwarded-for": "203.0.113.9" });
     expect(r.status).toBe(200);
-    const flagged = (await s.as(TOKENS.organizer).get("/api/events/evt_01/votes?status=flagged")).body;
-    expect(flagged.length).toBe(before + 1);
-    expect(flagged[0]).toMatchObject({ submissionId: "sub_01_07", status: "flagged" });
-    expect(flagged[0].flagReason).toMatch(/voters from one IP/);
+    // The same device's next vote must not slip back in as counted.
+    expect((await vote(spam, "sub_01_06")).status).toBe(200);
+    const flagged = (await s.as(TOKENS.organizer).get("/api/events/evt_01/votes?status=flagged")).body as { id: string; submissionId: string }[];
+    const fresh = flagged.filter((v) => !beforeIds.has(v.id));
+    expect(fresh.map((v) => v.submissionId).sort()).toEqual(["sub_01_06", "sub_01_07"]);
   });
 
   it("organizers can overturn a flag, and the decision is audited", async () => {

@@ -306,7 +306,7 @@ export interface AnnouncementDto {
   updatedAt: string;
 }
 
-export type NotificationKind = "announcement" | "assignment" | "invite";
+export type NotificationKind = "announcement" | "assignment" | "invite" | "team_request";
 
 export interface NotificationDto {
   id: string;

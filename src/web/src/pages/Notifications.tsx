@@ -12,6 +12,7 @@ const KIND_ICON: Record<NotificationDto["kind"], IconName> = {
   announcement: "campaign",
   assignment: "rate_review",
   invite: "group_add",
+  team_request: "how_to_reg",
 };
 
 export function NotificationsPage() {

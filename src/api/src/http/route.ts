@@ -57,7 +57,10 @@ export function mountRoutes(router: Router, defs: readonly RouteDef[], app: AppC
           }
         }
         if (def.rateLimit) {
-          const key = `${def.rateLimit.bucket}:${actor.user?.id ?? actor.ipHash}`;
+          // Public anti-abuse buckets key on the IP so attaching any valid
+          // session cannot move an anonymous caller onto a fresh bucket.
+          const ipOnly = def.rateLimit.bucket === "auth";
+          const key = `${def.rateLimit.bucket}:${ipOnly ? actor.ipHash : actor.user?.id ?? actor.ipHash}`;
           const wait = app.limiter.take(key, def.rateLimit.spec);
           if (wait > 0) {
             res.setHeader("Retry-After", String(wait));
