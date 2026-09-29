@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
+import { hasFormulaTrigger } from "@dogfood/core";
 import { get } from "../lib/api";
 import { formatDate } from "../lib/time";
 import { Banner, Button, ErrorState, Icon, PageLoader, Shape } from "../ui";
@@ -34,12 +35,19 @@ export function VerifyPage() {
   const r = q.data;
   const p = r.payload;
   const ok = r.valid && !r.revoked;
+  // Participant-controlled text (project, team) is shown on a printable
+  // certificate; never print a value that would run as a spreadsheet formula.
+  const safeText = (value: unknown) => typeof value === "string" && !hasFormulaTrigger(value) ? value : null;
+  const project = safeText(p.details.project);
+  const team = safeText(p.details.team);
+  const projectPhrase = project ? `“${project}”` : "their project";
+  const teamPhrase = team ?? "their team";
   const line =
     p.kind === "judge_participation"
       ? `served as a judge and completed ${p.details.reviewsCompleted} review${p.details.reviewsCompleted === 1 ? "" : "s"} (${p.details.tracks})`
       : p.kind === "winner"
-        ? `placed #${p.details.rank} with “${p.details.project}” (team ${p.details.team})`
-        : `built and submitted “${p.details.project}” with team ${p.details.team}`;
+        ? `placed #${p.details.rank} with ${projectPhrase} (team ${teamPhrase})`
+        : `built and submitted ${projectPhrase} with team ${teamPhrase}`;
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 py-6 animate-enter">
       <Banner tone={ok ? "success" : "error"} icon={ok ? "verified" : "gpp_maybe"} title={ok ? "Signature valid" : r.revoked ? "Record revoked" : "Signature invalid"} className="no-print">

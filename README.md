@@ -89,8 +89,9 @@ Also built in:
   count; clicking one opens the event, review queue or invitation.
 - **Team finder:** solo participants list their skills, and teams list
   their open spots and what they need. A team member can invite someone on
-  the board, and a solo participant can **ask to join** a recruiting team;
-  either way it arrives as a notification and emails are never shown.
+  the board, and a solo participant can **ask to join** a recruiting team.
+  The captain then **accepts or declines** on a Join requests card — accepting
+  adds the member straight away, with no second invite. Emails are never shown.
 - **Profiles:** every user has a public profile — participants show a tech
   stack, judges show qualifications, and everyone can add a headline, an
   about section and links. Captains open an applicant's profile from the

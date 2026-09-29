@@ -113,6 +113,7 @@ erDiagram
 | `outbox` | The local mail spool. The platform never calls an external email API, so it works offline; admins can read the spool. |
 | `comments` | Moderation via `hidden_at` and `hidden_by`. |
 | `notifications` | A per-user in-app feed. `kind ∈ {announcement, assignment, invite, team_request}` with an optional `event_id`, a `link` and `read_at`. Reads always filter `user_id = <caller>`; rows are written by the announcement, assignment, invitation and team-join-request code paths in the same transaction as the change. |
+| `team_join_requests` | **`PRIMARY KEY (team_id, user_id)`**: a pending "ask to join" from a solo participant, consumed by the captain's accept or decline. Joining a team by any path clears the person's requests for that event (trigger `team_members_clear_join_requests`). |
 
 ### Integrations and trust
 

@@ -335,5 +335,16 @@ A captain vetting a join request previously saw only a name and a one-line note.
 
 Re-verified on a fresh `docker compose` build: 249/249 Vitest (107 unit + 142 integration), 23/23 Playwright, acceptance 38/38 T4, lint and types clean.
 
+### Iteration 11 — captain answers a join request directly
 
+"Ask to join" used to funnel the captain back into the invite flow: the request only notified the captain and put the requester on the finder board, and the captain then had to send an invite the requester still had to accept. The captain now answers the request itself.
+
+| Area | Change |
+| :--- | :--- |
+| Data | Migration `010` adds `team_join_requests` (`PRIMARY KEY (team_id, user_id)`), so a request is real persisted state instead of an `audit_log` dedup probe. A trigger clears a person's pending requests when they join any team |
+| API | `POST /api/teams/:teamId/join-requests` stores the row (idempotent `ON CONFLICT`) and notifies the captains once. New captain-only `POST /api/teams/:teamId/join-requests/:userId/{accept,reject}`: accept joins the member directly (`addTeamMember`, extracted from the invite-accept path) and notifies them; reject clears the row. The finder DTO carries the viewer team's pending `requests` |
+| Web | `JoinRequestsCard` on the team page (captain, roster open) lists each requester with profile link, note and skills, and **Accept** / **Decline** buttons. Choosing is no longer "invite again" |
+| Tests | `tests/integration/team-finder.test.ts`: a captain accept/decline journey (non-member refused, accept adds the member, double-answer 404, decline never joins); the Playwright join-request journey now drives the captain's Accept/Decline card |
+
+Re-verified: 250/250 Vitest (107 unit + 143 integration), lint and types clean; web production build clean. (Docker/e2e re-run pending a fresh image.)
 

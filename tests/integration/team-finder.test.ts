@@ -8,7 +8,7 @@ let s: TestStack;
 const tok: Record<string, string> = {};
 beforeAll(async () => {
   s = await startStack({ now: () => clock });
-  for (const id of ["usr_p01", "usr_p02", "usr_p03"]) tok[id] = await s.tokenFor(id);
+  for (const id of ["usr_p01", "usr_p02", "usr_p03", "usr_p04", "usr_p05", "usr_p37"]) tok[id] = await s.tokenFor(id);
 });
 afterAll(async () => {
   await s?.close();
@@ -75,6 +75,32 @@ describe("team finder", () => {
     expect((await s.as(tok.usr_p01!).post("/api/teams/team_02_01/join-requests")).status).toBe(201);
     const [count] = await s.sql("SELECT count(*)::int AS n FROM notifications WHERE user_id = 'usr_participant' AND kind = 'team_request'");
     expect(count!.n).toBe(1);
+  });
+
+  it("the captain answers a join request — accept adds the member, decline clears it", async () => {
+    await s.as(tok.usr_p37!).put("/api/teams/team_02_03/recruiting", { lookingFor: "a regex enthusiast" });
+    // Accept: usr_p04 asks to join team_02_03; its board then exposes the request.
+    expect((await s.as(tok.usr_p04!).post("/api/teams/team_02_03/join-requests")).status).toBe(201);
+    const pending = (await s.as(tok.usr_p37!).get("/api/events/evt_02/team-finder")).body.requests;
+    expect(pending.some((x: { userId: string }) => x.userId === "usr_p04")).toBe(true);
+    // A non-member cannot answer someone else's request.
+    expect((await s.as(tok.usr_p05!).post("/api/teams/team_02_03/join-requests/usr_p04/accept")).status).toBe(403);
+    const acc = await s.as(tok.usr_p37!).post("/api/teams/team_02_03/join-requests/usr_p04/accept");
+    expect(acc.status).toBe(200);
+    expect(acc.body.members.map((m: { userId: string }) => m.userId)).toContain("usr_p04");
+    // The request is consumed and cannot be answered twice.
+    expect((await s.as(tok.usr_p37!).get("/api/events/evt_02/team-finder")).body.requests.some((x: { userId: string }) => x.userId === "usr_p04")).toBe(false);
+    expect((await s.as(tok.usr_p37!).post("/api/teams/team_02_03/join-requests/usr_p04/accept")).status).toBe(404);
+
+    // Decline: usr_p05 asks, is turned down and never joins.
+    expect((await s.as(tok.usr_p05!).post("/api/teams/team_02_03/join-requests")).status).toBe(201);
+    expect((await s.as(tok.usr_p37!).post("/api/teams/team_02_03/join-requests/usr_p05/reject")).status).toBe(204);
+    expect((await s.as(tok.usr_p37!).get("/api/events/evt_02/team-finder")).body.requests.some((x: { userId: string }) => x.userId === "usr_p05")).toBe(false);
+    expect((await s.as(tok.usr_p05!).get("/api/events/evt_02/my-team")).body).toBeNull();
+
+    // Restore the seed so later tests see a clean board.
+    await s.as(tok.usr_p37!).del("/api/teams/team_02_03/members/usr_p04");
+    await s.as(tok.usr_p37!).put("/api/teams/team_02_03/recruiting", { lookingFor: null });
   });
 
   it("joining a team takes you off the board automatically (database trigger)", async () => {

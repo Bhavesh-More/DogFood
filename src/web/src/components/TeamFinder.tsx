@@ -143,6 +143,67 @@ export function RecruitingCard({ team }: { team: TeamDto }) {
   );
 }
 
+/** Pending join requests to your own team; the captain accepts or declines. */
+export function JoinRequestsCard({ eventId, teamId }: { eventId: string; teamId: string }) {
+  const q = useTeamFinder(eventId);
+  const qc = useQueryClient();
+  const toast = useToast();
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: finderKey(eventId) });
+    qc.invalidateQueries({ queryKey: keys.myTeam(eventId) });
+  };
+  const accept = useMutation({
+    mutationFn: (userId: string) => post(`/api/teams/${teamId}/join-requests/${userId}/accept`),
+    onSuccess: () => {
+      toast.success("They joined your team");
+      refresh();
+    },
+    onError: (err) => toast.error(errorMessage(err)),
+  });
+  const reject = useMutation({
+    mutationFn: (userId: string) => post(`/api/teams/${teamId}/join-requests/${userId}/reject`),
+    onSuccess: () => {
+      toast.show("Request declined");
+      refresh();
+    },
+    onError: (err) => toast.error(errorMessage(err)),
+  });
+  const requests = q.data?.requests ?? [];
+  if (!requests.length) return null;
+  const busy = accept.isPending || reject.isPending;
+  return (
+    <Card variant="filled" radius="2xl" className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <Icon name="how_to_reg" size={22} className="text-primary" />
+        <h2 className="type-title-lg text-on-surface">Join requests</h2>
+        <Pill tone="secondary">{requests.length}</Pill>
+      </div>
+      <ul className="flex flex-col gap-2" aria-label="Join requests">
+        {requests.map((r) => (
+          <li key={r.userId} className="flex flex-wrap items-center gap-3 rounded-lg bg-surface-container-low p-3">
+            <Avatar name={r.name} size={40} />
+            <div className="min-w-0 flex-1">
+              <Link to={`/u/${r.userId}`} className="type-title-sm text-primary hover:underline">
+                {r.name}
+              </Link>
+              {r.note ? <p className="mt-0.5 whitespace-pre-line break-words type-body-sm text-on-surface-variant">{r.note}</p> : null}
+              <Skills skills={r.skills} />
+            </div>
+            <div className="flex items-center gap-1">
+              <Button size="xs" icon="check" loading={accept.isPending && accept.variables === r.userId} disabled={busy} onClick={() => accept.mutate(r.userId)}>
+                Accept
+              </Button>
+              <Button size="xs" variant="text" icon="close" loading={reject.isPending && reject.variables === r.userId} disabled={busy} onClick={() => reject.mutate(r.userId)}>
+                Decline
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
 /** People looking for a team and teams with open spots, for one event. */
 export function TeamFinderBoard({ eventId, showTeams = true, showSeekers = true }: { eventId: string; showTeams?: boolean; showSeekers?: boolean }) {
   const q = useTeamFinder(eventId);

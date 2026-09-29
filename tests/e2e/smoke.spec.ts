@@ -258,10 +258,11 @@ test.describe("team finder", () => {
     await page.request.delete(`/api/teams/team_02_01/invites/${invite.id}`, { headers: { authorization: `Bearer ${TOKENS.participant}` } });
   });
 
-  test("a solo participant asks to join a recruiting team and its captain is notified", async ({ page, context, baseURL }) => {
+  test("a solo participant asks to join and the captain answers accept or decline", async ({ page, context, baseURL }) => {
     const admin = { authorization: `Bearer ${TOKENS.participant}` };
     await page.request.put("/api/teams/team_02_01/recruiting", { headers: admin, data: { lookingFor: "e2e recruiting ping" } });
-    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
+    // Clear any request left over from an earlier run.
+    await page.request.post("/api/teams/team_02_01/join-requests/usr_participant2/reject", { headers: admin });
 
     await signInAs(context, baseURL!, "participant2");
     await page.goto("/e/autumn-build-week/team");
@@ -274,15 +275,21 @@ test.describe("team finder", () => {
       card.getByRole("button", { name: "Ask to join" }).click(),
     ]);
     expect(res.ok()).toBe(true);
-    await expect(page.getByText("Request sent to")).toBeVisible();
     await expect(card.getByRole("button", { name: "Request sent" })).toBeVisible();
 
-    // The captain sees the request in their own notification feed.
+    // The captain sees the request in their feed and as an actionable row.
     const feed = await (await page.request.get("/api/notifications", { headers: admin })).json();
     expect(feed.items.some((n: { kind: string; title: string }) => n.kind === "team_request" && n.title.includes("asked to join"))).toBe(true);
 
+    await signInAs(context, baseURL!, "participant");
+    await page.goto("/e/autumn-build-week/team");
+    const row = page.getByRole("list", { name: "Join requests" }).getByRole("listitem").filter({ hasText: "Mateo Rossi" });
+    await expect(row.getByRole("button", { name: "Accept" })).toBeVisible();
+    await expect(row.getByRole("button", { name: "Decline" })).toBeVisible();
+    await row.getByRole("button", { name: "Decline" }).click();
+    await expect(row).toHaveCount(0);
+
     // Restore the demo data.
-    await page.request.delete("/api/events/evt_02/team-finder/me", { headers: { authorization: `Bearer ${TOKENS.participant2}` } });
     await page.request.put("/api/teams/team_02_01/recruiting", { headers: admin, data: { lookingFor: null } });
   });
 });
@@ -344,6 +351,19 @@ test.describe("notifications", () => {
     const list = (await (await page.request.get("/api/events/evt_02/announcements", { headers: { authorization: `Bearer ${TOKENS.organizer}` } })).json()) as { id: string; title: string }[];
     const ann = list.find((a) => a.title === title);
     if (ann) await page.request.delete(`/api/announcements/${ann.id}`, { headers: { authorization: `Bearer ${TOKENS.organizer}` } });
+  });
+});
+
+test.describe("certificates", () => {
+  test("the certificate hides a project title that would run as a spreadsheet formula", async ({ page }) => {
+    const res = await page.request.get("/api/me/records", { headers: { authorization: `Bearer ${TOKENS.participant}` } });
+    const records = (await res.json()) as { id: string; kind: string; payload: { details: Record<string, string> } }[];
+    const unsafe = records.find((r) => r.kind === "winner" && /^[=+\-@\t\r]/.test(r.payload.details.project ?? ""));
+    test.skip(!unsafe, "no formula-trigger winner record available");
+    await page.goto(`/verify/${unsafe!.id}`);
+    const cert = page.locator("article");
+    await expect(cert.getByText("their project")).toBeVisible();
+    await expect(cert.getByText("HYPERLINK")).toHaveCount(0);
   });
 });
 

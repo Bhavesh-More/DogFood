@@ -59,6 +59,21 @@ export function assertRosterOpen(app: AppContext, event: EventRow, extensionUnti
   }
 }
 
+/**
+ * Capacity and eligibility guards plus the membership write, shared by invite
+ * acceptance and join-request acceptance. The caller must hold a row lock on
+ * the team so concurrent joins serialise.
+ */
+export async function addTeamMember(app: AppContext, t: Tx, team: TeamRow, event: EventRow, userId: string): Promise<void> {
+  assertRosterOpen(app, event, team.deadline_extension_until);
+  if (await judgeScope(t, userId, event.id)) throw conflict("Judges cannot join teams", "JUDGE_CONFLICT");
+  if (await teamOf(t, userId, event.id)) throw conflict("You are already on a team in this event", "ALREADY_ON_TEAM");
+  const size = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM team_members WHERE team_id = $1", [team.id]);
+  if ((size?.n ?? 0) >= event.max_team_size) throw conflict(`Team is full (${event.max_team_size} members max)`, "TEAM_FULL");
+  await t.query("INSERT INTO registrations (event_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [event.id, userId]);
+  await t.query("INSERT INTO team_members (team_id, event_id, user_id, role) VALUES ($1, $2, $3, 'member')", [team.id, event.id, userId]);
+}
+
 export async function loadMyTeam(tx: Tx, actor: Actor, teamId: string) {
   const team = await one<TeamRow>(tx, "SELECT id, event_id, name, deadline_extension_until FROM teams WHERE id = $1", [teamId]);
   if (!team) throw notFound("Team");
@@ -361,17 +376,7 @@ export const teamRoutes = [
         );
         if (!team) throw notFound("Team");
         const event = (await findEvent(t, team.event_id))!;
-        assertRosterOpen(app, event, team.deadline_extension_until);
-        if (await judgeScope(t, user.id, event.id)) throw conflict("Judges cannot join teams", "JUDGE_CONFLICT");
-        if (await teamOf(t, user.id, event.id)) throw conflict("You are already on a team in this event", "ALREADY_ON_TEAM");
-        const size = await one<{ n: number }>(t, "SELECT count(*)::int AS n FROM team_members WHERE team_id = $1", [team.id]);
-        if ((size?.n ?? 0) >= event.max_team_size) throw conflict(`Team is full (${event.max_team_size} members max)`, "TEAM_FULL");
-        await t.query("INSERT INTO registrations (event_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [event.id, user.id]);
-        await t.query("INSERT INTO team_members (team_id, event_id, user_id, role) VALUES ($1, $2, $3, 'member')", [
-          team.id,
-          event.id,
-          user.id,
-        ]);
+        await addTeamMember(app, t, team, event, user.id);
         await t.query("UPDATE team_invites SET used_at = now(), used_by = $2 WHERE id = $1", [invite.id, user.id]);
         await audit(t, actor, {
           eventId: event.id,

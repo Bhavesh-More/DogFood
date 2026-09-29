@@ -11,6 +11,11 @@ export type CsvValue = string | number | boolean | null | undefined | Date;
 
 const FORMULA_TRIGGER = /^[=+\-@\t\r]/;
 
+/** True when a cell/field would execute as a formula in a spreadsheet. */
+export function hasFormulaTrigger(text: string): boolean {
+  return FORMULA_TRIGGER.test(text);
+}
+
 export function csvCell(value: CsvValue): string {
   if (value === null || value === undefined) return "";
   let text: string;
@@ -18,7 +23,7 @@ export function csvCell(value: CsvValue): string {
   else if (typeof value === "number") text = Number.isFinite(value) ? String(value) : "";
   else text = String(value);
 
-  if (typeof value === "string" && FORMULA_TRIGGER.test(text)) text = `'${text}`;
+  if (typeof value === "string" && hasFormulaTrigger(text)) text = `'${text}`;
   if (/[",\r\n]/.test(text)) text = `"${text.replace(/"/g, '""')}"`;
   return text;
 }

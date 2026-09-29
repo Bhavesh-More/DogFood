@@ -340,12 +340,22 @@ export interface NotificationsDto {
   unread: number;
 }
 
+export interface TeamJoinRequestDto {
+  userId: string;
+  name: string;
+  skills: string[];
+  note: string;
+  createdAt: string;
+}
+
 export interface TeamFinderDto {
   /** Whether new posts and joins are still possible (roster open). */
   open: boolean;
   me: { onTeam: boolean; posted: boolean; canPost: boolean };
   seekers: { userId: string; name: string; skills: string[]; note: string; updatedAt: string }[];
   teams: { teamId: string; name: string; members: string[]; openSpots: number; lookingFor: string }[];
+  /** Pending joins for the viewer's own team (empty when they have no team). */
+  requests: TeamJoinRequestDto[];
 }
 
 /* ---------------------------------- AI (optional sidecar) ----------------- */

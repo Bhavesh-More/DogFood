@@ -63,7 +63,7 @@ The UI follows **Material 3 Expressive**, implemented with **Tailwind CSS v4**.
 
 - **Everything is implemented and verified.** On a freshly rebuilt Docker
   image:
-  - **249/249 Vitest tests** (107 unit + 142 integration), run with `pnpm test`.
+  - **250/250 Vitest tests** (107 unit + 143 integration), run with `pnpm test`.
   - **23/23 Playwright journeys.**
   - **38/38 acceptance checks** (T4 verified, 4/4 bonuses). See
     `acceptance-report.txt`.
@@ -684,17 +684,22 @@ behaviour change, also update README, ARCHITECTURE, `docs/16` and
     `announcement.published` webhook (a new `WEBHOOK_EVENTS` entry).
   - UI: `components/Announcements.tsx`.
 - **Team finder.**
-  - `modules/teamfinder.ts` and migration `005`.
+  - `modules/teamfinder.ts` and migrations `005`, `008`, `010`.
   - The `team_members_clear_seeker` trigger removes a person's post when
-    they join or found a team.
+    they join or found a team; `team_members_clear_join_requests` clears
+    their pending join requests for the event.
   - `teams.looking_for` holds the recruiting text; `null` means the team
     is not recruiting.
   - Two-way: seekers post themselves and captains **Invite** them; a solo
     participant can also **Ask to join** a recruiting team
-    (`POST /api/teams/:teamId/join-requests`), which notifies its captains
-    (notification kind `team_request`, migration `008`), puts the requester
-    on the board, and is idempotent. Acceptance is the normal invite flow.
-  - UI: `components/TeamFinder.tsx`, shown on the team page.
+    (`POST /api/teams/:teamId/join-requests`), which stores a
+    `team_join_requests` row (idempotent) and notifies its captains
+    (notification kind `team_request`). The captain **accepts or declines**
+    (`POST /api/teams/:teamId/join-requests/:userId/{accept,reject}`, captain
+    only); accepting adds the member directly via `addTeamMember` — no
+    second invite round-trip.
+  - UI: `components/TeamFinder.tsx` (`TeamFinderBoard` and the captain-only
+    `JoinRequestsCard`), shown on the team page.
 - **Notifications (in-app feed).**
   - `modules/notifications.ts` and migration `007`.
   - `lib/notify.ts`'s `notify(tx, …)` inserts rows in the same transaction

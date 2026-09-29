@@ -10,6 +10,7 @@ import {
   csvCell,
   eventInput,
   eventPhase,
+  hasFormulaTrigger,
   httpUrl,
   isBeforeDeadline,
   isVotingOpen,
@@ -140,6 +141,11 @@ describe("CSV", () => {
     expect(csvCell("+1")).toBe("'+1");
     expect(csvCell(-3)).toBe("-3");
     expect(csvCell(null)).toBe("");
+  });
+
+  it("flags spreadsheet-formula triggers", () => {
+    for (const t of ["=1+1", "+1", "-1", "@cmd", "\tx", "\rx"]) expect(hasFormulaTrigger(t)).toBe(true);
+    for (const t of ["plain", "A=B", " a", "", "1+1"]) expect(hasFormulaTrigger(t)).toBe(false);
   });
 
   it("round-trips through the parser", () => {

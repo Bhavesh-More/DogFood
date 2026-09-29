@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { Link, Navigate, useParams } from "react-router";
 import { isBeforeDeadline, type InviteDto } from "@dogfood/core";
 import { Countdown } from "../../components/Countdown";
-import { RecruitingCard, TeamFinderBoard } from "../../components/TeamFinder";
+import { JoinRequestsCard, RecruitingCard, TeamFinderBoard } from "../../components/TeamFinder";
 import { errorMessage, get, post, del } from "../../lib/api";
 import { keys, useEvent, useMyTeam } from "../../lib/queries";
 import { useSession } from "../../lib/session";
@@ -138,6 +138,7 @@ export function TeamPage() {
       ) : (
         <div className="grid grid-cols-1 gap-6 expanded:grid-cols-[minmax(0,1fr)_360px]">
           <section className="flex flex-col gap-6">
+            {open && me?.role === "captain" ? <JoinRequestsCard eventId={e.id} teamId={t.id} /> : null}
             <Card variant="filled" radius="2xl">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="type-title-lg text-on-surface">Roster</h2>
